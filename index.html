@@ -1610,7 +1610,7 @@ items.forEach(function(item,i){
 var score=(d.scores&&d.scores[i]!==undefined)?d.scores[i]:null;
 var cat=(d.catatan&&d.catatan[i])?d.catatan[i]:getAutoCatatan(score);
 
-html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek">'+item+'</td>';
+html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek clickable" onclick="showPenggalianGeneric(\''+key+'\','+i+')">'+item+'</td>';
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\''+key+'\','+i+','+s+')">'+(score===s?'✓':'')+'</button></td>';
 }
@@ -1653,7 +1653,7 @@ var gi=idx;
 var score=(d.scores&&d.scores[gi]!==undefined)?d.scores[gi]:null;
 var cat=(d.catatan&&d.catatan[gi])?d.catatan[gi]:getAutoCatatan(score);
 
-html+='<tr><td class="col-no">'+(gi+1)+'</td><td class="col-aspek">'+item+'</td>';
+html+='<tr><td class="col-no">'+(gi+1)+'</td><td class="col-aspek clickable" onclick="showPenggalian('+gi+')">'+item+'</td>';
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\'pelaksanaan\','+gi+','+s+')">'+(score===s?'✓':'')+'</button></td>';
 }
@@ -2474,7 +2474,7 @@ KOKURIKULER.forEach(function(item,i){
 var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
 var cat=(catatan[i])?catatan[i]:getAutoCatatan(score);
 var hasInfo=false;
-html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek">'+item+'</td>';
+html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek clickable" onclick="showPenggalianGeneric(\''+key+'\','+i+')">'+item+'</td>';
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkorKokurikuler('+idx+','+i+','+s+')">'+(score===s?'✓':'')+'</button></td>';
 }
@@ -2845,7 +2845,7 @@ html+='<div style="overflow-x:auto"><table class="instrumen-table"><thead><tr><t
 ekstraItems.forEach(function(item,i){
 var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
 var cat=catatan[i]||'';
-html+='<tr><td>'+(i+1)+'</td><td style="text-align:left">'+item+'</td>';
+html+='<tr><td>'+(i+1)+'</td><td class="col-aspek clickable" onclick="showPenggalianEkstrakurikuler('+i+')">'+item+'</td>';
 for(var s=0;s<4;s++){
 var checked=(score===s)?'checked':'';
 html+='<td><input type="radio" name="ekstra_score_'+i+'" value="'+s+'" '+checked+' onchange="setSkorEkstrakurikuler('+idx+','+i+','+s+')"></td>';
@@ -3212,7 +3212,7 @@ html+='<div style="overflow-x:auto"><table class="instrumen-table"><thead><tr><t
 iklimItems.forEach(function(item,i){
 var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
 var cat=catatan[i]||'';
-html+='<tr><td>'+(i+1)+'</td><td style="text-align:left">'+item+'</td>';
+html+='<tr><td>'+(i+1)+'</td><td class="col-aspek clickable" onclick="showPenggalianEkstrakurikuler('+i+')">'+item+'</td>';
 for(var s=0;s<4;s++){
 var checked=(score===s)?'checked':'';
 html+='<td><input type="radio" name="iklim_score_'+i+'" value="'+s+'" '+checked+' onchange="setSkorIklimMadrasah('+idx+','+i+','+s+')"></td>';
