@@ -1540,9 +1540,9 @@ html+='<div class="form-group"><label>Pilih Madrasah (dari data)</label><select 
 madrasahList.forEach(function(m,i){html+='<option value="'+i+'" '+(id.selectedMadrasahIdx==i?'selected':'')+'>'+escHtml(m.nama)+'</option>';});
 html+='</select></div>';
 // Guru dropdown
-var filteredGuru=guruList;
+var filteredGuru=[];
 if(id.namaMadrasah){filteredGuru=guruList.filter(function(g){return g.madrasah===id.namaMadrasah});}
-html+='<div class="form-group"><label>Pilih Guru (dari data)</label><select onchange="selectGuru(this.value)"><option value="">-- Pilih atau isi manual --</option>';
+html+='<div class="form-group"><label>Pilih Guru (dari data)</label><select onchange="selectGuru(this.value)"><option value="">-- '+(id.namaMadrasah?'Pilih atau isi manual':'Pilih madrasah dulu')+' --</option>';
 filteredGuru.forEach(function(g,i){
 var gIdx=guruList.indexOf(g);
 html+='<option value="'+gIdx+'" '+(id.selectedGuruIdx==gIdx?'selected':'')+'>'+escHtml(g.nama)+' - '+escHtml(g.mataPelajaran)+'</option>';
