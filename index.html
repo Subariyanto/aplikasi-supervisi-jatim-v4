@@ -85,9 +85,9 @@ header h1{font-size:1.5rem;color:#034f1d;margin-bottom:4px}
 .instrumen-table .col-no{width:40px}
 .instrumen-table .col-aspek{text-align:left;min-width:200px}
 .instrumen-table .col-skor{width:40px}
-.skor-radio{background:none;border:none;cursor:pointer;font-size:1.3rem;color:#94a3b8;transition:all .2s;padding:4px 8px}
-.skor-radio:hover{color:#016a34}
-.skor-radio.selected{color:#016a34;font-weight:bold}
+.skor-radio{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border:2px solid #cbd5e1;border-radius:5px;cursor:pointer;font-size:.95rem;color:transparent;transition:all .15s;background:#fff;padding:0}
+.skor-radio:hover{border-color:#016a34;background:#f0fdf4}
+.skor-radio.selected{background:#016a34;border-color:#016a34;color:#fff;font-weight:bold}
 .tahap-header{background:linear-gradient(135deg,#016a34,#034f1d);color:#fff;padding:10px 16px;border-radius:8px;margin:20px 0 12px;font-weight:600;font-size:.9rem}
 .rekap-card{background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:2px solid #016a34;border-radius:12px;padding:20px;margin-bottom:16px}
 .rekap-card h3{color:#016a34;margin-bottom:10px}
@@ -1576,7 +1576,7 @@ var cat=(d.catatan&&d.catatan[i])?d.catatan[i]:getAutoCatatan(score);
 
 html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek">'+item+'</td>';
 for(var s=0;s<4;s++){
-html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\''+key+'\','+i+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
+html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\''+key+'\','+i+','+s+')">'+(score===s?'✓':'')+'</button></td>';
 }
 html+='<td class="col-catatan"><input type="text" value="'+escHtml(cat)+'" onchange="setCatatan(\''+key+'\','+i+',this.value)" placeholder="Otomatis"></td></tr>';
 });
@@ -1619,7 +1619,7 @@ var cat=(d.catatan&&d.catatan[gi])?d.catatan[gi]:getAutoCatatan(score);
 
 html+='<tr><td class="col-no">'+(gi+1)+'</td><td class="col-aspek">'+item+'</td>';
 for(var s=0;s<4;s++){
-html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\'pelaksanaan\','+gi+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
+html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkor(\'pelaksanaan\','+gi+','+s+')">'+(score===s?'✓':'')+'</button></td>';
 }
 html+='<td class="col-catatan"><input type="text" value="'+escHtml(cat)+'" onchange="setCatatan(\'pelaksanaan\','+gi+',this.value)" placeholder="Otomatis"></td></tr>';
 idx++;
@@ -2420,7 +2420,7 @@ var cat=(catatan[i])?catatan[i]:getAutoCatatan(score);
 var hasInfo=false;
 html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek">'+item+'</td>';
 for(var s=0;s<4;s++){
-html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkorKokurikuler('+idx+','+i+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
+html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkorKokurikuler('+idx+','+i+','+s+')">'+(score===s?'✓':'')+'</button></td>';
 }
 html+='<td class="col-catatan"><input type="text" value="'+escHtml(cat)+'" onchange="setCatatanKokurikuler('+idx+','+i+',this.value)" placeholder="Otomatis"></td></tr>';
 });
