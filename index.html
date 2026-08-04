@@ -85,7 +85,7 @@ header h1{font-size:1.5rem;color:#034f1d;margin-bottom:4px}
 .instrumen-table .col-no{width:40px}
 .instrumen-table .col-aspek{text-align:left;min-width:200px}
 .instrumen-table .col-skor{width:40px}
-.skor-radio{background:none;border:none;cursor:pointer;font-size:1.1rem;color:#94a3b8;transition:all .2s}
+.skor-radio{background:none;border:none;cursor:pointer;font-size:1.3rem;color:#94a3b8;transition:all .2s;padding:4px 8px}
 .skor-radio:hover{color:#016a34}
 .skor-radio.selected{color:#016a34;font-weight:bold}
 .tahap-header{background:linear-gradient(135deg,#016a34,#034f1d);color:#fff;padding:10px 16px;border-radius:8px;margin:20px 0 12px;font-weight:600;font-size:.9rem}
@@ -2415,7 +2415,7 @@ html+='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th c
 KOKURIKULER.forEach(function(item,i){
 var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
 var cat=(catatan[i])?catatan[i]:getAutoCatatan(score);
-var hasInfo=PENGGALIAN_KOKURIKULER[i]?true:false;
+var hasInfo=false;
 html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek'+(hasInfo?' clickable':'')+'"'+(hasInfo?' onclick="showPenggalianKokurikuler('+i+')" title="Klik untuk lihat penggalian data"':'')+'>'+(hasInfo?'\u{1F50D} ':'')+item+'</td>';
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkorKokurikuler('+idx+','+i+','+s+')">'+(score===s?'&#9679;':'&#9675;')+'</button></td>';
@@ -2787,7 +2787,7 @@ html+='<div style="overflow-x:auto"><table class="instrumen-table"><thead><tr><t
 ekstraItems.forEach(function(item,i){
 var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
 var cat=catatan[i]||'';
-html+='<tr><td>'+(i+1)+'</td><td style="text-align:left;cursor:pointer" onclick="showPenggalianEkstrakurikuler('+i+')">'+item+' \u{1F50D}</td>';
+html+='<tr><td>'+(i+1)+'</td><td style="text-align:left">'+item+'</td>';
 for(var s=0;s<4;s++){
 var checked=(score===s)?'checked':'';
 html+='<td><input type="radio" name="ekstra_score_'+i+'" value="'+s+'" '+checked+' onchange="setSkorEkstrakurikuler('+idx+','+i+','+s+')"></td>';
