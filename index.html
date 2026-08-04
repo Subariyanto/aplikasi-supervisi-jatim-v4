@@ -931,12 +931,12 @@ function getPengawas(){try{return JSON.parse(localStorage.getItem(PENGAWAS_KEY))
 function savePengawas(d){localStorage.setItem(PENGAWAS_KEY,JSON.stringify(d))}
 
 // ===== UNIFIED HELPERS (merge RA + umum) =====
-function getAllMadrasah(){var umum=[];try{umum=JSON.parse(localStorage.getItem(MADRASAH_KEY))||[]}catch(e){umum=[]}var ra=[];try{ra=JSON.parse(localStorage.getItem(MADRASAH_KEY_RA))||[]}catch(e){ra=[]}var all=[];umum.forEach(function(m){all.push(Object.assign({},m,{jenjang:m.jenjang||'umum'}))});ra.forEach(function(m){all.push(Object.assign({},m,{jenjang:'ra'}))});return all}
-function getAllGuru(){var umum=[];try{umum=JSON.parse(localStorage.getItem(GURU_KEY))||[]}catch(e){umum=[]}var ra=[];try{ra=JSON.parse(localStorage.getItem(GURU_KEY_RA))||[]}catch(e){ra=[]}var all=[];umum.forEach(function(g){all.push(Object.assign({},g,{jenjang:g.jenjang||'umum'}))});ra.forEach(function(g){all.push(Object.assign({},g,{jenjang:'ra'}))});return all}
-function getAllSupervisi(){var umum=[];try{umum=JSON.parse(localStorage.getItem(APP_KEY))||[]}catch(e){umum=[]}var ra=[];try{ra=JSON.parse(localStorage.getItem(APP_KEY_RA))||[]}catch(e){ra=[]}var all=[];umum.forEach(function(d){all.push(Object.assign({},d,{jenjang:'umum'}))});ra.forEach(function(d){all.push(Object.assign({},d,{jenjang:'ra'}))});return all}
+function getAllMadrasah(){var umum=[];try{umum=JSON.parse(localStorage.getItem(MADRASAH_KEY))||[]}catch(e){umum=[]}var ra=[];try{ra=JSON.parse(localStorage.getItem(MADRASAH_KEY_RA))||[]}catch(e){ra=[]}var all=[];umum.forEach(function(m){all.push(Object.assign({},m,{jenjang:m.jenjang||'mi'}))});ra.forEach(function(m){all.push(Object.assign({},m,{jenjang:'ra'}))});return all}
+function getAllGuru(){var umum=[];try{umum=JSON.parse(localStorage.getItem(GURU_KEY))||[]}catch(e){umum=[]}var ra=[];try{ra=JSON.parse(localStorage.getItem(GURU_KEY_RA))||[]}catch(e){ra=[]}var all=[];umum.forEach(function(g){all.push(Object.assign({},g,{jenjang:g.jenjang||'mi'}))});ra.forEach(function(g){all.push(Object.assign({},g,{jenjang:'ra'}))});return all}
+function getAllSupervisi(){var umum=[];try{umum=JSON.parse(localStorage.getItem(APP_KEY))||[]}catch(e){umum=[]}var ra=[];try{ra=JSON.parse(localStorage.getItem(APP_KEY_RA))||[]}catch(e){ra=[]}var all=[];umum.forEach(function(d){all.push(Object.assign({},d,{jenjang:'mi'}))});ra.forEach(function(d){all.push(Object.assign({},d,{jenjang:'ra'}))});return all}
 function getMadrasahById(id){var all=getAllMadrasah();return all.find(function(m){return m.nama===id||m.npsn===id})||null}
 function getGuruById(id){var all=getAllGuru();return all.find(function(g){return g.nama===id||g.nip===id})||null}
-function getMadrasahJenjang(nama){if(!nama)return 'umum';var ra=[];try{ra=JSON.parse(localStorage.getItem(MADRASAH_KEY_RA))||[]}catch(e){ra=[]}var found=ra.find(function(m){return m.nama===nama});return found?'ra':'umum'}
+function getMadrasahJenjang(nama){if(!nama)return 'mi';var all=getAllMadrasah();var m=all.find(function(x){return x.nama===nama});return m?(m.jenjang||'mi'):'mi'}
 
 // ===== UTILITY =====
 function getPredikat(pct){if(pct>=91)return'Sangat Baik';if(pct>=81)return'Baik';if(pct>=71)return'Cukup';return'Kurang'}
@@ -1189,7 +1189,7 @@ var isEdit=(idx!==undefined);
 var jenjangVal=m.jenjang||'umum';
 var modal='<div class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal()">';
 modal+='<div class="modal"><h3>'+(isEdit?'Edit':'Tambah')+' Madrasah</h3>';
-modal+='<div class="form-group"><label>Jenjang</label><select id="m-jenjang"><option value="umum" '+(jenjangVal==='umum'?'selected':'')+'>MI / MTs / MA (Umum)</option><option value="ra" '+(jenjangVal==='ra'?'selected':'')+'>RA (Raudhatul Athfal)</option></select></div>';
+modal+='<div class="form-group"><label>Jenjang</label><select id="m-jenjang"><option value="ra" '+(jenjangVal==='ra'?'selected':'')+'>RA (Raudhatul Athfal)</option><option value="mi" '+(jenjangVal==='mi'?'selected':'')+'>MI (Madrasah Ibtidaiyah)</option><option value="mts" '+(jenjangVal==='mts'?'selected':'')+'>MTs (Madrasah Tsanawiyah)</option><option value="ma" '+(jenjangVal==='ma'?'selected':'')+'>MA (Madrasah Aliyah)</option></select></div>';
 modal+='<div class="form-group"><label>Nama Madrasah</label><input id="m-nama" value="'+escHtml(m.nama||'')+'"></div>';
 modal+='<div class="form-group"><label>NPSN</label><input id="m-npsn" value="'+escHtml(m.npsn||'')+'"></div>';
 modal+='<div class="form-group"><label>Alamat</label><input id="m-alamat" value="'+escHtml(m.alamat||'')+'"></div>';
@@ -1566,13 +1566,14 @@ return html;
 
 function selectMadrasah(idx){
 if(idx==='')return;
-var m=getMadrasah()[parseInt(idx)];
+var m=getAllMadrasah()[parseInt(idx)];
 if(!m)return;
 if(!state.formData.identitas)state.formData.identitas={};
 state.formData.identitas.namaMadrasah=m.nama;
 state.formData.identitas.alamatMadrasah=m.alamat;
 state.formData.identitas.kabupatenKota=m.kabupaten;
 state.formData.identitas.selectedMadrasahIdx=parseInt(idx);
+state.jenjang=m.jenjang||'mi';
 render();
 }
 
@@ -1907,7 +1908,7 @@ var pengawas=getPengawas();
 state.formData={identitas:{namaSupervisor:pengawas.nama||'',nipSupervisor:pengawas.nip||'',jabatanSupervisor:pengawas.jabatan||''},perencanaan:{scores:[],catatan:[],manualCatatan:[]},pelaksanaan:{scores:[],catatan:[],manualCatatan:[]},asesmen:{scores:[],catatan:[],manualCatatan:[]},rekap:{}};
 render();
 }
-function backToDashboard(){state.view='supervisi';state.jenjang='umum';render()}
+function backToDashboard(){state.view='supervisi';state.jenjang='mi';render()}
 function renderSupervisiList(){
 var data=getData();
 var html='<div class="card"><h2 style="margin-bottom:20px">📝 Daftar Supervisi Pembelajaran</h2>';
