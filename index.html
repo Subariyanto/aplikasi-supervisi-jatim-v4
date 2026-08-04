@@ -1082,8 +1082,7 @@ var isIklim=(state.view==='iklim-madrasah'||state.view==='iklim-madrasah-form'||
 var isRA=(state.view==='supervisi-ra'||state.view==='supervisi-ra-form'||state.view==='form-ra'||state.view==='detail-ra'||state.view==='rekap-ra'||state.view==='cetak-ra'||state.view==='laporan-ra'||state.view==='guru-ra'||state.view==='madrasah-ra');
 titleEl.innerHTML=isKoku?'\u{1F4CB} Pendampingan Kokurikuler':isEkstra?'\u{1F4CB} Pendampingan Ekstrakurikuler':isIklim?'\u{1F3EB} Iklim Madrasah':isRA?(state.view==='guru-ra'?'\u{1F468}\u200D\u{1F393} Data Guru RA':state.view==='madrasah-ra'?'\u{1F3EB} Data Madrasah RA':'\u{1F331} Supervisi Pembelajaran RA'):'\u{1F4CB} Supervisi Pembelajaran';
 }
-app.classList.add('fade-in');
-setTimeout(function(){app.classList.remove('fade-in')},300);
+
 }
 
 // ===== DASHBOARD =====
