@@ -14,16 +14,16 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f5f5f5;min-height:100vh;color:#333}
 .site-header{background:linear-gradient(135deg,#034f1d,#016a34);color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.15)}
-.header-top{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;margin:0}
-.header-brand{display:flex;align-items:center;gap:6px}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;margin:0;flex-wrap:wrap}
+.header-brand{display:flex;align-items:center;gap:6px;flex-shrink:0}
 .header-brand img{width:72px;height:72px;object-fit:contain;flex-shrink:0}
 .header-brand h1{font-size:1.4rem;line-height:1.3;margin:0;font-weight:700;color:#d4af37}
 .header-brand p{font-size:.85rem;margin:2px 0 0;color:#fff;text-align:left}
 .header-user{display:flex;align-items:center;gap:10px;font-size:.82rem}
 .header-user .badge{background:rgba(212,175,55,.2);border:1px solid #d4af37;padding:4px 12px;border-radius:20px;color:#fff}
-.navbar{background:#016a34;border-top:1px solid rgba(255,255,255,.08)}
-.navbar-inner{max-width:1200px;margin:0 auto;padding:0 12px;position:relative}
-.navbar-list{list-style:none;display:flex;flex-wrap:wrap;align-items:stretch}
+.navbar{flex:1;display:flex;justify-content:flex-end;align-items:center}
+.navbar-inner{padding:0;position:relative}
+.navbar-list{list-style:none;display:flex;flex-wrap:wrap;align-items:stretch;justify-content:flex-end}
 .navbar-list>li{position:relative}
 .navbar-list>li>a,.navbar-list>li>span{display:block;padding:11px 16px;color:#fff;cursor:pointer;font-size:.83rem;transition:background .2s;white-space:nowrap;text-decoration:none}
 .navbar-list>li>a:hover,.navbar-list>li>span:hover{background:rgba(255,255,255,.12)}
@@ -182,8 +182,6 @@ canvas{max-width:100%;margin:20px 0}
 <p>Pokjawas Madrasah Jawa Timur</p>
 </div>
 </div>
-<div class="header-user" id="headerUser"></div>
-</div>
 <nav class="navbar" id="navbar">
 <div class="navbar-inner">
 <ul class="navbar-list">
@@ -233,6 +231,8 @@ canvas{max-width:100%;margin:20px 0}
 </ul>
 </div>
 </nav>
+<div class="header-user" id="headerUser"></div>
+</div>
 </header>
 <div class="main-content">
 <div class="container">
