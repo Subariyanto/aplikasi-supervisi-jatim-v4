@@ -12,32 +12,50 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);min-height:100vh;color:#333}
-.app-layout{display:flex;min-height:100vh}
-.sidebar{width:250px;background:rgba(15,32,39,.97);padding:20px 0;color:#fff;position:fixed;height:100vh;overflow-y:auto;z-index:100;transition:transform .3s}
-.sidebar h2{padding:15px 20px;font-size:1.2rem;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:10px}
-.sidebar-menu{list-style:none}
-.sidebar-menu li{padding:12px 20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:10px;font-size:.9rem}
-.sidebar-menu li:hover{background:rgba(14,165,233,.2)}
-.sidebar-menu li.active{background:linear-gradient(135deg,rgba(14,165,233,.3),rgba(13,148,136,.3));border-left:3px solid #0ea5e9}
-.submenu-toggle{cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:12px 20px;font-size:.9rem;color:#fff;transition:all .2s}
-.submenu-toggle:hover{background:rgba(14,165,233,.2)}
-.submenu{list-style:none;max-height:0;overflow:hidden;transition:max-height .3s ease;padding:0;margin:0}
-.submenu.open{max-height:300px}
-.submenu li{padding:10px 20px 10px 35px;font-size:.85rem;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;color:rgba(255,255,255,.85)}
-.submenu li:hover{background:rgba(14,165,233,.15)}
-.submenu li.active{background:linear-gradient(135deg,rgba(14,165,233,.2),rgba(13,148,136,.2));border-left:3px solid #0ea5e9}
-.main-content{margin-left:250px;flex:1;padding:20px;min-height:100vh}
-.mobile-toggle{display:none;position:fixed;top:15px;left:15px;z-index:200;background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;border:none;border-radius:8px;padding:10px 14px;font-size:1.2rem;cursor:pointer}
-@media(max-width:768px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main-content{margin-left:0}.mobile-toggle{display:block}}
-.container{max-width:900px;margin:0 auto}
-header{text-align:center;padding:20px 0;color:#fff}
-header h1{font-size:1.6rem;margin-bottom:5px}
-header p{opacity:.8;font-size:.85rem}
-.card{background:#fff;border-radius:16px;padding:25px;margin:15px 0;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f5f5f5;min-height:100vh;color:#333}
+.site-header{background:linear-gradient(135deg,#034f1d,#016a34);color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.header-top{display:flex;align-items:center;justify-content:space-between;padding:10px 24px;max-width:1200px;margin:0 auto}
+.header-brand{display:flex;align-items:center;gap:12px}
+.header-brand img{width:42px;height:42px;border-radius:50%;object-fit:cover}
+.header-brand h1{font-size:1.05rem;line-height:1.3;margin:0}
+.header-brand p{font-size:.72rem;opacity:.85;margin:2px 0 0}
+.header-user{display:flex;align-items:center;gap:10px;font-size:.82rem}
+.header-user .badge{background:rgba(212,175,55,.2);border:1px solid #d4af37;padding:4px 12px;border-radius:20px;color:#fff}
+.navbar{background:#016a34;border-top:1px solid rgba(255,255,255,.08)}
+.navbar-inner{max-width:1200px;margin:0 auto;padding:0 12px;position:relative}
+.navbar-list{list-style:none;display:flex;flex-wrap:wrap;align-items:stretch}
+.navbar-list>li{position:relative}
+.navbar-list>li>a,.navbar-list>li>span{display:block;padding:11px 16px;color:#fff;cursor:pointer;font-size:.83rem;transition:background .2s;white-space:nowrap;text-decoration:none}
+.navbar-list>li>a:hover,.navbar-list>li>span:hover{background:rgba(255,255,255,.12)}
+.navbar-list>li.active>span{background:#d4af37;color:#034f1d;font-weight:600}
+.dropdown{position:absolute;top:100%;left:0;background:#fff;min-width:210px;box-shadow:0 6px 20px rgba(0,0,0,.13);border-radius:0 0 8px 8px;display:none;z-index:200}
+.navbar-list>li:hover .dropdown{display:block}
+.dropdown a{display:block;padding:10px 16px;color:#374151;font-size:.8rem;transition:all .15s;border-bottom:1px solid #f1f5f9;text-decoration:none;cursor:pointer}
+.dropdown a:last-child{border-bottom:none}
+.dropdown a:hover{background:#f0fdf4;color:#016a34;padding-left:20px}
+.dropdown a.active{background:#d4af37;color:#034f1d;font-weight:600}
+.dropdown a.dd-danger{color:#dc2626}
+.dropdown a.dd-danger:hover{background:#fef2f2;color:#dc2626}
+.mobile-toggle{display:none;background:none;border:none;color:#fff;font-size:1.4rem;cursor:pointer;padding:4px 8px}
+@media(max-width:900px){
+.header-top{padding:10px 16px}
+.header-brand h1{font-size:.95rem}
+.navbar-list{flex-direction:column;display:none;position:absolute;top:100%;left:0;right:0;background:#016a34;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:300;max-height:80vh;overflow-y:auto}
+.navbar.open .navbar-list{display:flex}
+.navbar-list>li{width:100%}
+.navbar-list>li>a,.navbar-list>li>span{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.06)}
+.dropdown{position:static;box-shadow:none;display:none;border-radius:0}
+.navbar-list>li.open-mobile .dropdown{display:block}
+.mobile-toggle{display:block}
+}
+.main-content{max-width:1200px;margin:0 auto;padding:24px 20px;min-height:calc(100vh - 220px)}
+.container{max-width:100%;margin:0}
+header{text-align:center;padding:16px 0}
+header h1{font-size:1.5rem;color:#034f1d;margin-bottom:4px}
+.card{background:#fff;border-radius:12px;padding:24px;margin:15px 0;box-shadow:0 2px 12px rgba(0,0,0,.06)}
 .btn{padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
-.btn-primary{background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(14,165,233,.4)}
+.btn-primary{background:linear-gradient(135deg,#016a34,#034f1d);color:#fff}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(1,106,52,.35)}
 .btn-danger{background:#ef4444;color:#fff}
 .btn-danger:hover{background:#dc2626}
 .btn-secondary{background:#e2e8f0;color:#475569}
@@ -53,35 +71,34 @@ header p{opacity:.8;font-size:.85rem}
 .progress-bar{display:flex;justify-content:space-between;margin-bottom:25px;position:relative}
 .progress-bar::before{content:'';position:absolute;top:50%;left:0;right:0;height:3px;background:#e2e8f0;transform:translateY(-50%);z-index:0}
 .step-indicator{width:36px;height:36px;border-radius:50%;background:#e2e8f0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;position:relative;z-index:1;transition:all .3s}
-.step-indicator.active{background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;box-shadow:0 3px 10px rgba(14,165,233,.4)}
+.step-indicator.active{background:linear-gradient(135deg,#016a34,#034f1d);color:#fff;box-shadow:0 3px 10px rgba(1,106,52,.35)}
 .step-indicator.done{background:#10b981;color:#fff}
 .form-group{margin-bottom:16px}
 .form-group label{display:block;font-weight:600;margin-bottom:6px;color:#374151;font-size:.9rem}
 .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 14px;border:2px solid #e2e8f0;border-radius:8px;font-size:.9rem;transition:border-color .2s}
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#0ea5e9}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#016a34}
 .form-group textarea{resize:vertical;min-height:80px}
+.form-group input[readonly]{background:#f1f5f9;color:#64748b}
 .instrumen-table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:.85rem}
 .instrumen-table th,.instrumen-table td{border:1px solid #e2e8f0;padding:8px 6px;text-align:center;vertical-align:middle}
-.instrumen-table th{background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;font-weight:600;font-size:.8rem}
+.instrumen-table th{background:linear-gradient(135deg,#016a34,#034f1d);color:#fff;font-weight:600;font-size:.8rem}
 .instrumen-table .col-no{width:40px}
 .instrumen-table .col-aspek{text-align:left;min-width:200px}
 .instrumen-table .col-skor{width:40px}
-.instrumen-table .col-catatan{min-width:140px;text-align:left}
-.instrumen-table .col-catatan input{width:100%;padding:6px 8px;border:1px solid #e2e8f0;border-radius:4px;font-size:.8rem}
 .skor-radio{background:none;border:none;cursor:pointer;font-size:1.1rem;color:#94a3b8;transition:all .2s}
-.skor-radio:hover{color:#0ea5e9}
-.skor-radio.selected{color:#0ea5e9;font-weight:bold}
-.tahap-header{background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;padding:10px 16px;border-radius:8px;margin:20px 0 12px;font-weight:600;font-size:.9rem}
-.rekap-card{background:linear-gradient(135deg,#f0f9ff,#f0fdfa);border:2px solid #0ea5e9;border-radius:12px;padding:20px;margin-bottom:16px}
-.rekap-card h3{color:#0d9488;margin-bottom:10px}
-.rekap-score{font-size:2rem;font-weight:700;color:#0ea5e9}
+.skor-radio:hover{color:#016a34}
+.skor-radio.selected{color:#016a34;font-weight:bold}
+.tahap-header{background:linear-gradient(135deg,#016a34,#034f1d);color:#fff;padding:10px 16px;border-radius:8px;margin:20px 0 12px;font-weight:600;font-size:.9rem}
+.rekap-card{background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:2px solid #016a34;border-radius:12px;padding:20px;margin-bottom:16px}
+.rekap-card h3{color:#016a34;margin-bottom:10px}
+.rekap-score{font-size:2rem;font-weight:700;color:#016a34}
 .rekap-predikat{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.8rem;font-weight:600;margin-top:5px}
 .predikat-sangat-baik{background:#d1fae5;color:#065f46}
 .predikat-baik{background:#dbeafe;color:#1e40af}
 .predikat-cukup{background:#fef3c7;color:#92400e}
 .predikat-kurang{background:#fee2e2;color:#991b1b}
 .dashboard-item{display:flex;justify-content:space-between;align-items:center;padding:16px;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px;transition:all .2s;cursor:pointer}
-.dashboard-item:hover{border-color:#0ea5e9;box-shadow:0 4px 12px rgba(14,165,233,.1)}
+.dashboard-item:hover{border-color:#016a34;box-shadow:0 4px 12px rgba(1,106,52,.1)}
 .dashboard-item .info h4{color:#1e293b;font-size:.95rem}
 .dashboard-item .info p{color:#64748b;font-size:.8rem;margin-top:3px}
 .dashboard-item .actions{display:flex;gap:6px}
@@ -89,20 +106,10 @@ header p{opacity:.8;font-size:.85rem}
 canvas{max-width:100%;margin:20px 0}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-@media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr}.container{padding:10px}header h1{font-size:1.3rem}.card{padding:15px}}
+@media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr}header h1{font-size:1.3rem}.card{padding:15px}}
 .hidden{display:none}
 .fade-in{animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-.modal-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000}
-.modal{background:#fff;border-radius:16px;padding:30px;max-width:500px;width:90%;max-height:90vh;overflow-y:auto}
-.modal h3{margin-bottom:20px;color:#1e293b}
-.data-table{width:100%;border-collapse:collapse;font-size:.85rem;margin:15px 0}
-.data-table th,.data-table td{border:1px solid #e2e8f0;padding:10px 8px;text-align:left}
-.data-table th{background:#f1f5f9;font-weight:600;color:#374151}
-.data-table tr:hover{background:#f8fafc}
-.stat-card{background:linear-gradient(135deg,#f0f9ff,#f0fdfa);border:2px solid #e2e8f0;border-radius:12px;padding:20px;text-align:center}
-.stat-card .stat-number{font-size:2rem;font-weight:700;color:#0ea5e9}
-.stat-card .stat-label{color:#64748b;font-size:.85rem;margin-top:5px}
 .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center}
 .modal-box{background:#fff;border-radius:12px;padding:18px;max-width:600px;width:90%;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);position:relative;font-size:.75rem;line-height:1.3}
 .modal-box h3{margin:0 0 8px;color:#1e293b;font-size:.9rem}
@@ -112,26 +119,37 @@ canvas{max-width:100%;margin:20px 0}
 .modal-box .modal-close:hover{color:#ef4444}
 .col-aspek.clickable{cursor:pointer;color:#2563eb;text-decoration:underline;text-decoration-style:dotted}
 .col-aspek.clickable:hover{color:#1d4ed8}
-@media print{.sidebar,.mobile-toggle,.no-print,.btn-group,.modal-overlay{display:none!important}.main-content{margin-left:0!important}.card{box-shadow:none;border:1px solid #ddd}body{background:#fff}.print-only{display:block!important}}
+.modal-overlay[style*="flex"]{display:flex}
+.modal{background:#fff;border-radius:16px;padding:30px;max-width:500px;width:90%;max-height:90vh;overflow-y:auto}
+.modal h3{margin-bottom:20px;color:#1e293b}
+.data-table{width:100%;border-collapse:collapse;font-size:.85rem;margin:15px 0}
+.data-table th,.data-table td{border:1px solid #e2e8f0;padding:10px 8px;text-align:left}
+.data-table th{background:#f1f5f9;font-weight:600;color:#374151}
+.data-table tr:hover{background:#f8fafc}
+.stat-card{background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:2px solid #e2e8f0;border-radius:12px;padding:20px;text-align:center}
+.stat-card .stat-number{font-size:2rem;font-weight:700;color:#016a34}
+.stat-card .stat-label{color:#64748b;font-size:.85rem;margin-top:5px}
+@media print{.site-header,.navbar,.mobile-toggle,.no-print,.btn-group,.modal-overlay,.site-footer{display:none!important}.main-content{max-width:100%;padding:0}.card{box-shadow:none;border:1px solid #ddd}body{background:#fff}.print-only{display:block!important}}
 .print-only{display:none}
-/* AUTH STYLES */
-.auth-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);display:flex;align-items:center;justify-content:center;z-index:10000;min-height:100vh}
+.auth-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#034f1d,#016a34);display:flex;align-items:center;justify-content:center;z-index:10000;min-height:100vh}
 .auth-card{background:#fff;border-radius:16px;padding:35px;width:90%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:fadeIn .3s ease}
-.auth-card h2{text-align:center;margin-bottom:8px;color:#1e293b;font-size:1.4rem}
+.auth-card h2{text-align:center;margin-bottom:8px;color:#034f1d;font-size:1.4rem}
 .auth-card p.auth-subtitle{text-align:center;color:#64748b;font-size:.85rem;margin-bottom:24px}
 .auth-card .form-group{margin-bottom:16px}
 .auth-card .form-group label{display:block;font-weight:600;margin-bottom:6px;color:#374151;font-size:.9rem}
 .auth-card .form-group input{width:100%;padding:10px 14px;border:2px solid #e2e8f0;border-radius:8px;font-size:.9rem;transition:border-color .2s}
-.auth-card .form-group input:focus{outline:none;border-color:#0ea5e9}
-.auth-card .btn-auth{width:100%;padding:12px;border:none;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:600;background:linear-gradient(135deg,#0ea5e9,#0d9488);color:#fff;transition:all .2s;margin-top:8px}
-.auth-card .btn-auth:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(14,165,233,.4)}
+.auth-card .form-group input:focus{outline:none;border-color:#016a34}
+.auth-card .btn-auth{width:100%;padding:12px;border:none;border-radius:8px;cursor:pointer;font-size:1rem;font-weight:600;background:linear-gradient(135deg,#016a34,#034f1d);color:#fff;transition:all .2s;margin-top:8px}
+.auth-card .btn-auth:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(1,106,52,.4)}
 .auth-card .auth-link{text-align:center;margin-top:16px;font-size:.85rem;color:#64748b}
-.auth-card .auth-link a{color:#0ea5e9;cursor:pointer;text-decoration:none;font-weight:600}
+.auth-card .auth-link a{color:#016a34;cursor:pointer;text-decoration:none;font-weight:600}
 .auth-card .auth-link a:hover{text-decoration:underline}
 .auth-card .auth-error{background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:.85rem;margin-bottom:16px;display:none}
 .auth-card .auth-success{background:#d1fae5;color:#065f46;padding:10px 14px;border-radius:8px;font-size:.85rem;margin-bottom:16px;display:none}
-.sidebar-user{padding:10px 20px;font-size:.8rem;color:rgba(255,255,255,.7);border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:5px}
-.sidebar-user strong{color:#fff;font-size:.85rem}
+.site-footer{background:#034f1d;color:rgba(255,255,255,.75);padding:20px;text-align:center;font-size:.78rem;line-height:1.6;border-top:3px solid #d4af37}
+.site-footer p{margin:3px 0}
+.site-footer a{color:#d4af37;text-decoration:none}
+.site-footer .footer-brand{font-weight:600;color:#d4af37;margin-bottom:4px}
 </style>
 </head>
 <body>
@@ -147,74 +165,98 @@ canvas{max-width:100%;margin:20px 0}
 <div class="auth-overlay" id="authOverlay" style="display:none">
 <div class="auth-card" id="authCard"></div>
 </div>
-<button class="mobile-toggle no-print" onclick="toggleSidebar()">&#9776;</button>
-<div class="app-layout" id="appLayout" style="display:none">
-<nav class="sidebar" id="sidebar">
-<h2 style="line-height:1.3">SUPERVISI PM-KBC<br><span style="font-size:.75em">POKJAWAS JAWA TIMUR</span></h2>
-<div class="sidebar-user" id="sidebarUser"></div>
-<ul class="sidebar-menu">
-<li class="active" onclick="navigate('dashboard')" data-nav="dashboard">&#128202; Dashboard</li>
-<li onclick="navigate('pengawas')" data-nav="pengawas">&#128100; Data Pengawas</li>
-<li onclick="navigate('madrasah')" data-nav="madrasah">&#127979; Data Madrasah</li>
-<li onclick="navigate('guru')" data-nav="guru">&#128104;&#8205;&#127891; Data Guru</li>
-<li class="submenu-toggle" onclick="toggleSubmenu('sub-data-ra')">&#127793; Data RA &#9662;</li>
-<ul class="submenu" id="sub-data-ra">
-<li onclick="navigate('madrasah-ra')" data-nav="madrasah-ra">&#127979; Data Madrasah RA</li>
-<li onclick="navigate('guru-ra')" data-nav="guru-ra">&#128104;&#8205;&#127891; Data Guru RA</li>
+<button class="mobile-toggle no-print" onclick="toggleNavbar()">&#9776;</button>
+<div id="appLayout" style="display:none">
+<header class="site-header">
+<div class="header-top">
+<div class="header-brand">
+<img src="logo-kemenag.png" alt="Logo Kemenag">
+<div>
+<h1>SUPERVISI PM-KBC</h1>
+<p>Pokjawas Madrasah Jawa Timur</p>
+</div>
+</div>
+<div class="header-user" id="headerUser"></div>
+</div>
+<nav class="navbar" id="navbar">
+<div class="navbar-inner">
+<ul class="navbar-list">
+<li class="active"><span onclick="navigate('dashboard')" data-nav="dashboard">🏠 Beranda</span></li>
+<li><span onclick="navigate('pengawas')" data-nav="pengawas">👤 Data Pengawas</span></li>
+<li><span onclick="navigate('madrasah')" data-nav="madrasah">🏫 Data Madrasah</span></li>
+<li><span onclick="navigate('guru')" data-nav="guru">👨‍🏫 Data Guru</span></li>
+<li><span>📝 Supervisi ▾</span>
+<div class="dropdown">
+<a onclick="navigate('supervisi')" data-nav="supervisi">📝 Input Supervisi</a>
+<a onclick="navigate('rekap')" data-nav="rekap">📊 Rekap Hasil</a>
+<a onclick="navigate('cetak')" data-nav="cetak">🖨️ Cetak Hasil</a>
+<a onclick="navigate('laporan')" data-nav="laporan">📄 Laporan</a>
+</div>
+</li>
+<li><span>📋 Kokurikuler ▾</span>
+<div class="dropdown">
+<a onclick="navigate('kokurikuler')" data-nav="kokurikuler">📝 Input Kokurikuler</a>
+<a onclick="navigate('rekap-kokurikuler')" data-nav="rekap-kokurikuler">📊 Rekap</a>
+<a onclick="navigate('laporan-kokurikuler')" data-nav="laporan-kokurikuler">📄 Laporan Lengkap</a>
+<a onclick="navigate('laporan-kokurikuler-madrasah')" data-nav="laporan-kokurikuler-madrasah">📄 Laporan Per Madrasah</a>
+</div>
+</li>
+<li><span>📋 Ekstrakurikuler ▾</span>
+<div class="dropdown">
+<a onclick="navigate('ekstrakurikuler')" data-nav="ekstrakurikuler">📝 Input Ekstrakurikuler</a>
+<a onclick="navigate('rekap-ekstrakurikuler')" data-nav="rekap-ekstrakurikuler">📊 Rekap</a>
+<a onclick="navigate('laporan-ekstrakurikuler')" data-nav="laporan-ekstrakurikuler">📄 Laporan Lengkap</a>
+<a onclick="navigate('laporan-ekstrakurikuler-madrasah')" data-nav="laporan-ekstrakurikuler-madrasah">📄 Laporan Per Madrasah</a>
+</div>
+</li>
+<li><span>🏫 Iklim Madrasah ▾</span>
+<div class="dropdown">
+<a onclick="navigate('iklim-madrasah')" data-nav="iklim-madrasah">📝 Input Iklim Madrasah</a>
+<a onclick="navigate('rekap-iklim-madrasah')" data-nav="rekap-iklim-madrasah">📊 Rekap</a>
+<a onclick="navigate('laporan-iklim-madrasah')" data-nav="laporan-iklim-madrasah">📄 Laporan Lengkap</a>
+<a onclick="navigate('laporan-iklim-madrasah-madrasah')" data-nav="laporan-iklim-madrasah-madrasah">📄 Laporan Per Madrasah</a>
+</div>
+</li>
+<li><span>🌿 Data RA ▾</span>
+<div class="dropdown">
+<a onclick="navigate('madrasah-ra')" data-nav="madrasah-ra">🏫 Data Madrasah RA</a>
+<a onclick="navigate('guru-ra')" data-nav="guru-ra">👨‍🏫 Data Guru RA</a>
+</div>
+</li>
+<li><span>🌿 Supervisi RA ▾</span>
+<div class="dropdown">
+<a onclick="navigate('supervisi-ra')" data-nav="supervisi-ra">📝 Input Supervisi RA</a>
+<a onclick="navigate('rekap-ra')" data-nav="rekap-ra">📊 Rekap Hasil RA</a>
+<a onclick="navigate('cetak-ra')" data-nav="cetak-ra">🖨️ Cetak Hasil RA</a>
+<a onclick="navigate('laporan-ra')" data-nav="laporan-ra">📄 Laporan RA</a>
+</div>
+</li>
+<li><span>⚙️ Pengaturan ▾</span>
+<div class="dropdown">
+<a onclick="navigate('ubah-password')" data-nav="ubah-password">🔐 Ubah Password</a>
+<a onclick="navigate('backup-restore')" data-nav="backup-restore">💾 Backup & Restore</a>
+<a onclick="window.open('panduan.html','_blank')">📖 Panduan</a>
+<a class="dd-danger" onclick="doLogout()">🚪 Logout</a>
+</div>
+</li>
 </ul>
-<li class="submenu-toggle" onclick="toggleSubmenu('sub-supervisi')">&#128221; Supervisi Pembelajaran &#9662;</li>
-<ul class="submenu" id="sub-supervisi">
-<li onclick="navigate('supervisi')" data-nav="supervisi">&#128221; Input Supervisi</li>
-<li onclick="navigate('rekap')" data-nav="rekap">&#128202; Rekap Hasil</li>
-<li onclick="navigate('cetak')" data-nav="cetak">&#128424; Cetak Hasil</li>
-<li onclick="navigate('laporan')" data-nav="laporan">&#128196; Laporan</li>
-</ul>
-<li class="submenu-toggle" onclick="toggleSubmenu('sub-supervisi-ra')">&#127793; Supervisi Pembelajaran RA &#9662;</li>
-<ul class="submenu" id="sub-supervisi-ra">
-<li onclick="navigate('supervisi-ra')" data-nav="supervisi-ra">&#128221; Input Supervisi RA</li>
-<li onclick="navigate('rekap-ra')" data-nav="rekap-ra">&#128202; Rekap Hasil RA</li>
-<li onclick="navigate('cetak-ra')" data-nav="cetak-ra">&#128424; Cetak Hasil RA</li>
-<li onclick="navigate('laporan-ra')" data-nav="laporan-ra">&#128196; Laporan RA</li>
-</ul>
-<li class="submenu-toggle" onclick="toggleSubmenu('sub-kokurikuler')">&#128203; Kokurikuler &#9662;</li>
-<ul class="submenu" id="sub-kokurikuler">
-<li onclick="navigate('kokurikuler')" data-nav="kokurikuler">&#128221; Input Kokurikuler</li>
-<li onclick="navigate('rekap-kokurikuler')" data-nav="rekap-kokurikuler">&#128202; Rekap</li>
-<li onclick="navigate('laporan-kokurikuler')" data-nav="laporan-kokurikuler">&#128196; Cetak Laporan Lengkap</li>
-<li onclick="navigate('laporan-kokurikuler-madrasah')" data-nav="laporan-kokurikuler-madrasah">&#128196; Laporan Per Madrasah</li>
-
-</ul>
-<li class="submenu-toggle" onclick="toggleSubmenu('sub-ekstrakurikuler')">&#128203; Ekstrakurikuler &#9662;</li>
-<ul class="submenu" id="sub-ekstrakurikuler">
-<li onclick="navigate('ekstrakurikuler')" data-nav="ekstrakurikuler">&#128221; Input Ekstrakurikuler</li>
-<li onclick="navigate('rekap-ekstrakurikuler')" data-nav="rekap-ekstrakurikuler">&#128202; Rekap</li>
-<li onclick="navigate('laporan-ekstrakurikuler')" data-nav="laporan-ekstrakurikuler">&#128196; Cetak Laporan Lengkap</li>
-<li onclick="navigate('laporan-ekstrakurikuler-madrasah')" data-nav="laporan-ekstrakurikuler-madrasah">&#128196; Laporan Per Madrasah</li>
-
-</ul>
-<li class="submenu-toggle" onclick="toggleSubmenu('sub-iklim')">&#127979; Iklim Madrasah &#9662;</li>
-<ul class="submenu" id="sub-iklim">
-<li onclick="navigate('iklim-madrasah')" data-nav="iklim-madrasah">&#128221; Input Iklim Madrasah</li>
-<li onclick="navigate('rekap-iklim-madrasah')" data-nav="rekap-iklim-madrasah">&#128202; Rekap</li>
-<li onclick="navigate('laporan-iklim-madrasah')" data-nav="laporan-iklim-madrasah">&#128196; Cetak Laporan Lengkap</li>
-<li onclick="navigate('laporan-iklim-madrasah-madrasah')" data-nav="laporan-iklim-madrasah-madrasah">&#128196; Laporan Per Madrasah</li>
-
-</ul>
-<li onclick="navigate('ubah-password')" data-nav="ubah-password">&#128274; Ubah Password</li>
-<li onclick="navigate('backup-restore')" data-nav="backup-restore">&#128190; Export/Backup &amp; Restore</li>
-<li onclick="window.open('panduan.html','_blank')" style="border-top:1px solid rgba(255,255,255,.1);margin-top:10px">&#128214; Panduan</li>
-<li onclick="doLogout()" style="border-top:1px solid rgba(255,255,255,.1);margin-top:10px;color:#f87171">&#128682; Logout</li>
-</ul>
-<p style="padding:10px 20px;font-size:.6rem;color:rgba(255,255,255,.4);border-top:1px solid rgba(255,255,255,.1);white-space:normal;line-height:1.4;text-align:center">Aplikasi ini dibuat oleh : Subariyanto<br>Ketua Pokjawas Madrasah Kab. Jember<br><br>Instrumen disusun oleh : Ida Safiaturrahma<br>Pengawas Madrasah Kab. Lamongan</p>
+</div>
 </nav>
+</header>
 <div class="main-content">
 <div class="container">
 <header>
-<h1 id="pageTitle">&#128203; Supervisi Pembelajaran</h1>
+<h1 id="pageTitle">📝 Supervisi Pembelajaran</h1>
 </header>
 <div id="app"></div>
 </div>
 </div>
+<footer class="site-footer">
+<p class="footer-brand">SUPERVISI PM-KBC — POKJAWAS MADRASAH JAWA TIMUR</p>
+<p>Aplikasi ini dibuat oleh: Subariyanto — Ketua Pokjawas Madrasah Kab. Jember</p>
+<p>Instrumen disusun oleh: Ida Safiaturrahma — Pengawas Madrasah Kab. Lamongan</p>
+<p>&copy; 2026 Kementerian Agama Republik Indonesia</p>
+</footer>
 </div>
 <script>
 // ===== AUTH SYSTEM =====
@@ -988,7 +1030,7 @@ if(window.innerWidth<768)document.getElementById('sidebar').classList.remove('op
 if((view==='supervisi'||view==='supervisi-ra')&&(!state.formData||!state.formData.identitas||!state.formData.identitas.namaGuru)){newForm();return;}
 render();
 }
-function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open')}
+function toggleNavbar(){document.getElementById('navbar').classList.toggle('open')}
 
 // ===== RENDER MAIN =====
 function render(){
