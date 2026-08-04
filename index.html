@@ -25,15 +25,19 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f5f5f5;min-height:100v
 .navbar-inner{padding:0;position:relative}
 .navbar-list{list-style:none;display:flex;flex-wrap:wrap;align-items:stretch;justify-content:flex-end}
 .navbar-list>li{position:relative}
-.navbar-list>li>a,.navbar-list>li>span{display:block;padding:8px 10px;color:#fff;cursor:pointer;font-size:.72rem;transition:background .2s;white-space:nowrap;text-decoration:none;background:rgba(255,255,255,.08);border-radius:4px;margin:2px}
-.navbar-list>li>a:hover,.navbar-list>li>span:hover{background:rgba(255,255,255,.12)}
-.navbar-list>li.active>span{background:#d4af37;color:#034f1d;font-weight:600}
-.dropdown{position:absolute;top:100%;left:0;background:#fff;min-width:210px;box-shadow:0 6px 20px rgba(0,0,0,.13);border-radius:0 0 8px 8px;display:none;z-index:200}
+.navbar-list>li>a,.navbar-list>li>span{display:block;padding:10px 14px;color:#fff;cursor:pointer;font-size:.78rem;transition:color .2s;white-space:nowrap;text-decoration:none;position:relative}
+.navbar-list>li>a::after,.navbar-list>li>span::after{content:'';position:absolute;left:14px;right:14px;bottom:4px;height:2px;background:#d4af37;transform:scaleX(0);transform-origin:left;transition:transform .3s ease}
+.navbar-list>li>a:hover::after,.navbar-list>li>span:hover::after{transform:scaleX(1)}
+.navbar-list>li>a:hover,.navbar-list>li>span:hover{color:#d4af37}
+.navbar-list>li.active>span{background:rgba(212,175,55,.15);border-bottom:2px solid #d4af37;color:#d4af37;font-weight:600}
+.dropdown{position:absolute;top:100%;left:0;background:#fff;min-width:210px;box-shadow:0 6px 20px rgba(0,0,0,.13);border-radius:0 0 8px 8px;border-top:3px solid #d4af37;display:none;z-index:200}
 .navbar-list>li:hover .dropdown{display:block}
 .navbar.dropdown-locked .dropdown{display:none!important}
-.dropdown a{display:block;padding:10px 16px;color:#374151;font-size:.8rem;transition:all .15s;border-bottom:1px solid #f1f5f9;text-decoration:none;cursor:pointer}
+.dropdown a{display:block;padding:10px 16px;color:#374151;font-size:.8rem;transition:all .15s;border-bottom:1px solid #f1f5f9;text-decoration:none;cursor:pointer;position:relative}
 .dropdown a:last-child{border-bottom:none}
-.dropdown a:hover{background:#f0fdf4;color:#016a34;padding-left:20px}
+.dropdown a::before{content:'›';position:absolute;left:8px;opacity:0;color:#d4af37;transition:all .15s}
+.dropdown a:hover{background:#f0fdf4;color:#016a34;padding-left:26px}
+.dropdown a:hover::before{opacity:1;left:12px}
 .dropdown a.active{background:#d4af37;color:#034f1d;font-weight:600}
 .dropdown a.dd-danger{color:#dc2626}
 .dropdown a.dd-danger:hover{background:#fef2f2;color:#dc2626}
@@ -51,9 +55,9 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f5f5f5;min-height:100v
 }
 .main-content{max-width:1200px;margin:0 auto;padding:24px 20px;min-height:calc(100vh - 220px)}
 .container{max-width:100%;margin:0}
-header{text-align:center;padding:16px 0}
-header h1{font-size:1.5rem;color:#034f1d;margin-bottom:4px}
-.card{background:#fff;border-radius:12px;padding:24px;margin:15px 0;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+header{text-align:center;padding:20px 0}
+header h1{font-size:1.3rem;color:#034f1d;margin-bottom:4px;font-weight:700;letter-spacing:.3px}
+.card{background:#fff;border-radius:16px;padding:24px;margin:15px 0;box-shadow:0 2px 16px rgba(0,0,0,.05);border:1px solid #f1f5f9}
 .btn{padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-size:.9rem;font-weight:600;transition:all .2s;display:inline-flex;align-items:center;gap:6px}
 .btn-primary{background:linear-gradient(135deg,#016a34,#034f1d);color:#fff}
 .btn-primary:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(1,106,52,.35)}
@@ -98,8 +102,8 @@ header h1{font-size:1.5rem;color:#034f1d;margin-bottom:4px}
 .predikat-baik{background:#dbeafe;color:#1e40af}
 .predikat-cukup{background:#fef3c7;color:#92400e}
 .predikat-kurang{background:#fee2e2;color:#991b1b}
-.dashboard-item{display:flex;justify-content:space-between;align-items:center;padding:16px;border:1px solid #e2e8f0;border-radius:12px;margin-bottom:10px;transition:all .2s;cursor:pointer}
-.dashboard-item:hover{border-color:#016a34;box-shadow:0 4px 12px rgba(1,106,52,.1)}
+.dashboard-item{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:#fff;border:1px solid #f1f5f9;border-radius:12px;margin-bottom:8px;transition:all .25s;cursor:pointer}
+.dashboard-item:hover{border-color:#d4af37;box-shadow:0 4px 16px rgba(212,175,55,.12);transform:translateX(4px)}
 .dashboard-item .info h4{color:#1e293b;font-size:.95rem}
 .dashboard-item .info p{color:#64748b;font-size:.8rem;margin-top:3px}
 .dashboard-item .actions{display:flex;gap:6px}
@@ -112,7 +116,7 @@ header h1{font-size:1.5rem;color:#034f1d;margin-bottom:4px}
 canvas{max-width:100%;margin:20px 0}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
-@media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr}header h1{font-size:1.3rem}.card{padding:15px}}
+@media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr}header h1{font-size:1.3rem}.card{padding:15px}.hero-banner{padding:30px 18px}.hero-banner h2{font-size:1.25rem}}
 .hidden{display:none}
 .fade-in{animation:fadeIn .3s ease}
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -132,9 +136,24 @@ canvas{max-width:100%;margin:20px 0}
 .data-table th,.data-table td{border:1px solid #e2e8f0;padding:10px 8px;text-align:left}
 .data-table th{background:#f1f5f9;font-weight:600;color:#374151}
 .data-table tr:hover{background:#f8fafc}
-.stat-card{background:linear-gradient(135deg,#f0fdf4,#ecfdf5);border:2px solid #e2e8f0;border-radius:12px;padding:20px;text-align:center}
-.stat-card .stat-number{font-size:2rem;font-weight:700;color:#016a34}
-.stat-card .stat-label{color:#64748b;font-size:.85rem;margin-top:5px}
+.stat-card{background:#fff;border-radius:16px;padding:24px;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,.06);border:1px solid #f1f5f9;transition:all .3s;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#034f1d,#d4af37)}
+.stat-card:hover{transform:translateY(-4px);box-shadow:0 8px 30px rgba(0,0,0,.1)}
+.stat-card .stat-icon{font-size:2rem;margin-bottom:8px}
+.stat-card .stat-number{font-size:2.2rem;font-weight:800;color:#034f1d}
+.stat-card .stat-label{color:#64748b;font-size:.82rem;margin-top:4px;text-transform:uppercase;letter-spacing:.5px}
+.hero-banner{background:linear-gradient(135deg,#034f1d,#016a34,#034f1d);border-radius:16px;padding:40px 30px;color:#fff;text-align:center;margin-bottom:24px;position:relative;overflow:hidden;box-shadow:0 8px 30px rgba(3,79,29,.25)}
+.hero-banner::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:url('logo-kemenag.png') center/300px no-repeat;opacity:.07}
+.hero-overlay{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none}
+.hero-banner h2{font-size:1.6rem;margin-bottom:8px;position:relative;z-index:1}
+.hero-banner h2 span{color:#d4af37}
+.hero-banner p{font-size:.9rem;opacity:.9;position:relative;z-index:1;line-height:1.6}
+.hero-quick{margin-top:20px;display:flex;gap:12px;justify-content:center;position:relative;z-index:1;flex-wrap:wrap}
+.hero-quick button{background:rgba(212,175,55,.2);border:1px solid #d4af37;color:#d4af37;padding:10px 24px;border-radius:30px;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .3s}
+.hero-quick button:hover{background:#d4af37;color:#034f1d;transform:translateY(-2px)}
+.section-title{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.section-title h2{font-size:1.1rem;color:#034f1d;font-weight:700}
+.section-title .line{flex:1;height:2px;background:linear-gradient(90deg,#d4af37,transparent)}
 @media print{.site-header,.navbar,.mobile-toggle,.no-print,.btn-group,.modal-overlay,.site-footer{display:none!important}.main-content{max-width:100%;padding:0}.card{box-shadow:none;border:1px solid #ddd}body{background:#fff}.print-only{display:block!important}}
 .print-only{display:none}
 .auth-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#034f1d,#016a34);display:flex;align-items:center;justify-content:center;z-index:10000;min-height:100vh}
@@ -152,10 +171,10 @@ canvas{max-width:100%;margin:20px 0}
 .auth-card .auth-link a:hover{text-decoration:underline}
 .auth-card .auth-error{background:#fee2e2;color:#991b1b;padding:10px 14px;border-radius:8px;font-size:.85rem;margin-bottom:16px;display:none}
 .auth-card .auth-success{background:#d1fae5;color:#065f46;padding:10px 14px;border-radius:8px;font-size:.85rem;margin-bottom:16px;display:none}
-.site-footer{background:#034f1d;color:rgba(255,255,255,.75);padding:20px;text-align:center;font-size:.78rem;line-height:1.6;border-top:3px solid #d4af37}
+.site-footer{background:linear-gradient(135deg,#034f1d,#016a34);color:#fff;padding:24px 20px;text-align:center;font-size:.8rem;line-height:1.8;border-top:3px solid #d4af37}
 .site-footer p{margin:3px 0}
 .site-footer a{color:#d4af37;text-decoration:none}
-.site-footer .footer-brand{font-weight:600;color:#d4af37;margin-bottom:4px}
+.site-footer .footer-brand{color:#d4af37;font-weight:700;font-size:.9rem;letter-spacing:.5px;margin-bottom:4px}
 </style>
 </head>
 <body>
@@ -1091,10 +1110,17 @@ function renderDashboard(){
 const data=getAllSupervisi();
 const madrasahCount=getAllMadrasah().length;
 const guruCount=getAllGuru().length;
+const session=getSession();
+const heroName=session&&session.nama?escHtml(session.nama):'Pengawas';
+let hero='<div class="hero-banner"><div class="hero-overlay"></div><div class="hero-content">';
+hero+='<h2>Selamat Datang, <span id="heroName">'+heroName+'</span></h2>';
+hero+='<p>Sistem Supervisi Pembelajaran PM-KBC<br>Pokjawas Madrasah Jawa Timur</p>';
+hero+='<div class="hero-quick"><button onclick="navigate(\'input-observasi\')">📝 Mulai Observasi</button><button onclick="navigate(\'rekap\')">📊 Lihat Rekap</button></div>';
+hero+='</div></div>';
 let stats='<div class="grid-3" style="margin-bottom:20px">';
-stats+='<div class="stat-card"><div class="stat-number">'+data.length+'</div><div class="stat-label">Total Supervisi</div></div>';
-stats+='<div class="stat-card"><div class="stat-number">'+madrasahCount+'</div><div class="stat-label">Data Madrasah</div></div>';
-stats+='<div class="stat-card"><div class="stat-number">'+guruCount+'</div><div class="stat-label">Data Guru</div></div>';
+stats+='<div class="stat-card"><div class="stat-icon">📋</div><div class="stat-number">'+data.length+'</div><div class="stat-label">Total Supervisi</div></div>';
+stats+='<div class="stat-card"><div class="stat-icon">🏫</div><div class="stat-number">'+madrasahCount+'</div><div class="stat-label">Data Madrasah</div></div>';
+stats+='<div class="stat-card"><div class="stat-icon">👨‍🏫</div><div class="stat-number">'+guruCount+'</div><div class="stat-label">Data Guru</div></div>';
 stats+='</div>';
 let items='';
 if(data.length===0){
@@ -1111,7 +1137,7 @@ items+='<button class="btn btn-sm btn-danger" onclick="event.stopPropagation();d
 items+='</div></div>';
 });
 }
-let html=stats+'<div class="card"><h2 style="margin-bottom:20px">Daftar Supervisi</h2>'+items;
+let html=hero+stats+'<div class="card"><div class="section-title"><h2>📋 Supervisi Terbaru</h2><div class="line"></div></div>'+items;
 html+='<div style="text-align:center;margin-top:20px"><button class="btn btn-primary" onclick="newForm()">+ Supervisi Baru</button></div></div>';
 if(data.length>0)html+=renderChart(data);
 return html;
