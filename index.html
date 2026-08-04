@@ -1161,7 +1161,7 @@ function renderMadrasahPage(){
 var data=getAllMadrasah();
 var rows='';
 data.forEach(function(m,i){
-rows+='<tr><td>'+(i+1)+'</td><td>'+escHtml(m.nama)+'</td><td>'+escHtml(m.npsn)+'</td><td>'+escHtml(m.alamat)+'</td><td>'+escHtml(m.kabupaten)+'</td><td>'+(m.jenjang==='ra'?'RA':'Umum')+'</td><td>'+escHtml(m.kepala)+'</td><td>';
+rows+='<tr><td>'+(i+1)+'</td><td>'+escHtml(m.nama)+'</td><td>'+escHtml(m.npsn)+'</td><td>'+escHtml(m.alamat)+'</td><td>'+escHtml(m.kabupaten)+'</td><td>'+(m.jenjang||'mi').toUpperCase()+'</td><td>'+escHtml(m.kepala)+'</td><td>';
 rows+='<div style="display:flex;gap:4px;align-items:center;white-space:nowrap"><button class="btn btn-sm btn-secondary" style="padding:3px 7px;font-size:.7rem" onclick="editMadrasah('+i+')">&#9998;</button>';
 rows+='<button class="btn btn-sm btn-danger" style="padding:3px 7px;font-size:.7rem" onclick="deleteMadrasah('+i+')">&#128465;</button></div>';
 rows+='</td></tr>';
@@ -1186,7 +1186,7 @@ function showMadrasahModal(idx){
 var all=getAllMadrasah();
 var m=(idx!==undefined)?all[idx]:{};
 var isEdit=(idx!==undefined);
-var jenjangVal=m.jenjang||'umum';
+var jenjangVal=m.jenjang||'mi';
 var modal='<div class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal()">';
 modal+='<div class="modal"><h3>'+(isEdit?'Edit':'Tambah')+' Madrasah</h3>';
 modal+='<div class="form-group"><label>Jenjang</label><select id="m-jenjang"><option value="ra" '+(jenjangVal==='ra'?'selected':'')+'>RA (Raudhatul Athfal)</option><option value="mi" '+(jenjangVal==='mi'?'selected':'')+'>MI (Madrasah Ibtidaiyah)</option><option value="mts" '+(jenjangVal==='mts'?'selected':'')+'>MTs (Madrasah Tsanawiyah)</option><option value="ma" '+(jenjangVal==='ma'?'selected':'')+'>MA (Madrasah Aliyah)</option></select></div>';
@@ -1299,7 +1299,7 @@ var madrasahList=getAllMadrasah();
 var rows='';
 data.forEach(function(g,i){
 var mName=g.madrasah||'-';
-rows+='<tr><td>'+(i+1)+'</td><td>'+escHtml(g.nama)+'</td><td>'+escHtml(g.nip)+'</td><td>'+escHtml(g.mataPelajaran)+'</td><td>'+escHtml(mName)+'</td><td>'+(g.jenjang==='ra'?'RA':'Umum')+'</td><td>';
+rows+='<tr><td>'+(i+1)+'</td><td>'+escHtml(g.nama)+'</td><td>'+escHtml(g.nip)+'</td><td>'+escHtml(g.mataPelajaran)+'</td><td>'+escHtml(mName)+'</td><td>'+(g.jenjang||'mi').toUpperCase()+'</td><td>';
 rows+='<button class="btn btn-sm btn-secondary" onclick="editGuru('+i+')">&#9998;</button> ';
 rows+='<button class="btn btn-sm btn-danger" onclick="deleteGuru('+i+')">&#128465;</button>';
 rows+='</td></tr>';
@@ -1323,7 +1323,7 @@ var g=(idx!==undefined)?all[idx]:{};
 var isEdit=(idx!==undefined);
 var madrasahList=getAllMadrasah();
 var opts='<option value="">-- Pilih Madrasah --</option>';
-madrasahList.forEach(function(m){opts+='<option value="'+escHtml(m.nama)+'" '+(g.madrasah===m.nama?'selected':'')+'>'+escHtml(m.nama)+' ('+(m.jenjang==='ra'?'RA':'Umum')+')</option>';});
+madrasahList.forEach(function(m){opts+='<option value="'+escHtml(m.nama)+'" '+(g.madrasah===m.nama?'selected':'')+'>'+escHtml(m.nama)+' ('+(m.jenjang||'MI').toUpperCase()+')</option>';});
 var modal='<div class="modal-overlay" style="display:flex" onclick="if(event.target===this)closeModal()">';
 modal+='<div class="modal"><h3>'+(isEdit?'Edit':'Tambah')+' Guru</h3>';
 modal+='<div class="form-group"><label>Nama Guru</label><input id="g-nama" value="'+escHtml(g.nama||'')+'"></div>';
