@@ -1041,7 +1041,8 @@ case 'pengawas':app.innerHTML=renderPengawasPage();break;
 case 'madrasah':app.innerHTML=renderMadrasahPage();break;
 case 'madrasah-ra':app.innerHTML=renderMadrasahPage();break;
 case 'guru':app.innerHTML=renderGuruPage();break;
-case 'supervisi':case 'form':app.innerHTML=renderForm();break;
+case 'supervisi':app.innerHTML=renderSupervisiList();break;
+case 'form':app.innerHTML=renderForm();break;
 case 'detail':app.innerHTML=renderDetail();break;
 case 'rekap':app.innerHTML=renderRekapAllPage();break;
 case 'cetak':app.innerHTML=renderCetakPage();break;
@@ -1872,7 +1873,27 @@ var pengawas=getPengawas();
 state.formData={identitas:{namaSupervisor:pengawas.nama||'',nipSupervisor:pengawas.nip||'',jabatanSupervisor:pengawas.jabatan||''},perencanaan:{scores:[],catatan:[],manualCatatan:[]},pelaksanaan:{scores:[],catatan:[],manualCatatan:[]},asesmen:{scores:[],catatan:[],manualCatatan:[]},rekap:{}};
 render();
 }
-function backToDashboard(){state.view='dashboard';state.jenjang='umum';render()}
+function backToDashboard(){state.view='supervisi';state.jenjang='umum';render()}
+function renderSupervisiList(){
+var data=getData();
+var html='<div class="card"><h2 style="margin-bottom:20px">📝 Daftar Supervisi Pembelajaran</h2>';
+if(data.length===0){
+html+='<div class="empty-state"><p>Belum ada data supervisi.<br>Klik tombol di bawah untuk mulai.</p></div>';
+}else{
+data.forEach(function(d,i){
+var pct=calcTotal(d);
+html+='<div class="dashboard-item" onclick="viewDetail('+i+')">';
+html+='<div class="info"><h4>'+escHtml(d.identitas&&d.identitas.namaGuru?d.identitas.namaGuru:'(Tanpa Nama)')+'</h4>';
+html+='<p>'+(escHtml(d.identitas&&d.identitas.mataPelajaran?d.identitas.mataPelajaran:'-'))+' &bull; '+(d.identitas&&d.identitas.tanggalSupervisi?d.identitas.tanggalSupervisi:'-')+' &bull; '+pct.toFixed(0)+'%</p></div>';
+html+='<div class="actions">';
+html+='<button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();editItem('+i+')">✏️</button>';
+html+='<button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteItem('+i+')">🗑️</button>';
+html+='</div></div>';
+});
+}
+html+='<div style="text-align:center;margin-top:20px"><button class="btn btn-primary" onclick="newForm()">+ Supervisi Baru</button></div></div>';
+return html;
+}
 function nextStep(){if(state.currentStep<4)state.currentStep++;render()}
 function prevStep(){if(state.currentStep>0)state.currentStep--;render()}
 function goToStep(i){state.currentStep=i;render()}
@@ -1914,7 +1935,7 @@ function saveForm(){
 var data=getData();
 if(state.editId!==null){data[state.editId]=state.formData;}
 else{data.push(state.formData);}
-saveData(data);state.view='dashboard';render();
+saveData(data);state.view='supervisi';render();
 }
 
 function editItem(idx){
