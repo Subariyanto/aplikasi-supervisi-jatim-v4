@@ -104,6 +104,11 @@ header h1{font-size:1.5rem;color:#034f1d;margin-bottom:4px}
 .dashboard-item .info p{color:#64748b;font-size:.8rem;margin-top:3px}
 .dashboard-item .actions{display:flex;gap:6px}
 .empty-state{text-align:center;padding:40px;color:#94a3b8}
+.obs-tabs{display:flex;flex-wrap:wrap;gap:4px;border-bottom:3px solid #034f1d;margin-bottom:20px}
+.obs-tab{padding:12px 20px;cursor:pointer;font-weight:600;color:#64748b;border-bottom:3px solid transparent;margin-bottom:-3px;transition:all .2s;white-space:nowrap}
+.obs-tab.active{color:#034f1d;border-bottom-color:#034f1d;background:#f0fdf4}
+.obs-tab:hover{color:#034f1d}
+.obs-content{padding:0}
 canvas{max-width:100%;margin:20px 0}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
@@ -173,7 +178,7 @@ canvas{max-width:100%;margin:20px 0}
 <div class="header-brand">
 <img src="logo-kemenag.png" alt="Logo Kemenag">
 <div>
-<h1>Aplikasi Supervisi PK-KBC</h1>
+<h1>Aplikasi Supervisi PM-KBC</h1>
 <p>Pokjawas Madrasah Jawa Timur</p>
 </div>
 </div>
@@ -183,12 +188,13 @@ canvas{max-width:100%;margin:20px 0}
 <div class="navbar-inner">
 <ul class="navbar-list">
 <li class="active"><span onclick="navigate('dashboard')" data-nav="dashboard">🏠 Beranda</span></li>
+<li><span onclick="navigate('input-observasi')" data-nav="input-observasi">📝 Input Observasi</span></li>
 <li><span onclick="navigate('pengawas')" data-nav="pengawas">👤 Data Pengawas</span></li>
 <li><span onclick="navigate('madrasah')" data-nav="madrasah">🏫 Data Madrasah</span></li>
 <li><span onclick="navigate('guru')" data-nav="guru">👨‍🏫 Data Guru</span></li>
 <li><span>📝 Supervisi ▾</span>
 <div class="dropdown">
-<a onclick="navigate('supervisi')" data-nav="supervisi">📝 Input Supervisi</a>
+<a onclick="navigate('supervisi')" data-nav="supervisi">📋 Daftar Supervisi</a>
 <a onclick="navigate('rekap')" data-nav="rekap">📊 Rekap Hasil</a>
 <a onclick="navigate('cetak')" data-nav="cetak">🖨️ Cetak Hasil</a>
 <a onclick="navigate('laporan')" data-nav="laporan">📄 Laporan</a>
@@ -196,7 +202,6 @@ canvas{max-width:100%;margin:20px 0}
 </li>
 <li><span>📋 Kokurikuler ▾</span>
 <div class="dropdown">
-<a onclick="navigate('kokurikuler')" data-nav="kokurikuler">📝 Input Kokurikuler</a>
 <a onclick="navigate('rekap-kokurikuler')" data-nav="rekap-kokurikuler">📊 Rekap</a>
 <a onclick="navigate('laporan-kokurikuler')" data-nav="laporan-kokurikuler">📄 Laporan Lengkap</a>
 <a onclick="navigate('laporan-kokurikuler-madrasah')" data-nav="laporan-kokurikuler-madrasah">📄 Laporan Per Madrasah</a>
@@ -204,7 +209,6 @@ canvas{max-width:100%;margin:20px 0}
 </li>
 <li><span>📋 Ekstrakurikuler ▾</span>
 <div class="dropdown">
-<a onclick="navigate('ekstrakurikuler')" data-nav="ekstrakurikuler">📝 Input Ekstrakurikuler</a>
 <a onclick="navigate('rekap-ekstrakurikuler')" data-nav="rekap-ekstrakurikuler">📊 Rekap</a>
 <a onclick="navigate('laporan-ekstrakurikuler')" data-nav="laporan-ekstrakurikuler">📄 Laporan Lengkap</a>
 <a onclick="navigate('laporan-ekstrakurikuler-madrasah')" data-nav="laporan-ekstrakurikuler-madrasah">📄 Laporan Per Madrasah</a>
@@ -212,7 +216,6 @@ canvas{max-width:100%;margin:20px 0}
 </li>
 <li><span>🏫 Iklim Madrasah ▾</span>
 <div class="dropdown">
-<a onclick="navigate('iklim-madrasah')" data-nav="iklim-madrasah">📝 Input Iklim Madrasah</a>
 <a onclick="navigate('rekap-iklim-madrasah')" data-nav="rekap-iklim-madrasah">📊 Rekap</a>
 <a onclick="navigate('laporan-iklim-madrasah')" data-nav="laporan-iklim-madrasah">📄 Laporan Lengkap</a>
 <a onclick="navigate('laporan-iklim-madrasah-madrasah')" data-nav="laporan-iklim-madrasah-madrasah">📄 Laporan Per Madrasah</a>
@@ -899,7 +902,7 @@ render();
 }
 
 // ===== STATE =====
-let state={view:'dashboard',editId:null,formData:{},currentStep:0,detailIdx:null,jenjang:'umum'};
+let state={view:'dashboard',editId:null,formData:{},currentStep:0,detailIdx:null,jenjang:'umum',activeTab:'supervisi'};
 
 // ===== JENJANG HELPERS =====
 function isRAView(v){return false;}
@@ -1036,6 +1039,7 @@ case 'pengawas':app.innerHTML=renderPengawasPage();break;
 case 'madrasah':app.innerHTML=renderMadrasahPage();break;
 case 'guru':app.innerHTML=renderGuruPage();break;
 case 'supervisi':app.innerHTML=renderSupervisiList();break;
+case 'input-observasi':app.innerHTML=renderInputObservasi();break;
 case 'form':app.innerHTML=renderForm();break;
 case 'detail':app.innerHTML=renderDetail();break;
 case 'rekap':app.innerHTML=renderRekapAllPage();break;
@@ -1069,7 +1073,12 @@ var isKoku=(state.view==='kokurikuler'||state.view==='kokurikuler-form'||state.v
 var isEkstra=(state.view==='ekstrakurikuler'||state.view==='ekstrakurikuler-form'||state.view==='rekap-ekstrakurikuler'||state.view==='laporan-ekstrakurikuler'||state.view==='laporan-ekstrakurikuler-madrasah'||state.view==='laporan-ekstrakurikuler-kkma');
 var isIklim=(state.view==='iklim-madrasah'||state.view==='iklim-madrasah-form'||state.view==='rekap-iklim-madrasah'||state.view==='laporan-iklim-madrasah'||state.view==='laporan-iklim-madrasah-madrasah'||state.view==='laporan-iklim-madrasah-kkma');
 var isRA=false;
-titleEl.innerHTML=isKoku?'\u{1F4CB} Pendampingan Kokurikuler':isEkstra?'\u{1F4CB} Pendampingan Ekstrakurikuler':isIklim?'\u{1F3EB} Iklim Madrasah':'\u{1F4CB} Supervisi Pembelajaran';
+var obsTitle='\u{1F4CB} Input Observasi';
+if(state.activeTab==='supervisi')obsTitle='\u{1F4CB} Supervisi Pembelajaran';
+else if(state.activeTab==='kokurikuler')obsTitle='\u{1F4CB} Pendampingan Kokurikuler';
+else if(state.activeTab==='ekstrakurikuler')obsTitle='\u{1F4CB} Pendampingan Ekstrakurikuler';
+else if(state.activeTab==='iklim-madrasah')obsTitle='\u{1F3EB} Iklim Madrasah';
+titleEl.innerHTML=state.view==='input-observasi'?obsTitle:(isKoku?'\u{1F4CB} Pendampingan Kokurikuler':isEkstra?'\u{1F4CB} Pendampingan Ekstrakurikuler':isIklim?'\u{1F3EB} Iklim Madrasah':'\u{1F4CB} Supervisi Pembelajaran');
 }
 
 }
@@ -1524,7 +1533,7 @@ var nav='<div style="display:flex;justify-content:space-between;margin-top:20px"
 nav+='<button class="btn btn-danger" onclick="backToDashboard()">✕ Batal</button>';
 nav+='<div style="display:flex;gap:8px">';
 if(state.currentStep>0){nav+='<button class="btn btn-secondary" onclick="prevStep()">&#8592; Kembali</button>';}
-if(isLast){nav+='<button class="btn btn-success" onclick="saveForm()">&#128190; Simpan</button>';}
+if(isLast){nav+='<button class="btn btn-success" onclick="saveForm()">&#128190; Simpan</button>';nav+='<button class="btn btn-info" onclick="saveForm();setActiveTab(\'kokurikuler\')" style="margin-left:8px">Lanjut ke Kokurikuler →</button>';}
 else{nav+='<button class="btn btn-primary" onclick="nextStep()">Lanjut &#8594;</button>';}
 nav+='</div></div>';
 return '<div class="card">'+progress+'<h2 style="margin-bottom:20px">'+steps[state.currentStep]+'</h2>'+content+nav+'</div>';
@@ -1902,13 +1911,14 @@ return html;
 
 // ===== FORM ACTIONS =====
 function newForm(){
+state.activeTab='supervisi';
 state.view=isRAJenjang()?'form-ra':'form';
 state.currentStep=0;state.editId=null;
 var pengawas=getPengawas();
 state.formData={identitas:{namaSupervisor:pengawas.nama||'',nipSupervisor:pengawas.nip||'',jabatanSupervisor:pengawas.jabatan||''},perencanaan:{scores:[],catatan:[],manualCatatan:[]},pelaksanaan:{scores:[],catatan:[],manualCatatan:[]},asesmen:{scores:[],catatan:[],manualCatatan:[]},rekap:{}};
 render();
 }
-function backToDashboard(){state.view='supervisi';state.jenjang='mi';render()}
+function backToDashboard(){state.view='input-observasi';state.activeTab='supervisi';state.jenjang='mi';render()}
 function renderSupervisiList(){
 var data=getAllSupervisi();
 var html='<div class="card"><h2 style="margin-bottom:20px">📝 Daftar Supervisi Pembelajaran</h2>';
@@ -1929,6 +1939,27 @@ html+='</div></div>';
 html+='<div style="text-align:center;margin-top:20px"><button class="btn btn-primary" onclick="newForm()">+ Supervisi Baru</button></div></div>';
 return html;
 }
+// ===== INPUT OBSERVASI (KONSOLIDASI 4 FORM INPUT) =====
+function renderInputObservasi(){
+var tab=state.activeTab||'supervisi';
+var html='<div class="card" style="padding-bottom:0"><h2 style="margin-bottom:16px">📝 Input Observasi</h2>';
+html+='<div class="obs-tabs">';
+var items=[['supervisi','📝 Supervisi Pembelajaran'],['kokurikuler','📋 Kokurikuler'],['ekstrakurikuler','🏅 Ekstrakurikuler'],['iklim-madrasah','🏫 Iklim Madrasah']];
+items.forEach(function(it){
+var cls='obs-tab'+(tab===it[0]?' active':'');
+html+='<div class="'+cls+'" onclick="setActiveTab(\''+it[0]+'\')">'+it[1]+'</div>';
+});
+html+='</div></div>';
+html+='<div class="obs-content">';
+if(tab==='supervisi')html+=renderSupervisiList();
+else if(tab==='kokurikuler')html+=renderKokurikulerPage();
+else if(tab==='ekstrakurikuler')html+=renderEkstrakurikulerPage();
+else html+=renderIklimMadrasahPage();
+html+='</div>';
+return html;
+}
+function setActiveTab(tab){state.activeTab=tab;render();}
+function gotoObservasi(tab){state.view='input-observasi';state.activeTab=tab||state.activeTab||'supervisi';render();}
 function nextStep(){if(state.currentStep<4)state.currentStep++;render()}
 function prevStep(){if(state.currentStep>0)state.currentStep--;render()}
 function goToStep(i){state.currentStep=i;render()}
@@ -1970,11 +2001,12 @@ function saveForm(){
 var data=getData();
 if(state.editId!==null){data[state.editId]=state.formData;}
 else{data.push(state.formData);}
-saveData(data);state.view='supervisi';render();
+saveData(data);state.view='input-observasi';state.activeTab='supervisi';render();
 }
 
 function editItem(idx){
 var data=getData();
+state.activeTab='supervisi';
 state.formData=JSON.parse(JSON.stringify(data[idx]));
 state.editId=idx;
 state.view=isRAJenjang()?'form-ra':'form';
@@ -2441,12 +2473,14 @@ var entry={madrasahNama:madrasah,tanggal:tanggal,scores:[],catatan:[],rekap:{cat
 data.push(entry);
 saveKokurikuler(data);
 state.kokurikulerIdx=data.length-1;
+state.activeTab='kokurikuler';
 state.view='kokurikuler-form';
 render();
 }
 
 function editKokurikuler(idx){
 state.kokurikulerIdx=idx;
+state.activeTab='kokurikuler';
 state.view='kokurikuler-form';
 render();
 }
@@ -2496,9 +2530,10 @@ html+='<textarea rows="4" onchange="setRekapKokurikuler('+idx+',\'catatan\',this
 html+='<div class="form-group"><label>Rencana Tindak Lanjut</label>';
 html+='<textarea rows="4" onchange="setRekapKokurikuler('+idx+',\'tindakLanjut\',this.value)">'+escHtml(rekap.tindakLanjut||'')+'</textarea></div>';
 html+='<div class="btn-group no-print" style="justify-content:center">';
-html+='<button class="btn btn-primary" onclick="navigate(\'kokurikuler\')">✔ Simpan</button>';
+html+='<button class="btn btn-primary" onclick="gotoObservasi(\'kokurikuler\')">✔ Simpan</button>';
+html+='<button class="btn btn-info" onclick="gotoObservasi(\'ekstrakurikuler\')" style="margin-left:8px">Lanjut ke Ekstrakurikuler →</button>';
 html+='<button class="btn btn-info" onclick="cetakKokurikuler('+idx+')">🖨️ Cetak</button>';
-html+='<button class="btn btn-danger" onclick="navigate(\'kokurikuler\')">✕ Tutup</button>';
+html+='<button class="btn btn-danger" onclick="gotoObservasi(\'kokurikuler\')">✕ Tutup</button>';
 html+='</div></div>';
 return html;
 }
@@ -2644,7 +2679,7 @@ html+='</tbody></table></div>';
 html+='<div class="no-print" style="margin-top:20px;text-align:center"><button class="btn btn-secondary" onclick="printRekapKokurikuler()">🖨️ Cetak Rekap</button></div>';
 }
 html+='</div>';
-html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';
+if(state.view!=='input-observasi'){html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">✕ Tutup</button></div>';}
 return html;
 }
 
@@ -2779,7 +2814,7 @@ var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},
 var max=EKSTRAKURIKULER.length*4;
 var pct=max>0?(sum/max)*100:0;
 html+='<tr><td>'+(i+1)+'</td><td>'+escHtml(d.madrasahNama||'-')+'</td><td>'+escHtml(d.tanggal||'-')+'</td><td>'+sum+'/'+max+' ('+pct.toFixed(1)+'%)</td><td>'+getPredikat(pct)+'</td>';
-html+='<td><button class="btn btn-sm btn-primary" onclick="state.ekstrakurikulerIdx='+i+';navigate(\'ekstrakurikuler-form\')">&\#9998;</button> ';
+html+='<td><button class="btn btn-sm btn-primary" onclick="state.activeTab=\'ekstrakurikuler\';state.ekstrakurikulerIdx='+i+';navigate(\'ekstrakurikuler-form\')">&\#9998;</button> ';
 html+='<button class="btn btn-sm btn-info" onclick="cetakEkstrakurikuler('+i+')">&#128424;</button> ';
 html+='<button class="btn btn-sm btn-danger" onclick="deleteEkstrakurikuler('+i+')">\u{1F5D1}</button></td></tr>';
 });
@@ -2814,7 +2849,7 @@ var data=getEkstrakurikuler();
 data.push({madrasahNama:nama,tanggal:tgl,scores:new Array(EKSTRAKURIKULER.length).fill(null),catatan:[],manualCatatan:[],rekap:{catatan:'',tindakLanjut:''}});
 saveEkstrakurikuler(data);
 var el=document.getElementById('modal-ekstra');if(el)el.remove();
-state.ekstrakurikulerIdx=data.length-1;
+state.ekstrakurikulerIdx=data.length-1;state.activeTab='ekstrakurikuler';
 navigate('ekstrakurikuler-form');
 }
 
@@ -2863,11 +2898,12 @@ html+='<textarea rows="6" style="width:100%;padding:10px;border:1px solid #ddd;b
 html+='<div style="margin-top:15px"><h3>Rencana Tindak Lanjut</h3>';
 html+='<textarea rows="6" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px" onchange="setRekapEkstrakurikuler('+idx+',\'tindakLanjut\',this.value)">'+escHtml(rekap.tindakLanjut||'')+'</textarea></div>';
 html+='<div class="btn-group no-print" style="justify-content:center">';
-html+='<button class="btn btn-primary" onclick="navigate(\'ekstrakurikuler\')">&\#10004; Simpan</button>';
+html+='<button class="btn btn-primary" onclick="gotoObservasi(\'ekstrakurikuler\')">&\#10004; Simpan</button>';
+html+='<button class="btn btn-info" onclick="gotoObservasi(\'iklim-madrasah\')" style="margin-left:8px">Lanjut ke Iklim Madrasah →</button>';
 html+='<button class="btn btn-info" onclick="cetakEkstrakurikuler('+idx+')">&\#128424; Cetak</button>';
 html+='<button class="btn btn-secondary" onclick="editIndikatorEkstrakurikuler()">&#9998; Edit Indikator</button>';
 html+='<button class="btn btn-warning" onclick="resetSkorEkstrakurikuler('+idx+')">&\#128260; Reset Skor</button>';
-html+='<button class="btn btn-danger" onclick="navigate(\'ekstrakurikuler\')">&\#10005; Tutup</button>';
+html+='<button class="btn btn-danger" onclick="gotoObservasi(\'ekstrakurikuler\')">&\#10005; Tutup</button>';
 html+='</div></div>';
 return html;
 }
@@ -3149,14 +3185,14 @@ var sum=scores.reduce(function(a,b){return a+((b!==null&&b!==undefined)?b+1:0)},
 var max=IKLIM_MADRASAH.length*4;
 var pct=max>0?(sum/max)*100:0;
 html+='<tr><td>'+(i+1)+'</td><td>'+escHtml(d.madrasahNama||'-')+'</td><td>'+escHtml(d.tanggal||'-')+'</td><td>'+sum+'/'+max+' ('+pct.toFixed(1)+'%)</td><td>'+getPredikat(pct)+'</td>';
-html+='<td><button class="btn btn-sm btn-primary" onclick="state.iklimMadrasahIdx='+i+';navigate(\'iklim-madrasah-form\')">&#9998;</button> ';
+html+='<td><button class="btn btn-sm btn-primary" onclick="state.activeTab=\'iklim-madrasah\';state.iklimMadrasahIdx='+i+';navigate(\'iklim-madrasah-form\')">&#9998;</button> ';
 html+='<button class="btn btn-sm btn-info" onclick="cetakIklimMadrasah('+i+')">&#128424;</button> ';
 html+='<button class="btn btn-sm btn-danger" onclick="deleteIklimMadrasah('+i+')">&#128465;</button></td></tr>';
 });
 html+='</tbody></table></div>';
 }
 html+='</div>';
-html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">&#10005; Tutup</button></div>';
+if(state.view!=='input-observasi'){html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">&#10005; Tutup</button></div>';}
 return html;
 }
 function showAddIklimMadrasah(){
@@ -3182,6 +3218,7 @@ var data=getIklimMadrasah();
 data.push({madrasahNama:nama,tanggal:tgl,scores:new Array(IKLIM_MADRASAH.length).fill(null),catatan:[],manualCatatan:[],rekap:{catatan:'',tindakLanjut:''}});
 saveIklimMadrasah(data);
 var el=document.getElementById('modal-iklim');if(el)el.remove();
+state.activeTab='iklim-madrasah';
 state.iklimMadrasahIdx=data.length-1;
 navigate('iklim-madrasah-form');
 }
@@ -3230,11 +3267,11 @@ html+='<textarea rows="6" style="width:100%;padding:10px;border:1px solid #ddd;b
 html+='<div style="margin-top:15px"><h3>Rencana Tindak Lanjut</h3>';
 html+='<textarea rows="6" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:14px" onchange="setRekapIklimMadrasah('+idx+',\'tindakLanjut\',this.value)">'+escHtml(rekap.tindakLanjut||'')+'</textarea></div>';
 html+='<div class="btn-group no-print" style="justify-content:center">';
-html+='<button class="btn btn-primary" onclick="navigate(\'iklim-madrasah\')">&#10004; Simpan</button>';
+html+='<button class="btn btn-primary" onclick="gotoObservasi(\'iklim-madrasah\')">&#10004; Simpan</button>';
 html+='<button class="btn btn-info" onclick="cetakIklimMadrasah('+idx+')">&#128424; Cetak</button>';
 html+='<button class="btn btn-secondary" onclick="editIndikatorIklimMadrasah()">&#9998; Edit Indikator</button>';
 html+='<button class="btn btn-warning" onclick="resetSkorIklimMadrasah('+idx+')">&#128260; Reset Skor</button>';
-html+='<button class="btn btn-danger" onclick="navigate(\'iklim-madrasah\')">&#10005; Tutup</button>';
+html+='<button class="btn btn-danger" onclick="gotoObservasi(\'iklim-madrasah\')">&#10005; Tutup</button>';
 html+='</div></div>';
 return html;
 }
