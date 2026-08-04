@@ -1910,7 +1910,7 @@ render();
 }
 function backToDashboard(){state.view='supervisi';state.jenjang='mi';render()}
 function renderSupervisiList(){
-var data=getData();
+var data=getAllSupervisi();
 var html='<div class="card"><h2 style="margin-bottom:20px">📝 Daftar Supervisi Pembelajaran</h2>';
 if(data.length===0){
 html+='<div class="empty-state"><p>Belum ada data supervisi.<br>Klik tombol di bawah untuk mulai.</p></div>';
