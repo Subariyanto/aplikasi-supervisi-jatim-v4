@@ -213,7 +213,7 @@ canvas{max-width:100%;margin:20px 0}
 <li><span onclick="navigate('pengawas')" data-nav="pengawas">👤 Data Pengawas</span></li>
 <li><span onclick="navigate('madrasah')" data-nav="madrasah">🏫 Data Madrasah</span></li>
 <li><span onclick="navigate('guru')" data-nav="guru">👨‍🏫 Data Guru</span></li>
-<li><span>📝 Supervisi ▾</span>
+<li><span onclick="toggleDropdown(this)">📝 Supervisi ▾</span>
 <div class="dropdown">
 <a onclick="navigate('supervisi')" data-nav="supervisi">📋 Daftar Supervisi</a>
 <a onclick="navigate('rekap')" data-nav="rekap">📊 Rekap Hasil</a>
@@ -221,7 +221,7 @@ canvas{max-width:100%;margin:20px 0}
 <a onclick="navigate('laporan')" data-nav="laporan">📄 Laporan</a>
 </div>
 </li>
-<li><span>📋 Kokurikuler ▾</span>
+<li><span onclick="toggleDropdown(this)">📋 Kokurikuler ▾</span>
 <div class="dropdown">
 <a onclick="gotoObservasi('kokurikuler')" data-nav="input-kokurikuler">📝 Input Kokurikuler</a>
 <a onclick="navigate('rekap-kokurikuler')" data-nav="rekap-kokurikuler">📊 Rekap</a>
@@ -229,7 +229,7 @@ canvas{max-width:100%;margin:20px 0}
 <a onclick="navigate('laporan-kokurikuler-madrasah')" data-nav="laporan-kokurikuler-madrasah">📄 Laporan Per Madrasah</a>
 </div>
 </li>
-<li><span>📋 Ekstrakurikuler ▾</span>
+<li><span onclick="toggleDropdown(this)">📋 Ekstrakurikuler ▾</span>
 <div class="dropdown">
 <a onclick="gotoObservasi('ekstrakurikuler')" data-nav="input-ekstrakurikuler">📝 Input Ekstrakurikuler</a>
 <a onclick="navigate('rekap-ekstrakurikuler')" data-nav="rekap-ekstrakurikuler">📊 Rekap</a>
@@ -237,7 +237,7 @@ canvas{max-width:100%;margin:20px 0}
 <a onclick="navigate('laporan-ekstrakurikuler-madrasah')" data-nav="laporan-ekstrakurikuler-madrasah">📄 Laporan Per Madrasah</a>
 </div>
 </li>
-<li><span>🏫 Iklim Madrasah ▾</span>
+<li><span onclick="toggleDropdown(this)">🏫 Iklim Madrasah ▾</span>
 <div class="dropdown">
 <a onclick="gotoObservasi('iklim-madrasah')" data-nav="input-iklim-madrasah">📝 Input Iklim Madrasah</a>
 <a onclick="navigate('rekap-iklim-madrasah')" data-nav="rekap-iklim-madrasah">📊 Rekap</a>
@@ -246,7 +246,7 @@ canvas{max-width:100%;margin:20px 0}
 </div>
 </li>
 
-<li><span>⚙️ Pengaturan ▾</span>
+<li><span onclick="toggleDropdown(this)">⚙️ Pengaturan ▾</span>
 <div class="dropdown">
 <a onclick="navigate('ubah-password')" data-nav="ubah-password">🔐 Ubah Password</a>
 <a onclick="navigate('backup-restore')" data-nav="backup-restore">💾 Backup & Restore</a>
@@ -1151,6 +1151,12 @@ var nb=document.getElementById('navbar');nb.classList.add('dropdown-locked');set
 render();
 }
 function toggleNavbar(){document.getElementById('navbar').classList.toggle('open')}
+function toggleDropdown(el){
+var li=el.closest('li');if(!li)return;
+var wasOpen=li.classList.contains('open-mobile');
+document.querySelectorAll('.navbar-list>li.open-mobile').forEach(function(x){x.classList.remove('open-mobile')});
+if(!wasOpen)li.classList.add('open-mobile');
+}
 
 // ===== RENDER MAIN =====
 function render(){
