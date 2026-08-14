@@ -60,6 +60,7 @@ table tr:nth-child(even){background:#f8fafc}
 <ol>
 <li><a href="#pendahuluan">Pendahuluan</a></li>
 <li><a href="#struktur-menu">Struktur Menu Aplikasi</a></li>
+<li><a href="#aktivasi">Aktivasi Aplikasi</a></li>
 <li><a href="#login">Login dan Registrasi</a></li>
 <li><a href="#dashboard">Dashboard</a></li>
 <li><a href="#data-pengawas">Data Pengawas</a></li>
@@ -179,8 +180,38 @@ Modul Kokurikuler, Ekstrakurikuler, dan Iklim Madrasah berlaku universal untuk s
 </div>
 </div>
 
+<div class="section" id="aktivasi">
+<h2>3. Aktivasi Aplikasi</h2>
+<p>Sebelum login, setiap perangkat harus diaktivasi menggunakan kode yang diterbitkan oleh Administrator.</p>
+<h3>A. Admin menerbitkan kode aktivasi</h3>
+<div class="step">
+<strong>Langkah 1:</strong> Login menggunakan akun Administrator:<br>
+Username: <strong>admin</strong><br>
+Password: <strong>@riyant1970</strong><br><br>
+<strong>Langkah 2:</strong> Buka menu <strong>Pengaturan → Kode Aktivasi</strong>.<br>
+<strong>Langkah 3:</strong> Klik <strong>+ Kode Pengawas</strong> atau <strong>+ Kode Kepala Madrasah</strong>.<br>
+<strong>Langkah 4:</strong> Klik ikon 📋 pada tabel untuk menyalin kode, lalu kirimkan kepada pengguna.
+</div>
+<h3>B. Pengguna mengaktifkan perangkat</h3>
+<div class="step">
+<strong>Langkah 1:</strong> Buka aplikasi pada perangkat yang akan digunakan.<br>
+<strong>Langkah 2:</strong> Pada halaman <strong>Aktivasi Aplikasi</strong>, masukkan kode yang diberikan Administrator.<br>
+<strong>Langkah 3:</strong> Klik <strong>Aktifkan Perangkat</strong>.<br>
+<strong>Langkah 4:</strong> Setelah aktivasi berhasil, klik <strong>Daftar</strong> untuk membuat akun pengguna.<br>
+<strong>Langkah 5:</strong> Pilih role yang sesuai, yaitu <strong>Pengawas</strong> atau <strong>Kepala Madrasah</strong>, lalu lengkapi data akun.<br>
+<strong>Langkah 6:</strong> Login menggunakan akun yang baru dibuat.
+</div>
+<h3>C. Perbedaan role</h3>
+<table>
+<tr><th>Role</th><th>Akses</th></tr>
+<tr><td>Pengawas</td><td>Supervisi pembelajaran, monev kokurikuler, ekstrakurikuler, dan iklim madrasah.</td></tr>
+<tr><td>Kepala Madrasah</td><td>Supervisi pembelajaran, rekap, cetak, dan laporan supervisi pembelajaran.</td></tr>
+</table>
+<div class="warning"><strong>Catatan:</strong> Data aktivasi dan akun tersimpan di localStorage browser. Jangan menghapus data browser agar aktivasi dan akun tetap tersimpan. Versi lokal ini tidak dapat memverifikasi penggunaan kode pada perangkat lain.</div>
+</div>
+
 <div class="section" id="login">
-<h2>3. Login dan Registrasi</h2>
+<h2>4. Login dan Registrasi</h2>
 <h3>Login</h3>
 <div class="step">
 <strong>Langkah 1:</strong> Buka aplikasi di browser Anda.<br>
@@ -205,7 +236,7 @@ Modul Kokurikuler, Ekstrakurikuler, dan Iklim Madrasah berlaku universal untuk s
 </div>
 
 <div class="section" id="dashboard">
-<h2>4. Dashboard</h2>
+<h2>5. Dashboard</h2>
 <p>Dashboard menampilkan ringkasan data supervisi pembelajaran (jenjang umum):</p>
 <ul>
 <li><strong>Total Supervisi</strong> - Jumlah supervisi pembelajaran yang telah dilakukan</li>
