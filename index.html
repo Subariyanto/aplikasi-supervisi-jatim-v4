@@ -266,7 +266,7 @@ canvas{max-width:100%;margin:20px 0}
 <div class="main-content">
 <div class="container">
 <header>
-<h1 id="pageTitle">📝 Supervisi Pembelajaran</h1>
+<h1 id="pageTitle"></h1>
 </header>
 <div id="app"></div>
 </div>
@@ -1209,7 +1209,7 @@ if(state.activeTab==='supervisi')obsTitle='\u{1F4CB} Supervisi Pembelajaran';
 else if(state.activeTab==='kokurikuler')obsTitle='\u{1F4CB} Pendampingan Kokurikuler';
 else if(state.activeTab==='ekstrakurikuler')obsTitle='\u{1F4CB} Pendampingan Ekstrakurikuler';
 else if(state.activeTab==='iklim-madrasah')obsTitle='\u{1F3EB} Iklim Madrasah';
-titleEl.innerHTML=state.view==='input-observasi'?obsTitle:(isKoku?'\u{1F4CB} Pendampingan Kokurikuler':isEkstra?'\u{1F4CB} Pendampingan Ekstrakurikuler':isIklim?'\u{1F3EB} Iklim Madrasah':'\u{1F4CB} Supervisi Pembelajaran');
+titleEl.innerHTML=state.view==='input-observasi'?obsTitle:(isKoku?'\u{1F4CB} Pendampingan Kokurikuler':isEkstra?'\u{1F4CB} Pendampingan Ekstrakurikuler':isIklim?'\u{1F3EB} Iklim Madrasah':'');
 }
 
 }
