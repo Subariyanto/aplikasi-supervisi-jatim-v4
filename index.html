@@ -290,7 +290,7 @@ function initDefaultAdmin(){
 var users=getUsers();
 var DEFAULT_ADMIN_PASS='@riyant1970';
 if(users.length===0){
-users.push({nama:'Administrator',username:'admin',password:DEFAULT_ADMIN_PASS});
+users.push({nama:'Administrator',username:'admin',password:DEFAULT_ADMIN_PASS,role:'admin'});
 saveUsers(users);
 }else{
 // Migrasi: kalau admin masih pakai password lama, update ke yang baru
@@ -316,8 +316,10 @@ function showApp(session){
 document.getElementById('authOverlay').style.display='none';
 document.getElementById('appLayout').style.display='';
 document.querySelector('.mobile-toggle').style.display='';
+var roleNames={'admin':'Administrator','pengawas':'Pengawas','kepala':'Kepala Madrasah'};
 var userEl=document.getElementById('sidebarUser');
-if(userEl)userEl.innerHTML='<strong>👤 '+escHtml(session.nama)+'</strong>';
+if(userEl)userEl.innerHTML='<strong>👤 '+escHtml(session.nama)+'</strong><br><span style="font-size:.7rem;color:#d4af37">'+(roleNames[session.role]||'Pengawas')+'</span>';
+applyRoleVisibility(session.role||'pengawas');
 }
 
 function hideApp(){
@@ -355,6 +357,7 @@ card.innerHTML='<h2>📝 Daftar Akun</h2>'+
 '<div class="auth-success" id="authSuccess"></div>'+
 '<div class="form-group"><label>Nama Lengkap</label><input type="text" id="regNama" placeholder="Masukkan nama lengkap"></div>'+
 '<div class="form-group"><label>Username</label><input type="text" id="regUsername" placeholder="Masukkan username" autocomplete="username"></div>'+
+'<div class="form-group"><label>Role</label><select id="regRole"><option value="pengawas">Pengawas</option><option value="kepala">Kepala Madrasah</option></select></div>'+
 '<div class="form-group"><label>Password</label><input type="password" id="regPassword" placeholder="Masukkan password" autocomplete="new-password"></div>'+
 '<div class="form-group"><label>Konfirmasi Password</label><input type="password" id="regConfirm" placeholder="Ulangi password" autocomplete="new-password"></div>'+
 '<button class="btn-auth" onclick="doRegister()">Daftar</button>'+
@@ -381,7 +384,7 @@ if(!user){
 errEl.textContent='Username atau password salah.';
 errEl.style.display='block';return;
 }
-var session={username:user.username,nama:user.nama};
+var session={username:user.username,nama:user.nama,role:(user.username==='admin'?'admin':(user.role||'pengawas'))};
 saveSession(session);
 showApp(session);
 render();
@@ -418,7 +421,7 @@ if(exists){
 errEl.textContent='Username sudah digunakan.';
 errEl.style.display='block';return;
 }
-users.push({nama:nama,username:username,password:password});
+var roleEl=document.getElementById('regRole');var role=roleEl?roleEl.value:'pengawas';users.push({nama:nama,username:username,password:password,role:role});
 saveUsers(users);
 sucEl.textContent='Registrasi berhasil! Silakan login.';
 sucEl.style.display='block';
@@ -1037,12 +1040,31 @@ if(state.formData.rekap&&state.formData.rekap[key])delete state.formData.rekap[k
 render();
 }
 
+// ===== ROLE ACCESS CONTROL =====
+function applyRoleVisibility(role){
+var isAdmin=role==='admin', isPengawas=role==='pengawas';
+var restricted=['pengawas','madrasah','guru','input-observasi','supervisi','input-kokurikuler','input-ekstrakurikuler','input-iklim-madrasah','backup-restore'];
+var readOnly=['rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler','laporan-kokurikuler-madrasah','laporan-kokurikuler-kkma','rekap-ekstrakurikuler','laporan-ekstrakurikuler','laporan-ekstrakurikuler-madrasah','laporan-ekstrakurikuler-kkma','rekap-iklim-madrasah','laporan-iklim-madrasah','laporan-iklim-madrasah-madrasah','laporan-iklim-madrasah-kkma'];
+ document.querySelectorAll('[data-nav]').forEach(function(el){
+  var nav=el.getAttribute('data-nav'), hide=false;
+  if(!isAdmin && nav==='backup-restore') hide=true;
+  if(role==='kepala' && restricted.indexOf(nav)!==-1) hide=true;
+  el.style.display=hide?'none':'';
+  var li=el.closest('li'); if(li){var visible=Array.from(li.querySelectorAll('[data-nav]')).some(function(x){return x.style.display!=='none'}); if(el===li.querySelector(':scope>span')) li.style.display=visible?'':'none';}
+ });
+}
+function roleCanNavigate(view){
+var s=getSession(), role=s&&s.role||'pengawas';
+if(role==='admin'||role==='pengawas')return true;
+return ['dashboard','rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler','laporan-kokurikuler-madrasah','laporan-kokurikuler-kkma','rekap-ekstrakurikuler','laporan-ekstrakurikuler','laporan-ekstrakurikuler-madrasah','laporan-ekstrakurikuler-kkma','rekap-iklim-madrasah','laporan-iklim-madrasah','laporan-iklim-madrasah-madrasah','laporan-iklim-madrasah-kkma','ubah-password'].indexOf(view)!==-1;
+}
 // ===== NAVIGATION =====
 function toggleSubmenu(id){
 var el=document.getElementById(id);
 if(el)el.classList.toggle('open');
 }
 function navigate(view){
+if(!roleCanNavigate(view)){alert('Menu ini tidak tersedia untuk role Anda.');return;}
 state.view=view;state.editId=null;
 document.querySelectorAll('.navbar-list>li').forEach(function(li){li.classList.toggle('active',li.dataset.nav===view)});
 document.querySelectorAll('.dropdown a').forEach(function(a){a.classList.toggle('active',a.dataset.nav===view)});
