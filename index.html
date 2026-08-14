@@ -1102,13 +1102,12 @@ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.write
 }
 function editActivationCode(index){
 var a=getActivationCodes(), c=a[index];if(!c)return;
-if(c.used){alert('Kode yang sudah digunakan tidak dapat diedit.');return;}
-var newCode=prompt('Edit kode aktivasi:',c.code);if(newCode===null)return;newCode=newCode.trim().toUpperCase();
-if(!/^[A-Z0-9-]{6,60}$/.test(newCode)){alert('Format kode tidak valid. Gunakan huruf, angka, dan tanda hubung.');return;}
-if(a.some(function(x,i){return i!==index&&x.code===newCode})){alert('Kode tersebut sudah ada.');return;}
-var newRole=prompt('Role (pengawas/kepala):',c.role);if(newRole===null)return;newRole=newRole.trim().toLowerCase();
-if(newRole!=='pengawas'&&newRole!=='kepala'){alert('Role harus pengawas atau kepala.');return;}
-c.code=newCode;c.role=newRole;c.editedAt=new Date().toISOString();saveActivationCodes(a);render();
+var current=c.used?'sudah':'belum';
+var status=prompt('Status kode aktivasi:\nKetik "belum" agar dapat digunakan kembali, atau "sudah" agar dinonaktifkan.',current);
+if(status===null)return;status=status.trim().toLowerCase();
+if(status!=='belum'&&status!=='sudah'){alert('Status harus diisi: belum atau sudah.');return;}
+if(status==='belum'){c.used=false;delete c.activatedAt;}else{c.used=true;c.activatedAt=c.activatedAt||new Date().toISOString();}
+c.editedAt=new Date().toISOString();saveActivationCodes(a);render();
 }
 function deleteActivationCode(index){
 var a=getActivationCodes(), c=a[index];if(!c)return;
