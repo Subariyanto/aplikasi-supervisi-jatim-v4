@@ -1043,7 +1043,7 @@ render();
 // ===== ROLE ACCESS CONTROL =====
 function applyRoleVisibility(role){
 var isAdmin=role==='admin', isPengawas=role==='pengawas';
-var restricted=['pengawas','madrasah','guru','input-observasi','supervisi','input-kokurikuler','input-ekstrakurikuler','input-iklim-madrasah','backup-restore'];
+var restricted=['input-kokurikuler','rekap-kokurikuler','laporan-kokurikuler','laporan-kokurikuler-madrasah','laporan-kokurikuler-kkma','input-ekstrakurikuler','rekap-ekstrakurikuler','laporan-ekstrakurikuler','laporan-ekstrakurikuler-madrasah','laporan-ekstrakurikuler-kkma','input-iklim-madrasah','rekap-iklim-madrasah','laporan-iklim-madrasah','laporan-iklim-madrasah-madrasah','laporan-iklim-madrasah-kkma','backup-restore'];
 var readOnly=['rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler','laporan-kokurikuler-madrasah','laporan-kokurikuler-kkma','rekap-ekstrakurikuler','laporan-ekstrakurikuler','laporan-ekstrakurikuler-madrasah','laporan-ekstrakurikuler-kkma','rekap-iklim-madrasah','laporan-iklim-madrasah','laporan-iklim-madrasah-madrasah','laporan-iklim-madrasah-kkma'];
  document.querySelectorAll('[data-nav]').forEach(function(el){
   var nav=el.getAttribute('data-nav'), hide=false;
@@ -1056,7 +1056,7 @@ var readOnly=['rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler
 function roleCanNavigate(view){
 var s=getSession(), role=s&&s.role||'pengawas';
 if(role==='admin'||role==='pengawas')return true;
-return ['dashboard','rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler','laporan-kokurikuler-madrasah','laporan-kokurikuler-kkma','rekap-ekstrakurikuler','laporan-ekstrakurikuler','laporan-ekstrakurikuler-madrasah','laporan-ekstrakurikuler-kkma','rekap-iklim-madrasah','laporan-iklim-madrasah','laporan-iklim-madrasah-madrasah','laporan-iklim-madrasah-kkma','ubah-password'].indexOf(view)!==-1;
+return ['dashboard','input-observasi','pengawas','madrasah','guru','supervisi','rekap','cetak','laporan','ubah-password'].indexOf(view)!==-1;
 }
 // ===== NAVIGATION =====
 function toggleSubmenu(id){
