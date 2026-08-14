@@ -1092,8 +1092,8 @@ var readOnly=['rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler
 }
 function renderActivationCodes(){
 var s=getSession();if(!s||s.role!=='admin')return '<div class="card"><p>Akses ditolak.</p></div>';
-var codes=getActivationCodes(), html='<div class="card"><h2>🔑 Kode Aktivasi</h2><p style="color:#64748b;margin:10px 0 20px">Kode yang dibuat tersimpan lokal di perangkat administrator.</p><div class="btn-group"><button class="btn btn-primary" onclick="issueActivationCode(\'pengawas\')">+ Kode Pengawas</button><button class="btn btn-success" onclick="issueActivationCode(\'kepala\')">+ Kode Kepala Madrasah</button></div><div style="overflow:auto;margin-top:20px"><table class="instrumen-table"><tr><th>Kode</th><th>Role</th><th>Status</th><th>Aksi</th></tr>';
-codes.forEach(function(c,i){html+='<tr><td>'+escHtml(c.code)+'</td><td>'+escHtml(c.role==='kepala'?'Kepala Madrasah':'Pengawas')+'</td><td>'+(c.used?'Sudah digunakan':'Belum digunakan')+'</td><td style="white-space:nowrap"><button class="btn btn-sm btn-info" title="Copy kode aktivasi" aria-label="Copy kode aktivasi" onclick="copyActivationCode('+i+')">📋</button> <button class="btn btn-sm btn-warning" title="Edit kode aktivasi" aria-label="Edit kode aktivasi" onclick="editActivationCode('+i+')">✏️</button> <button class="btn btn-sm btn-danger" title="Hapus kode aktivasi" aria-label="Hapus kode aktivasi" onclick="deleteActivationCode('+i+')">🗑️</button></td></tr>'});
+var codes=getActivationCodes(), html='<div class="card"><h2>🔑 Kode Aktivasi</h2><p style="color:#64748b;margin:10px 0 20px">Kode yang dibuat tersimpan lokal di perangkat administrator.</p><div class="btn-group"><button class="btn btn-primary" onclick="issueActivationCode(\'pengawas\')">+ Kode Pengawas</button><button class="btn btn-success" onclick="issueActivationCode(\'kepala\')">+ Kode Kepala Madrasah</button></div><div style="overflow:auto;margin-top:20px"><table class="instrumen-table"><tr><th>Kode</th><th>Role</th><th>Pengguna</th><th>Status</th><th>Aksi</th></tr>';
+codes.forEach(function(c,i){html+='<tr><td>'+escHtml(c.code)+'</td><td>'+escHtml(c.role==='kepala'?'Kepala Madrasah':'Pengawas')+'</td><td>'+escHtml(c.user||'-')+'</td><td>'+(c.used?'Sudah digunakan':'Belum digunakan')+'</td><td style="white-space:nowrap"><button class="btn btn-sm btn-info" title="Copy kode aktivasi" aria-label="Copy kode aktivasi" onclick="copyActivationCode('+i+')">📋</button> <button class="btn btn-sm btn-warning" title="Edit kode aktivasi" aria-label="Edit kode aktivasi" onclick="editActivationCode('+i+')">✏️</button> <button class="btn btn-sm btn-danger" title="Hapus kode aktivasi" aria-label="Hapus kode aktivasi" onclick="deleteActivationCode('+i+')">🗑️</button></td></tr>'});
 return html+'</table></div></div>';
 }
 function copyActivationCode(index){
@@ -1102,6 +1102,7 @@ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.write
 }
 function editActivationCode(index){
 var a=getActivationCodes(), c=a[index];if(!c)return;
+var user=prompt('Nama pengguna/penerima kode:',c.user||'');if(user===null)return;c.user=user.trim();
 var current=c.used?'sudah':'belum';
 var status=prompt('Status kode aktivasi:\nKetik "belum" agar dapat digunakan kembali, atau "sudah" agar dinonaktifkan.',current);
 if(status===null)return;status=status.trim().toLowerCase();
@@ -1116,7 +1117,8 @@ a.splice(index,1);saveActivationCodes(a);render();
 }
 function issueActivationCode(role){
 var code='SUPERVISI-'+(role==='kepala'?'KAMAD':'PENGAWAS')+'-'+Math.random().toString(36).slice(2,8).toUpperCase();
-var a=getActivationCodes();a.push({code:code,role:role,used:false,createdAt:new Date().toISOString()});saveActivationCodes(a);alert('Kode aktivasi '+role+' berhasil dibuat:\\n\\n'+code);navigate('activation-codes');
+var user=prompt('Nama pengguna/penerima kode (boleh dikosongkan):','');if(user===null)return;
+var a=getActivationCodes();a.push({code:code,role:role,user:user.trim(),used:false,createdAt:new Date().toISOString()});saveActivationCodes(a);alert('Kode aktivasi '+role+' berhasil dibuat:\\n\\n'+code);navigate('activation-codes');
 }
 function roleCanNavigate(view){
 var s=getSession(), role=s&&s.role||'pengawas';
