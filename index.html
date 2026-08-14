@@ -201,7 +201,6 @@ canvas{max-width:100%;margin:20px 0}
 <img src="logo-kemenag.png" alt="Logo Kemenag">
 <div>
 <h1>Aplikasi Supervisi PM-KBC</h1>
-<p>Pokjawas Madrasah Jawa Timur</p>
 </div>
 </div>
 <nav class="navbar" id="navbar">
@@ -268,10 +267,8 @@ canvas{max-width:100%;margin:20px 0}
 </div>
 </div>
 <footer class="site-footer">
-<p class="footer-brand">SUPERVISI PM-KBC — POKJAWAS MADRASAH JAWA TIMUR</p>
-<p>Aplikasi ini dibuat oleh: Subariyanto — Ketua Pokjawas Madrasah Kab. Jember</p>
-<p>Instrumen disusun oleh: Ida Safiaturrahma — Pengawas Madrasah Kab. Lamongan</p>
-<p>&copy; 2026 Kementerian Agama Provinsi Jawa Timur</p>
+<p class="footer-brand">Aplikasi ini dibuat Oleh : Subariyanto, S.Pd, M.Pd.I.</p>
+<p>Ketua Pokjawas Madrasah Kabupaten Jember</p>
 </footer>
 </div>
 <script>
@@ -1117,7 +1114,7 @@ const session=getSession();
 const heroName=session&&session.nama?escHtml(session.nama):'Pengawas';
 let hero='<div class="hero-banner"><div class="hero-overlay"></div><div class="hero-content">';
 hero+='<h2>Selamat Datang, <span id="heroName">'+heroName+'</span></h2>';
-hero+='<p>Sistem Supervisi Pembelajaran PM-KBC<br>Pokjawas Madrasah Jawa Timur</p>';
+hero+='<p>Sistem Supervisi Pembelajaran PM-KBC</p>';
 hero+='<div class="hero-quick"><button onclick="navigate(\'input-observasi\')">📝 Mulai Observasi</button><button onclick="navigate(\'rekap\')">📊 Lihat Rekap</button></div>';
 hero+='</div></div>';
 let stats='<div class="grid-3" style="margin-bottom:20px">';
