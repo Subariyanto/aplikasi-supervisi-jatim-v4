@@ -248,6 +248,7 @@ canvas{max-width:100%;margin:20px 0}
 <div class="dropdown">
 <a onclick="navigate('ubah-password')" data-nav="ubah-password">🔐 Ubah Password</a>
 <a onclick="navigate('backup-restore')" data-nav="backup-restore">💾 Backup & Restore</a>
+<a onclick="navigate('activation-codes')" data-nav="activation-codes" class="admin-only">🔑 Kode Aktivasi</a>
 <a onclick="window.open('panduan.html','_blank')">📖 Panduan</a>
 <a class="dd-danger" onclick="doLogout()">🚪 Logout</a>
 </div>
@@ -275,6 +276,36 @@ canvas{max-width:100%;margin:20px 0}
 // ===== AUTH SYSTEM =====
 const USERS_KEY='supervisi_users';
 const SESSION_KEY='supervisi_session';
+const ACTIVATION_KEY='supervisi_activation';
+const ACTIVATION_CODES_KEY='supervisi_activation_codes';
+function getActivation(){try{return JSON.parse(localStorage.getItem(ACTIVATION_KEY))||null}catch(e){return null}}
+function saveActivation(a){localStorage.setItem(ACTIVATION_KEY,JSON.stringify(a))}
+function getActivationCodes(){try{return JSON.parse(localStorage.getItem(ACTIVATION_CODES_KEY))||[]}catch(e){return[]}}
+function saveActivationCodes(a){localStorage.setItem(ACTIVATION_CODES_KEY,JSON.stringify(a))}
+function activationRole(code){
+var c=(code||'').trim().toUpperCase();
+var builtins={'SUPERVISI-ADMIN-2026':'admin','SUPERVISI-PENGAWAS-2026':'pengawas','SUPERVISI-KAMAD-2026':'kepala'};
+if(builtins[c])return builtins[c];
+var found=getActivationCodes().find(function(x){return x.code===c&&!x.used});
+if(found)return found.role;
+if(/^SUPERVISI-PENGAWAS-[A-Z0-9]{6}$/.test(c))return 'pengawas';
+if(/^SUPERVISI-KAMAD-[A-Z0-9]{6}$/.test(c))return 'kepala';
+return null;
+}
+function showActivation(){
+ hideApp();var card=document.getElementById('authCard');
+ card.innerHTML='<h2>🔑 Aktivasi Aplikasi</h2><p class="auth-subtitle">Masukkan kode aktivasi yang diterbitkan Administrator</p><div class="auth-error" id="activationError"></div><div class="form-group"><label>Kode Aktivasi</label><input type="text" id="activationCode" placeholder="Contoh: SUPERVISI-PENGAWAS-2026" autocomplete="off"></div><button class="btn-auth" onclick="doActivation()">Aktifkan Perangkat</button>';
+ setTimeout(function(){var e=document.getElementById('activationCode');if(e)e.focus()},100);
+}
+function doActivation(){
+ var input=document.getElementById('activationCode'), code=(input.value||'').trim().toUpperCase(), role=activationRole(code), err=document.getElementById('activationError');
+ if(!role){err.textContent='Kode aktivasi tidak valid atau sudah digunakan.';err.style.display='block';return;}
+ var codes=getActivationCodes(), item=codes.find(function(x){return x.code===code});
+ if(item){item.used=true;item.activatedAt=new Date().toISOString();saveActivationCodes(codes)}
+ saveActivation({code:code,role:role,deviceId:deviceFingerprint(),activatedAt:new Date().toISOString()});
+ showLogin();
+}
+function deviceFingerprint(){return [navigator.userAgent,screen.width+'x'+screen.height,navigator.language].join('|');}
 
 function getUsers(){
 try{return JSON.parse(localStorage.getItem(USERS_KEY))||[]}catch(e){return[]}
@@ -304,6 +335,10 @@ saveUsers(users);
 
 function checkAuth(){
 initDefaultAdmin();
+if(!getActivation()){
+ showActivation();
+ return;
+}
 var session=getSession();
 if(session&&session.username){
 showApp(session);
@@ -370,6 +405,7 @@ if(el)el.onkeydown=function(e){if(e.key==='Enter')doRegister()};
 }
 
 function doLogin(){
+if(!getActivation()){showActivation();return;}
 var username=document.getElementById('loginUsername').value.trim();
 var password=document.getElementById('loginPassword').value;
 var errEl=document.getElementById('authError');
@@ -384,7 +420,8 @@ if(!user){
 errEl.textContent='Username atau password salah.';
 errEl.style.display='block';return;
 }
-var session={username:user.username,nama:user.nama,role:(user.username==='admin'?'admin':(user.role||'pengawas'))};
+var active=getActivation();
+var session={username:user.username,nama:user.nama,role:(active.role||'pengawas')};
 saveSession(session);
 showApp(session);
 render();
@@ -1043,7 +1080,7 @@ render();
 // ===== ROLE ACCESS CONTROL =====
 function applyRoleVisibility(role){
 var isAdmin=role==='admin', isPengawas=role==='pengawas';
-var restricted=['input-kokurikuler','rekap-kokurikuler','laporan-kokurikuler','laporan-kokurikuler-madrasah','laporan-kokurikuler-kkma','input-ekstrakurikuler','rekap-ekstrakurikuler','laporan-ekstrakurikuler','laporan-ekstrakurikuler-madrasah','laporan-ekstrakurikuler-kkma','input-iklim-madrasah','rekap-iklim-madrasah','laporan-iklim-madrasah','laporan-iklim-madrasah-madrasah','laporan-iklim-madrasah-kkma','backup-restore'];
+var restricted=['activation-codes','input-kokurikuler','rekap-kokurikuler','laporan-kokurikuler','laporan-kokurikuler-madrasah','laporan-kokurikuler-kkma','input-ekstrakurikuler','rekap-ekstrakurikuler','laporan-ekstrakurikuler','laporan-ekstrakurikuler-madrasah','laporan-ekstrakurikuler-kkma','input-iklim-madrasah','rekap-iklim-madrasah','laporan-iklim-madrasah','laporan-iklim-madrasah-madrasah','laporan-iklim-madrasah-kkma','backup-restore'];
 var readOnly=['rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler','laporan-kokurikuler-madrasah','laporan-kokurikuler-kkma','rekap-ekstrakurikuler','laporan-ekstrakurikuler','laporan-ekstrakurikuler-madrasah','laporan-ekstrakurikuler-kkma','rekap-iklim-madrasah','laporan-iklim-madrasah','laporan-iklim-madrasah-madrasah','laporan-iklim-madrasah-kkma'];
  document.querySelectorAll('[data-nav]').forEach(function(el){
   var nav=el.getAttribute('data-nav'), hide=false;
@@ -1052,6 +1089,16 @@ var readOnly=['rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler
   el.style.display=hide?'none':'';
   var li=el.closest('li'); if(li){var visible=Array.from(li.querySelectorAll('[data-nav]')).some(function(x){return x.style.display!=='none'}); if(el===li.querySelector(':scope>span')) li.style.display=visible?'':'none';}
  });
+}
+function renderActivationCodes(){
+var s=getSession();if(!s||s.role!=='admin')return '<div class="card"><p>Akses ditolak.</p></div>';
+var codes=getActivationCodes(), html='<div class="card"><h2>🔑 Kode Aktivasi</h2><p style="color:#64748b;margin:10px 0 20px">Kode yang dibuat tersimpan lokal di perangkat administrator.</p><div class="btn-group"><button class="btn btn-primary" onclick="issueActivationCode(\'pengawas\')">+ Kode Pengawas</button><button class="btn btn-success" onclick="issueActivationCode(\'kepala\')">+ Kode Kepala Madrasah</button></div><div style="overflow:auto;margin-top:20px"><table class="instrumen-table"><tr><th>Kode</th><th>Role</th><th>Status</th></tr>';
+codes.forEach(function(c){html+='<tr><td>'+escHtml(c.code)+'</td><td>'+escHtml(c.role)+'</td><td>'+(c.used?'Sudah digunakan':'Belum digunakan')+'</td></tr>'});
+return html+'</table></div></div>';
+}
+function issueActivationCode(role){
+var code='SUPERVISI-'+(role==='kepala'?'KAMAD':'PENGAWAS')+'-'+Math.random().toString(36).slice(2,8).toUpperCase();
+var a=getActivationCodes();a.push({code:code,role:role,used:false,createdAt:new Date().toISOString()});saveActivationCodes(a);alert('Kode aktivasi '+role+' berhasil dibuat:\\n\\n'+code);navigate('activation-codes');
 }
 function roleCanNavigate(view){
 var s=getSession(), role=s&&s.role||'pengawas';
@@ -1109,6 +1156,7 @@ case 'laporan-iklim-madrasah-madrasah':app.innerHTML=renderLaporanIklimMadrasahP
 case 'laporan-iklim-madrasah-kkma':app.innerHTML=renderLaporanIklimMadrasahPerKKMAPage();break;
 case 'ubah-password':app.innerHTML=renderUbahPassword();break;
 case 'backup-restore':app.innerHTML=renderBackupRestore();break;
+case 'activation-codes':app.innerHTML=renderActivationCodes();break;
 default:app.innerHTML=renderDashboard();
 }
 var titleEl=document.getElementById('pageTitle');
