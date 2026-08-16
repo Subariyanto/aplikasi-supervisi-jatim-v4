@@ -9,9 +9,10 @@
 
   const PAT_KEY = 'gh_pat';
 
-  function getPAT() { return Store.getGlobal(PAT_KEY, '') || ''; }
-  function setPAT(pat) { Store.setGlobal(PAT_KEY, String(pat || '').trim()); }
-  function clearPAT() { Store.removeGlobal(PAT_KEY); }
+  // File ini dimuat sebelum script aplikasi; gunakan localStorage langsung.
+  function getPAT() { try { return localStorage.getItem(PAT_KEY) || ''; } catch (e) { return ''; } }
+  function setPAT(pat) { try { localStorage.setItem(PAT_KEY, String(pat || '').trim()); } catch (e) {} }
+  function clearPAT() { try { localStorage.removeItem(PAT_KEY); } catch (e) {} }
   function hasPAT() { return !!getPAT(); }
 
   // RAW URL — public, tidak butuh auth, cache-busted dengan timestamp.
