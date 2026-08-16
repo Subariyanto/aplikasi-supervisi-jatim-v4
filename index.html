@@ -1129,6 +1129,7 @@ var restricted=['activation-codes','input-kokurikuler','rekap-kokurikuler','lapo
 var readOnly=['rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler','laporan-kokurikuler-madrasah','laporan-kokurikuler-kkma','rekap-ekstrakurikuler','laporan-ekstrakurikuler','laporan-ekstrakurikuler-madrasah','laporan-ekstrakurikuler-kkma','rekap-iklim-madrasah','laporan-iklim-madrasah','laporan-iklim-madrasah-madrasah','laporan-iklim-madrasah-kkma'];
  document.querySelectorAll('[data-nav]').forEach(function(el){
   var nav=el.getAttribute('data-nav'), hide=false;
+  if(!isAdmin && nav==='activation-codes') hide=true;
   if(!isAdmin && nav==='backup-restore') hide=true;
   if(role==='kepala' && restricted.indexOf(nav)!==-1) hide=true;
   el.style.display=hide?'none':'';
