@@ -40,6 +40,17 @@
 
   // Helper: fetch SHA + remote codes terbaru dari gh-pages.
   // Return { sha, remoteCodes }. sha=null kalau file belum ada (first create).
+  async function ensureBranch(headers) {
+    const branchUrl = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/git/refs/heads/${REPO_BRANCH}`;
+    const check = await fetch(branchUrl, { headers, cache: 'no-store' });
+    if (check.ok) return;
+    if (check.status !== 404) throw new Error('Gagal memeriksa branch '+REPO_BRANCH+': '+check.status);
+    const repo = await (await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}`, {headers})).json();
+    const base = await (await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/git/ref/heads/${repo.default_branch || 'main'}`, {headers})).json();
+    const create = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/git/refs`, {method:'POST',headers,body:JSON.stringify({ref:'refs/heads/'+REPO_BRANCH,sha:base.object.sha})});
+    if (!create.ok && create.status !== 422) throw new Error('Gagal membuat branch '+REPO_BRANCH+': '+await create.text());
+  }
+
   async function fetchCurrentSha(headers) {
     const r = await fetch(apiUrl() + '?ref=' + REPO_BRANCH + '&t=' + Date.now(), { headers, cache: 'no-store' });
     if (r.ok) {
@@ -73,7 +84,8 @@
       'Content-Type': 'application/json',
     };
 
-    // Step 1: ambil SHA terbaru.
+    // Step 1: pastikan branch gh-pages tersedia, lalu ambil SHA terbaru.
+    await ensureBranch(headers);
     let sha = null;
     try {
       const cur = await fetchCurrentSha(headers);
