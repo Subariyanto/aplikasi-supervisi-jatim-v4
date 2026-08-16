@@ -10,6 +10,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
+<!-- Firebase: validasi kode aktivasi dan penguncian satu perangkat -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f5f5f5;min-height:100vh;color:#333}
@@ -286,6 +290,9 @@ const USERS_KEY='supervisi_users';
 const SESSION_KEY='supervisi_session';
 const ACTIVATION_KEY='supervisi_activation';
 const ACTIVATION_CODES_KEY='supervisi_activation_codes';
+const firebaseConfig={apiKey:'AIzaSyC0GTp10ojXKklM-iM3k7CZSTM0vt07jOY',authDomain:'supervisi-pm-kbc-new.firebaseapp.com',projectId:'supervisi-pm-kbc-new',storageBucket:'supervisi-pm-kbc-new.firebasestorage.app',messagingSenderId:'734690756804',appId:'1:734690756804:web:403615140474c83d8be191',measurementId:'G-BHE3BKBHPT'};
+var firebaseReady=false, firebaseDb=null;
+try{firebase.initializeApp(firebaseConfig);firebaseDb=firebase.firestore();firebaseReady=true}catch(e){console.warn('Firebase belum siap:',e)}
 function getActivation(){try{return JSON.parse(localStorage.getItem(ACTIVATION_KEY))||null}catch(e){return null}}
 function saveActivation(a){localStorage.setItem(ACTIVATION_KEY,JSON.stringify(a))}
 function getActivationCodes(){try{return JSON.parse(localStorage.getItem(ACTIVATION_CODES_KEY))||[]}catch(e){return[]}}
@@ -305,15 +312,31 @@ function showActivation(){
  card.innerHTML='<h2>🔑 Aktivasi Aplikasi</h2><p class="auth-subtitle">Masukkan kode aktivasi yang diterbitkan Administrator</p><div class="auth-error" id="activationError"></div><div class="form-group"><label>Kode Aktivasi</label><input type="text" id="activationCode" placeholder="Contoh: SUPERVISI-PENGAWAS-2026" autocomplete="off"></div><button class="btn-auth" onclick="doActivation()">Aktifkan Perangkat</button>';
  setTimeout(function(){var e=document.getElementById('activationCode');if(e)e.focus()},100);
 }
-function doActivation(){
- var input=document.getElementById('activationCode'), code=(input.value||'').trim().toUpperCase(), role=activationRole(code), err=document.getElementById('activationError');
- if(!role){err.textContent='Kode aktivasi tidak valid atau sudah digunakan.';err.style.display='block';return;}
- var codes=getActivationCodes(), item=codes.find(function(x){return x.code===code});
- if(item){item.used=true;item.activatedAt=new Date().toISOString();saveActivationCodes(codes)}
- saveActivation({code:code,role:role,deviceId:deviceFingerprint(),activatedAt:new Date().toISOString()});
- showLogin();
+async function doActivation(){
+ var input=document.getElementById('activationCode'), code=(input.value||'').trim().toUpperCase(), err=document.getElementById('activationError');
+ if(!code){err.textContent='Masukkan kode aktivasi.';err.style.display='block';return;}
+ var deviceId=deviceFingerprint(), now=new Date().toISOString();
+ try{
+  if(firebaseReady){
+   if(!firebase.auth().currentUser)await firebase.auth().signInAnonymously();
+   var ref=firebaseDb.collection('activation_codes').doc(code), role;
+   await firebaseDb.runTransaction(async function(tx){
+    var snap=await tx.get(ref);
+    if(!snap.exists)throw new Error('INVALID_CODE');
+    var data=snap.data();role=data.role;
+    if(data.status==='used'&&data.deviceId!==deviceId)throw new Error('USED_CODE');
+    if(data.status==='disabled')throw new Error('DISABLED_CODE');
+    if(data.status!=='used')tx.update(ref,{status:'used',deviceId:deviceId,activatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+   });
+   saveActivation({code:code,role:role,deviceId:deviceId,activatedAt:now,source:'firebase'});showLogin();return;
+  }
+  var role=activationRole(code);if(!role)throw new Error('INVALID_CODE');
+  var codes=getActivationCodes(),item=codes.find(function(x){return x.code===code});
+  if(item){if(item.used&&item.deviceId!==deviceId)throw new Error('USED_CODE');item.used=true;item.deviceId=deviceId;item.activatedAt=now;saveActivationCodes(codes)}
+  saveActivation({code:code,role:role,deviceId:deviceId,activatedAt:now,source:'local'});showLogin();
+ }catch(e){console.error(e);err.textContent=e.message==='USED_CODE'?'Kode sudah digunakan pada perangkat lain.':e.message==='DISABLED_CODE'?'Kode sudah dinonaktifkan.':'Kode tidak valid atau Firebase belum terkonfigurasi.';err.style.display='block';}
 }
-function deviceFingerprint(){return [navigator.userAgent,screen.width+'x'+screen.height,navigator.language].join('|');}
+function deviceFingerprint(){var raw=[navigator.userAgent,screen.width+'x'+screen.height,navigator.language,navigator.platform].join('|');var h=0;for(var i=0;i<raw.length;i++)h=((h<<5)-h)+raw.charCodeAt(i)|0;return 'web-'+Math.abs(h).toString(36)+'-'+btoa(raw).slice(0,16);}
 
 function getUsers(){
 try{return JSON.parse(localStorage.getItem(USERS_KEY))||[]}catch(e){return[]}
