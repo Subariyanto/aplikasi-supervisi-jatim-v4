@@ -1,0 +1,34 @@
+{
+  "codes": [
+    {
+      "code": "SUPERVISI-KAMAD-85GIK5",
+      "role": "kepala",
+      "user": "Katim",
+      "used": false,
+      "createdAt": "2026-08-16T03:42:02.750Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-GLI110",
+      "role": "kepala",
+      "user": "Coba1",
+      "used": false,
+      "createdAt": "2026-08-16T03:52:30.843Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-Y8ATAI",
+      "role": "pengawas",
+      "user": "Coba2",
+      "used": false,
+      "createdAt": "2026-08-16T05:52:44.041Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-QDEOSA",
+      "role": "pengawas",
+      "user": "Coba3",
+      "used": false,
+      "createdAt": "2026-08-16T06:42:28.473Z",
+      "editedAt": "2026-08-16T06:42:53.458Z"
+    }
+  ],
+  "updatedAt": "2026-08-16T07:07:11.570Z"
+}
