@@ -339,7 +339,16 @@ async function doActivation(){
   var codes=getActivationCodes(),item=codes.find(function(x){return x.code===code});
   if(item){if(item.used&&item.deviceId!==deviceId)throw new Error('USED_CODE');item.used=true;item.deviceId=deviceId;item.activatedAt=now;saveActivationCodes(codes)}
   saveActivation({code:code,role:role,deviceId:deviceId,activatedAt:now,source:'local'});showLogin();
- }catch(e){console.error(e);err.textContent=e.message==='USED_CODE'?'Kode sudah digunakan pada perangkat lain.':e.message==='DISABLED_CODE'?'Kode sudah dinonaktifkan.':'Kode tidak valid atau Firebase belum terkonfigurasi.';err.style.display='block';}
+ }catch(e){
+  console.error(e);
+  // Jika Firebase belum tersedia, gunakan daftar kode publik hasil sinkronisasi GitHub.
+  // Ini memungkinkan aktivasi kode yang diterbitkan admin dari HP/perangkat lain.
+  if(e.message==='INVALID_CODE' || e.message.indexOf('Firebase')>=0 || e.code==='permission-denied'){
+   var localRole=activationRole(code);
+   if(localRole){saveActivation({code:code,role:localRole,deviceId:deviceId,activatedAt:now,source:'github-sync'});showLogin();return;}
+  }
+  err.textContent=e.message==='USED_CODE'?'Kode sudah digunakan pada perangkat lain.':e.message==='DISABLED_CODE'?'Kode sudah dinonaktifkan.':'Kode tidak valid atau Firebase belum terkonfigurasi.';err.style.display='block';
+ }
 }
 function deviceFingerprint(){var raw=[navigator.userAgent,screen.width+'x'+screen.height,navigator.language,navigator.platform].join('|');var h=0;for(var i=0;i<raw.length;i++)h=((h<<5)-h)+raw.charCodeAt(i)|0;return 'web-'+Math.abs(h).toString(36)+'-'+btoa(raw).slice(0,16);}
 
@@ -5302,7 +5311,7 @@ function cetakLaporanIklimMadrasahPerMadrasah(mName){cetakLaporanPerMadrasahGene
 function cetakLaporanIklimMadrasahPerKKMA(){cetakLaporanPerKKMAGeneric('Supervisi Iklim Madrasah',getIklimMadrasah,IKLIM_MADRASAH);}
 
 initDefaultMadrasah();
-checkAuth();
+(async function(){try{if(window.GithubSync)await window.GithubSync.refreshFromPublic();}catch(e){console.warn('Gagal memuat kode publik:',e)}checkAuth();})();
 render();
 </script>
 </body>
