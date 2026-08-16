@@ -318,6 +318,10 @@ async function doActivation(){
  if(!code){err.textContent='Masukkan kode aktivasi.';err.style.display='block';return;}
  var deviceId=deviceFingerprint(), now=new Date().toISOString();
  try{
+  // Kode admin bawaan tetap dapat dipakai untuk masuk ke panel admin.
+  // Jangan dipaksa mencari dokumen Firestore karena kode ini bersifat lokal bawaan.
+  var builtinRole=({'SUPERVISI-ADMIN-2026':'admin','SUPERVISI-PENGAWAS-2026':'pengawas','SUPERVISI-KAMAD-2026':'kepala'})[code];
+  if(builtinRole){saveActivation({code:code,role:builtinRole,deviceId:deviceId,activatedAt:now,source:'builtin'});showLogin();return;}
   if(firebaseReady){
    if(!firebase.auth().currentUser)await firebase.auth().signInAnonymously();
    var ref=firebaseDb.collection('activation_codes').doc(code), role;
