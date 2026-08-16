@@ -342,6 +342,7 @@ async function doActivation(){
   err.textContent=e.message==='USED_CODE'?'Kode sudah digunakan pada perangkat lain.':e.message==='DISABLED_CODE'?'Kode sudah dinonaktifkan.':e.message==='FIREBASE_REQUIRED'?'Layanan aktivasi belum tersedia. Hubungi administrator.':'Kode tidak valid atau Firebase belum terkonfigurasi.';
   err.style.display='block';
  }
+}
 function deviceFingerprint(){var raw=[navigator.userAgent,screen.width+'x'+screen.height,navigator.language,navigator.platform].join('|');var h=0;for(var i=0;i<raw.length;i++)h=((h<<5)-h)+raw.charCodeAt(i)|0;return 'web-'+Math.abs(h).toString(36)+'-'+btoa(raw).slice(0,16);}
 
 function getUsers(){
