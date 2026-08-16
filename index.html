@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
@@ -10,6 +10,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js" defer></script>
+<script src="github_sync.js"></script>
 <!-- Firebase: validasi kode aktivasi dan penguncian satu perangkat -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -1121,9 +1122,17 @@ var readOnly=['rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler
   var li=el.closest('li'); if(li){var visible=Array.from(li.querySelectorAll('[data-nav]')).some(function(x){return x.style.display!=='none'}); if(el===li.querySelector(':scope>span')) li.style.display=visible?'':'none';}
  });
 }
+function showActivationSync(){
+var pat=window.GithubSync?window.GithubSync.getPAT():'';
+var html='<div class="card"><h2>🔄 Sinkronisasi Kode Lintas Perangkat</h2><p style="color:#64748b">Gunakan GitHub PAT dengan akses Contents: Read and write hanya untuk repository ini.</p><div class="form-group"><label>GitHub Personal Access Token</label><input id="githubPat" type="password" value="'+escHtml(pat)+'" placeholder="github_pat_..."></div><div class="btn-group"><button class="btn btn-primary" onclick="saveGithubPat()">💾 Simpan + Test</button><button class="btn btn-info" onclick="pullGithubCodes()">⬇️ Tarik dari gh-pages</button><button class="btn btn-success" onclick="pushGithubCodes()">⬆️ Push Sekarang</button><button class="btn btn-danger" onclick="clearGithubPat()">Hapus PAT</button></div><p id="syncStatus" style="margin-top:15px"></p><button class="btn btn-sm" onclick="render()">← Kembali</button></div>';document.getElementById('app').innerHTML=html;
+}
+async function saveGithubPat(){var v=document.getElementById('githubPat').value.trim();if(!v)return alert('PAT wajib diisi.');GithubSync.setPAT(v);var r=await GithubSync.testPAT();document.getElementById('syncStatus').textContent=r.message;if(r.ok)await pushGithubCodes();}
+async function pullGithubCodes(){var r=await GithubSync.refreshFromPublic();if(!r||!r.codes)return alert('Gagal mengambil codes.json.');saveActivationCodes(r.codes);alert('Berhasil menarik '+r.codes.length+' kode dari gh-pages.');render();}
+async function pushGithubCodes(){var r=await GithubSync.pushIfConfigured(getActivationCodes(),'sync activation codes from admin');alert(r.synced?'Berhasil push kode ke gh-pages.':('Gagal push: '+(r.error||r.reason)));}
+function clearGithubPat(){if(confirm('Hapus PAT dari browser ini?')){GithubSync.clearPAT();showActivationSync();}}
 function renderActivationCodes(){
 var s=getSession();if(!s||s.role!=='admin')return '<div class="card"><p>Akses ditolak.</p></div>';
-var codes=getActivationCodes(), html='<div class="card"><h2>🔑 Kode Aktivasi</h2><p style="color:#64748b;margin:10px 0 20px">Kode yang dibuat tersimpan lokal di perangkat administrator.</p><div class="btn-group"><button class="btn btn-primary" onclick="issueActivationCode(\'pengawas\')">+ Kode Pengawas</button><button class="btn btn-success" onclick="issueActivationCode(\'kepala\')">+ Kode Kepala Madrasah</button><button class="btn btn-info" onclick="issueBulkActivationCodes()">+ Terbitkan 10 Kode</button></div><div style="overflow:auto;margin-top:20px"><table class="instrumen-table"><tr><th>Kode</th><th>Role</th><th>Pengguna</th><th>Status</th><th>Aksi</th></tr>';
+var codes=getActivationCodes(), html='<div class="card"><h2>🔑 Kode Aktivasi</h2><div class="tabs" style="margin:12px 0"><button class="btn btn-sm btn-info" onclick="showActivationSync()">🔄 Sinkronisasi</button></div><p style="color:#64748b;margin:10px 0 20px">Kode disimpan lokal dan dapat disinkronkan ke GitHub Pages.</p><div class="btn-group"><button class="btn btn-primary" onclick="issueActivationCode(\'pengawas\')">+ Kode Pengawas</button><button class="btn btn-success" onclick="issueActivationCode(\'kepala\')">+ Kode Kepala Madrasah</button><button class="btn btn-info" onclick="issueBulkActivationCodes()">+ Terbitkan 10 Kode</button></div><div style="overflow:auto;margin-top:20px"><table class="instrumen-table"><tr><th>Kode</th><th>Role</th><th>Pengguna</th><th>Status</th><th>Aksi</th></tr>';
 codes.forEach(function(c,i){html+='<tr><td>'+escHtml(c.code)+'</td><td>'+escHtml(c.role==='kepala'?'Kepala Madrasah':'Pengawas')+'</td><td>'+escHtml(c.user||'-')+'</td><td>'+(c.used?'Sudah digunakan':'Belum digunakan')+'</td><td style="white-space:nowrap"><button class="btn btn-sm btn-info" title="Copy kode aktivasi" aria-label="Copy kode aktivasi" onclick="copyActivationCode('+i+')">📋</button> <button class="btn btn-sm btn-warning" title="Edit kode aktivasi" aria-label="Edit kode aktivasi" onclick="editActivationCode('+i+')">✏️</button> <button class="btn btn-sm btn-danger" title="Hapus kode aktivasi" aria-label="Hapus kode aktivasi" onclick="deleteActivationCode('+i+')">🗑️</button></td></tr>'});
 return html+'</table></div></div>';
 }
