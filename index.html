@@ -1122,6 +1122,7 @@ var readOnly=['rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler
   var li=el.closest('li'); if(li){var visible=Array.from(li.querySelectorAll('[data-nav]')).some(function(x){return x.style.display!=='none'}); if(el===li.querySelector(':scope>span')) li.style.display=visible?'':'none';}
  });
 }
+document.addEventListener('click',function(e){var b=e.target&&e.target.closest?e.target.closest('#btnActivationSync'):null;if(b){e.preventDefault();showActivationSync();}});
 function showActivationSync(){
 var pat=window.GithubSync?window.GithubSync.getPAT():'';
 var html='<div class="card"><h2>🔄 Sinkronisasi Kode Lintas Perangkat</h2><p style="color:#64748b">Gunakan GitHub PAT dengan akses Contents: Read and write hanya untuk repository ini.</p><div class="form-group"><label>GitHub Personal Access Token</label><input id="githubPat" type="password" value="'+escHtml(pat)+'" placeholder="github_pat_..."></div><div class="btn-group"><button class="btn btn-primary" onclick="saveGithubPat()">💾 Simpan + Test</button><button class="btn btn-info" onclick="pullGithubCodes()">⬇️ Tarik dari gh-pages</button><button class="btn btn-success" onclick="pushGithubCodes()">⬆️ Push Sekarang</button><button class="btn btn-danger" onclick="clearGithubPat()">Hapus PAT</button></div><p id="syncStatus" style="margin-top:15px"></p><button class="btn btn-sm" onclick="render()">← Kembali</button></div>';document.getElementById('app').innerHTML=html;
