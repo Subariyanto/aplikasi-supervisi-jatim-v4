@@ -1255,6 +1255,9 @@ if(el)el.classList.toggle('open');
 function navigate(view){
 if(!roleCanNavigate(view)){alert('Menu ini tidak tersedia untuk role Anda.');return;}
 state.view=view;state.editId=null;
+// Tutup dropdown setelah submenu dipilih, baik desktop maupun mobile.
+document.querySelectorAll('.navbar-list>li.open-mobile').forEach(function(li){li.classList.remove('open-mobile');});
+document.querySelectorAll('.navbar-list>li.open').forEach(function(li){li.classList.remove('open');});
 document.querySelectorAll('.navbar-list>li').forEach(function(li){li.classList.toggle('active',li.dataset.nav===view)});
 document.querySelectorAll('.dropdown a').forEach(function(a){a.classList.toggle('active',a.dataset.nav===view)});
 if(window.innerWidth<900){document.getElementById('navbar').classList.remove('open');document.querySelectorAll('.navbar-list>li').forEach(function(li){li.classList.remove('open-mobile')});}
