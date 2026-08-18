@@ -141,7 +141,14 @@
       "used": false,
       "createdAt": "2026-08-18T05:32:33.423Z",
       "editedAt": "2026-08-18T05:34:26.743Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-3XIZ0W",
+      "role": "pengawas",
+      "user": "Syahru",
+      "used": false,
+      "createdAt": "2026-08-18T06:03:45.062Z"
     }
   ],
-  "updatedAt": "2026-08-18T06:02:45.055Z"
+  "updatedAt": "2026-08-18T06:03:47.782Z"
 }
