@@ -1301,10 +1301,9 @@ const madrasahCount=getAllMadrasah().length;
 const guruCount=getAllGuru().length;
 const session=getSession();
 const heroName=session&&session.nama?escHtml(session.nama):'Pengawas';
-const heroUsername=session&&session.username?escHtml(session.username):'';
 let hero='<div class="hero-banner"><div class="hero-overlay"></div><div class="hero-content">';
 hero+='<h2>Selamat Datang, <span id="heroName">'+heroName+'</span></h2>';
-hero+='<p style="margin-top:-8px;font-size:.95rem;opacity:.9">Username: <b>'+heroUsername+'</b></p>';
+
 hero+='<p>Sistem Supervisi Pembelajaran PM-KBC</p>';
 hero+='<div class="hero-quick"><button onclick="navigate(\'input-observasi\')">📝 Mulai Observasi</button><button onclick="navigate(\'rekap\')">📊 Lihat Rekap</button></div>';
 hero+='</div></div>';
