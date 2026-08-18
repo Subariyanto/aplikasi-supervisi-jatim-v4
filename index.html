@@ -216,7 +216,7 @@ canvas{max-width:100%;margin:20px 0}
 <div class="navbar-inner">
 <ul class="navbar-list">
 <li class="active"><span onclick="navigate('dashboard')" data-nav="dashboard">🏠 Beranda</span></li>
-<li><span onclick="navigate('madrasah')" data-nav="madrasah">🏫 Data Madrasah</span></li>
+<li class="pengawas-only"><span onclick="navigate('madrasah')" data-nav="madrasah">🏫 Data Madrasah</span></li>
 <li><span onclick="navigate('input-observasi')" data-nav="input-observasi">📝 Input Observasi</span></li>
 <li><span onclick="toggleDropdown(this)">🗂️ Data Master ▾</span>
 <div class="dropdown">
@@ -1137,13 +1137,16 @@ render();
 // ===== ROLE ACCESS CONTROL =====
 function applyRoleVisibility(role){
 var isAdmin=role==='admin', isPengawas=role==='pengawas';
-var restricted=['activation-codes','input-kokurikuler','rekap-kokurikuler','laporan-kokurikuler','laporan-kokurikuler-madrasah','laporan-kokurikuler-kkma','input-ekstrakurikuler','rekap-ekstrakurikuler','laporan-ekstrakurikuler','laporan-ekstrakurikuler-madrasah','laporan-ekstrakurikuler-kkma','input-iklim-madrasah','rekap-iklim-madrasah','laporan-iklim-madrasah','laporan-iklim-madrasah-madrasah','laporan-iklim-madrasah-kkma','backup-restore'];
+var restricted=['activation-codes','madrasah','pengawas','kepala-madrasah','input-kokurikuler','rekap-kokurikuler','laporan-kokurikuler','laporan-kokurikuler-madrasah','laporan-kokurikuler-kkma','input-ekstrakurikuler','rekap-ekstrakurikuler','laporan-ekstrakurikuler','laporan-ekstrakurikuler-madrasah','laporan-ekstrakurikuler-kkma','input-iklim-madrasah','rekap-iklim-madrasah','laporan-iklim-madrasah','laporan-iklim-madrasah-madrasah','laporan-iklim-madrasah-kkma','backup-restore'];
 var readOnly=['rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler','laporan-kokurikuler-madrasah','laporan-kokurikuler-kkma','rekap-ekstrakurikuler','laporan-ekstrakurikuler','laporan-ekstrakurikuler-madrasah','laporan-ekstrakurikuler-kkma','rekap-iklim-madrasah','laporan-iklim-madrasah','laporan-iklim-madrasah-madrasah','laporan-iklim-madrasah-kkma'];
  document.querySelectorAll('[data-nav]').forEach(function(el){
   var nav=el.getAttribute('data-nav'), hide=false;
   if(!isAdmin && nav==='activation-codes') hide=true;
   if(!isAdmin && nav==='backup-restore') hide=true;
   if(role==='kepala' && restricted.indexOf(nav)!==-1) hide=true;
+  if(el.classList.contains('pengawas-only') && role==='kepala') hide=true;
+  if(el.classList.contains('kepala-only') && role!=='kepala') hide=true;
+  if(role==='kepala' && nav==='kepala-madrasah') hide=false;
   el.style.display=hide?'none':'';
   var li=el.closest('li'); if(li){var visible=Array.from(li.querySelectorAll('[data-nav]')).some(function(x){return x.style.display!=='none'}); if(el===li.querySelector(':scope>span')) li.style.display=visible?'':'none';}
  });
@@ -1216,7 +1219,7 @@ try{
 function roleCanNavigate(view){
 var s=getSession(), role=s&&s.role||'pengawas';
 if(role==='admin'||role==='pengawas')return true;
-return ['dashboard','input-observasi','pengawas','madrasah','guru','supervisi','rekap','cetak','laporan','ubah-password'].indexOf(view)!==-1;
+return ['dashboard','input-observasi','pengawas','madrasah','kepala-madrasah','guru','supervisi','rekap','cetak','laporan','ubah-password'].indexOf(view)!==-1;
 }
 // ===== NAVIGATION =====
 function toggleSubmenu(id){
