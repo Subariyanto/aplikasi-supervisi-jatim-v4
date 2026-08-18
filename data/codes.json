@@ -1,29 +1,6 @@
 {
   "codes": [
     {
-      "code": "SUPERVISI-PENGAWAS-LGP9OS",
-      "role": "pengawas",
-      "user": "Neni",
-      "used": false,
-      "createdAt": "2026-08-18T06:08:43.137Z",
-      "editedAt": "2026-08-18T06:09:00.509Z"
-    },
-    {
-      "code": "SUPERVISI-PENGAWAS-W0Y4FK",
-      "role": "pengawas",
-      "user": "sudah",
-      "used": false,
-      "createdAt": "2026-08-18T06:08:43.137Z",
-      "editedAt": "2026-08-18T06:32:05.495Z"
-    },
-    {
-      "code": "SUPERVISI-PENGAWAS-7VGOBK",
-      "role": "pengawas",
-      "user": "",
-      "used": false,
-      "createdAt": "2026-08-18T06:08:43.138Z"
-    },
-    {
       "code": "SUPERVISI-PENGAWAS-9UBCHX",
       "role": "pengawas",
       "user": "",
@@ -80,5 +57,5 @@
       "createdAt": "2026-08-18T07:11:11.529Z"
     }
   ],
-  "updatedAt": "2026-08-18T07:11:15.423Z"
+  "updatedAt": "2026-08-18T08:20:04.221Z"
 }
