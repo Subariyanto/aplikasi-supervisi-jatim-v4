@@ -323,15 +323,10 @@ async function doActivation(){
   // Jangan dipaksa mencari dokumen Firestore karena kode ini bersifat lokal bawaan.
   var builtinRole=({'SUPERVISI-ADMIN-2026':'admin','SUPERVISI-PENGAWAS-2026':'pengawas','SUPERVISI-KAMAD-2026':'kepala'})[code];
   if(builtinRole){saveActivation({code:code,role:builtinRole,deviceId:deviceId,activatedAt:now,source:'builtin'});showLogin();return;}
-  // Kode yang diterbitkan admin disinkronkan ke codes.json GitHub Pages.
-  // Validasi juga terhadap cache publik agar dapat dipakai di perangkat lain.
+  // Kode terbitan admin harus dikunci atomik di Firestore.
+  // GitHub Pages hanya menjadi katalog publik, bukan sumber lock.
   var publicCode=(Array.isArray(window.REMOTE_CODES)?window.REMOTE_CODES:[]).find(function(x){return String(x.code||'').trim().toUpperCase()===code&&!x.revoked&&x.status!=='disabled'});
-  if(publicCode){
-   var publicRole=publicCode.role||publicCode.tier||activationRole(code);
-   if(publicCode.usedBy&&publicCode.usedBy!==deviceId)throw new Error('USED_CODE');
-   saveActivation({code:code,role:publicRole,deviceId:deviceId,activatedAt:now,source:'github-public'});
-   showLogin();return;
-  }
+  if(publicCode&&!firebaseReady)throw new Error('FIREBASE_REQUIRED');
   if(firebaseReady){
    if(!firebase.auth().currentUser)await firebase.auth().signInAnonymously();
    var ref=firebaseDb.collection('activation_codes').doc(code), role;
@@ -1175,10 +1170,15 @@ var a=getActivationCodes(), c=a[index];if(!c)return;
 if(!confirm('Hapus kode '+c.code+'?'))return;
 a.splice(index,1);saveActivationCodes(a);render();
 }
-async function issueActivationCode(role){
+async async function issueActivationCode(role){
 var code=makeActivationCode(role);
 var user=prompt('Nama pengguna/penerima kode (boleh dikosongkan):','');if(user===null)return;
 var a=getActivationCodes(),candidate={code:code,role:role,user:user.trim(),used:false,createdAt:new Date().toISOString()},next=a.concat([candidate]);
+if(!firebaseReady){alert('Kode BELUM diterbitkan karena layanan penguncian Firestore tidak tersedia.');return;}
+try{
+ if(!firebase.auth().currentUser)await firebase.auth().signInAnonymously();
+ await firebaseDb.collection('activation_codes').doc(code).set({code:code,role:role,user:user.trim(),status:'available',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+}catch(e){console.error(e);alert('Kode BELUM diterbitkan karena gagal membuat penguncian server.');return;}
 var sync=window.GithubSync?await GithubSync.pushIfConfigured(next,'terbitkan kode aktivasi '+code):{synced:false};
 if(!sync.synced){alert('Kode BELUM diterbitkan karena gagal disinkronkan ke server.\n\n'+(sync.error||'Atur GitHub PAT di menu Sinkronisasi lalu coba lagi.'));return;}
 saveActivationCodes(next);alert('Kode aktivasi '+role+' berhasil diterbitkan dan siap digunakan di perangkat lain:\n\n'+code);navigate('activation-codes');
