@@ -2396,9 +2396,12 @@ var item=all[idx];
 if(!item){alert('Data tidak ditemukan.');return;}
 state.jenjang=item.jenjang==='ra'?'ra':'mi';
 var data=getData();
+var localIdx=item.id?data.findIndex(function(x){return x&&x.id===item.id;}):-1;
+if(localIdx<0)localIdx=data.indexOf(item);
+if(localIdx<0){alert('Data supervisi tidak ditemukan pada penyimpanan jenjang ini.');return;}
 state.activeTab='supervisi';
-state.formData=JSON.parse(JSON.stringify(data[idx]));
-state.editId=idx;
+state.formData=JSON.parse(JSON.stringify(data[localIdx]));
+state.editId=localIdx;
 state.view=isRAJenjang()?'form-ra':'form';
 state.currentStep=0;render();
 }
@@ -2409,7 +2412,11 @@ var all=getAllSupervisi();
 var item=all[idx];
 if(!item)return;
 state.jenjang=item.jenjang==='ra'?'ra':'mi';
-var data=getData();data.splice(idx,1);saveData(data);render();
+var data=getData();
+var localIdx=item.id?data.findIndex(function(x){return x&&x.id===item.id;}):-1;
+if(localIdx<0)localIdx=data.indexOf(item);
+if(localIdx<0){alert('Data supervisi tidak ditemukan pada penyimpanan jenjang ini.');return;}
+data.splice(localIdx,1);saveData(data);render();
 }
 
 function viewDetail(idx){
