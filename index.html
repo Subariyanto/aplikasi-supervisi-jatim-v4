@@ -310,9 +310,8 @@ if(/^SUPERVISI-KAMAD-[A-Z0-9]{6}$/.test(c))return 'kepala';
 return null;
 }
 function showActivation(){
- hideApp();var card=document.getElementById('authCard');
- card.innerHTML='<h2>🔑 Aktivasi Aplikasi</h2><p class="auth-subtitle">Masukkan kode aktivasi yang diterbitkan Administrator</p><div class="auth-error" id="activationError"></div><div class="form-group"><label>Kode Aktivasi</label><input type="text" id="activationCode" placeholder="Contoh: SUPERVISI-PENGAWAS-2026" autocomplete="off"></div><button class="btn-auth" onclick="doActivation()">Aktifkan Perangkat</button>';
- setTimeout(function(){var e=document.getElementById('activationCode');if(e)e.focus()},100);
+ // Alur baru: aktivasi dilakukan bersamaan dengan pendaftaran akun.
+ showRegister();
 }
 async function doActivation(){
  var input=document.getElementById('activationCode'), code=(input.value||'').trim().toUpperCase(), err=document.getElementById('activationError');
