@@ -1178,9 +1178,10 @@ a.splice(index,1);saveActivationCodes(a);render();
 async function issueActivationCode(role){
 var code=makeActivationCode(role);
 var user=prompt('Nama pengguna/penerima kode (boleh dikosongkan):','');if(user===null)return;
-var a=getActivationCodes();a.push({code:code,role:role,user:user.trim(),used:false,createdAt:new Date().toISOString()});saveActivationCodes(a);
-var sync=window.GithubSync?await GithubSync.pushIfConfigured(a,'terbitkan kode aktivasi '+code):{synced:false};
-alert('Kode aktivasi '+role+' berhasil dibuat:\n\n'+code+(sync.synced?'\n\n✅ Sudah disinkronkan ke perangkat lain.':'\n\n⚠️ Belum tersinkron. Atur PAT di menu Sinkronisasi.'));navigate('activation-codes');
+var a=getActivationCodes(),candidate={code:code,role:role,user:user.trim(),used:false,createdAt:new Date().toISOString()},next=a.concat([candidate]);
+var sync=window.GithubSync?await GithubSync.pushIfConfigured(next,'terbitkan kode aktivasi '+code):{synced:false};
+if(!sync.synced){alert('Kode BELUM diterbitkan karena gagal disinkronkan ke server.\n\n'+(sync.error||'Atur GitHub PAT di menu Sinkronisasi lalu coba lagi.'));return;}
+saveActivationCodes(next);alert('Kode aktivasi '+role+' berhasil diterbitkan dan siap digunakan di perangkat lain:\n\n'+code);navigate('activation-codes');
 }
 function makeActivationCode(role){return 'SUPERVISI-'+(role==='kepala'?'KAMAD':'PENGAWAS')+'-'+Math.random().toString(36).slice(2,8).toUpperCase();}
 function issueBulkActivationCodes(){
