@@ -2299,7 +2299,13 @@ state.jenjang=item.jenjang==='ra'?'ra':'mi';
 var data=getData();data.splice(idx,1);saveData(data);render();
 }
 
-function viewDetail(idx){state.detailIdx=idx;state.view='detail';render();}
+function viewDetail(idx){
+var all=getAllSupervisi();
+var item=all[idx];
+if(!item)return;
+state.jenjang=item.jenjang==='ra'?'ra':'mi';
+state.detailIdx=idx;state.view='detail';render();
+}
 
 // ===== CETAK HASIL SUPERVISI PAGE =====
 function renderCetakPage(){
