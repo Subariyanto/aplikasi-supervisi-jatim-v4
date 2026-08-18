@@ -37,7 +37,7 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f5f5f5;min-height:100v
 .navbar-list>li>a:hover,.navbar-list>li>span:hover{color:#d4af37}
 .navbar-list>li.active>span{background:rgba(212,175,55,.15);border-bottom:2px solid #d4af37;color:#d4af37;font-weight:600}
 .dropdown{position:absolute;top:100%;left:0;background:#fff;min-width:210px;box-shadow:0 6px 20px rgba(0,0,0,.13);border-radius:0 0 8px 8px;border-top:3px solid #d4af37;display:none;z-index:200}
-.navbar-list>li:hover .dropdown{display:block}
+.navbar-list>li.open-mobile .dropdown{display:block}
 .navbar-list>li:last-child .dropdown{right:0;left:auto}
 .navbar-list>li:nth-last-child(2) .dropdown{right:0;left:auto}
 .navbar.dropdown-locked .dropdown{display:none!important}
@@ -60,8 +60,8 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:#f5f5f5;min-height:100v
 .navbar-list{display:flex;flex-direction:row;flex-wrap:nowrap;justify-content:flex-start;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
 .navbar-list>li{width:auto;flex:0 0 auto}
 .navbar-list>li>a,.navbar-list>li>span{padding:10px 12px;font-size:.72rem}
-.dropdown{position:absolute;top:100%;left:0;box-shadow:0 6px 20px rgba(0,0,0,.13);display:none;border-radius:0 0 8px 8px}
-.navbar-list>li.open-mobile .dropdown{display:block;position:fixed;z-index:9999;background:#fff;min-width:230px;max-height:70vh;overflow-y:auto;border:1px solid #d1d5db;border-top:3px solid #d4af37;border-radius:0 0 10px 10px}
+.dropdown{position:absolute;top:100%;left:0;box-shadow:0 6px 20px rgba(0,0,0,.13);display:none;border-radius:0 0 8px 8px;border-top:3px solid #d4af37;background:#fff;min-width:210px;max-height:70vh;overflow-y:auto;border:1px solid #d1d5db;border-radius:0 0 8px 8px;z-index:200}
+.navbar-list>li.open-mobile .dropdown{display:block;position:fixed;z-index:9999;min-width:230px}
 }
 .main-content{max-width:1200px;margin:0 auto;padding:24px 20px;min-height:calc(100vh - 220px)}
 .container{max-width:100%;margin:0}
@@ -1243,6 +1243,7 @@ var li=el.closest('li');if(!li)return;
 var wasOpen=li.classList.contains('open-mobile');
  document.querySelectorAll('.navbar-list>li.open-mobile').forEach(function(x){x.classList.remove('open-mobile')});
 if(!wasOpen){li.classList.add('open-mobile');var menu=li.querySelector('.dropdown');if(menu&&window.innerWidth<=900){var r=el.getBoundingClientRect();menu.style.top=Math.min(r.bottom,window.innerHeight-260)+'px';menu.style.left=Math.min(r.left,window.innerWidth-240)+'px';}}
+if(!wasOpen&&window.innerWidth>900){document.addEventListener('click',function closeDropdown(e){if(!li.contains(e.target)){li.classList.remove('open-mobile');document.removeEventListener('click',closeDropdown)}});}
 }
 
 // ===== RENDER MAIN =====
