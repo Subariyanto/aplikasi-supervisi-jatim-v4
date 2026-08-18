@@ -13,7 +13,14 @@
       "user": "kamad1",
       "used": false,
       "createdAt": "2026-08-18T05:13:34.881Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-7ZJTN1",
+      "role": "kepala",
+      "user": "kamad2",
+      "used": false,
+      "createdAt": "2026-08-18T05:14:48.295Z"
     }
   ],
-  "updatedAt": "2026-08-18T05:14:12.981Z"
+  "updatedAt": "2026-08-18T05:14:49.768Z"
 }
