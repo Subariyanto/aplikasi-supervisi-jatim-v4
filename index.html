@@ -4929,30 +4929,8 @@ setTimeout(function(){w.print()},500);
 // ===== INIT =====
 // === INIT DEFAULT MADRASAH ===
 function initDefaultMadrasah(){
-if(getMadrasah().length>0)return;
-var def=[
-{nama:'MAS AL - BADRI',npsn:'20580249',alamat:'Jl. Kalisat Arjasa No. 50 Dusun Krajan, Gumuksari, Kalisat',kabupaten:'Jember',kepala:'Saifuddin, S.Pd.I',nipKepala:''},
-{nama:'MAS AL MUBAROK',npsn:'20580256',alamat:'Jalan Imam Bonjol. No. 11, Glagahwero, Kalisat',kabupaten:'Jember',kepala:'Yuliana Anggraeni',nipKepala:''},
-{nama:'MAS MIFTAHUL ULUM KALISAT',npsn:'20580298',alamat:'Jl. Pesantren No. 117, Glagahwero, Kalisat',kabupaten:'Jember',kepala:'ISFANDIAR',nipKepala:''},
-{nama:'MAS BAHRUL AMIN AL KHOLILI',npsn:'20596561',alamat:'Jl. PB. Sudirman RT. 05 RW. 04, Plalangan, Kalisat',kabupaten:'Jember',kepala:'Ifrohatul Hasanah, S. Pd',nipKepala:''},
-{nama:'MAS NURUL ALI',npsn:'20580304',alamat:'Jl. Bringin No.12 Ledokombo, Sumberbulus, Ledokombo',kabupaten:'Jember',kepala:'Halik, S.Pd.I',nipKepala:''},
-{nama:'MAS MIFTAHUL ULUM SUREN',npsn:'20580300',alamat:'Jl. Cendrawasih 17 Suren, Suren, Ledokombo',kabupaten:'Jember',kepala:'Muhammad Hazin Mudzhar, S.Hum',nipKepala:''},
-{nama:'MAS AT-TAQWA',npsn:'20580266',alamat:'DSN. KRAJAN DESA SUREN LEDOKOMBO, Suren, Ledokombo',kabupaten:'Jember',kepala:'Dr. Mohammad Erwan, S.Pd, M.Pd',nipKepala:''},
-{nama:'MAS AR - ROHMAH',npsn:'60728115',alamat:'JL. KH SANHAJI NO.57 LEDOKOMBO, Suren, Ledokombo',kabupaten:'Jember',kepala:'Ali Rachamtulloh, S.Pd',nipKepala:''},
-{nama:'MAS RAUDLATUL ULUM',npsn:'69788053',alamat:'JL. CUMEDAK N0 76 LEDOKOMBO, Ledokombo, Ledokombo',kabupaten:'Jember',kepala:'NUR FARIDZAH, S.Kg',nipKepala:''},
-{nama:'MAS KEPENDIDIKAN NURURRAHMAN',npsn:'69894851',alamat:'Jl. Pemancar Telkom No.08 Prasean - Pakusari, Jatian, Pakusari',kabupaten:'Jember',kepala:'Abdullah, S.Pd.I, M.Pd.',nipKepala:''},
-{nama:'MAS HABIBURROHMAN',npsn:'69894852',alamat:'Jl. Dsn Plalangan Desa Jatian, Jatian, Pakusari',kabupaten:'Jember',kepala:'Ahmad Zaini, S.Pd.I, M.Pd',nipKepala:''},
-{nama:'MAS NURUL QARNAIN',npsn:'20580308',alamat:'Jl. Imam Sukarto No.60, Baletbaru, Sukowono',kabupaten:'Jember',kepala:'Drs. H. IMAM SYAFI\'I, M.Pd.I',nipKepala:''},
-{nama:'MAS MIFTAHUL ULUM',npsn:'69894854',alamat:'Jl. Keramat 01 Desa Arjasa Kecamatan Sukowono, Arjasa, Sukowono',kabupaten:'Jember',kepala:'LUTFI GHUFRON, S.Pd.I',nipKepala:''},
-{nama:'MAS RAUDLATUS SYABAB',npsn:'69894855',alamat:'Jl. KH Ahmad Syukri No.2 Sumber Wringin - Sukowono, Sumberwringin, Sukowono',kabupaten:'Jember',kepala:'H. Badrudin, S.Pd.I, M.Pd',nipKepala:''},
-{nama:'MAS NURUL ISLAM AL-HAMIDY',npsn:'20580306',alamat:'JL. KH. ABD. HAMID NO. 01, Jambearum, Sumberjambe',kabupaten:'Jember',kepala:'Musthofa, S.Pd.I, M.Pd',nipKepala:''},
-{nama:'MAS BAITUL AZHAR',npsn:'20580270',alamat:'Jl. Karang Duren No.20 Sumberpakem - Sumberjambe, Sumberpakem, Sumberjambe',kabupaten:'Jember',kepala:'MOCHAMMAD ISWANTO, S.Pd',nipKepala:''},
-{nama:'MAS NURUL IMAM',npsn:'69881456',alamat:'Jl. Sukosari Randuagung Sumberjambe, Cumedak, Sumberjambe',kabupaten:'Jember',kepala:'RIZQY FEBRI PUJI LESTARI, S.Pd',nipKepala:''},
-{nama:'MAS PLUS AL MAHFUDZ',npsn:'20595872',alamat:'Jl. Gunung Raung No. 01 Desa Pringgondani Kecamatan Sumberjambe, Pringgondani, Sumberjambe',kabupaten:'Jember',kepala:'M.Ainul Fata Al Kiromi, S.H, M.Pd.I',nipKepala:''},
-{nama:'MAS MIFTAHUL ULUM',npsn:'70010531',alamat:'Dusun Panggung Tinggi RT. 001 RW. 001, Plerean, Sumberjambe',kabupaten:'Jember',kepala:'MOHAMMAD RAMSI, SE.',nipKepala:''},
-{nama:'MAS NURUL ULUM',npsn:'70059027',alamat:'Jl. Pesantren Dsn. Tegalan Ds. Sumberkejayan, Sumberkejayan, Mayang',kabupaten:'Jember',kepala:'Ahmad Ghovind Surur Hafili, S.Pd',nipKepala:''}
-];
-saveMadrasah(def);
+// Tidak ada data contoh; setiap pengguna mengisi data madrasah sendiri.
+if(getMadrasah().length===0)saveMadrasah([]);
 }
 // ===== BACKUP & RESTORE =====
 function renderBackupRestore(){
