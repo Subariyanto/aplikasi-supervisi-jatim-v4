@@ -1803,6 +1803,16 @@ var id=state.formData.identitas||{};
 var madrasahList=getAllMadrasah();
 var guruList=getAllGuru();
 var html='<div class="grid-2">';
+if(isRAJenjang()){
+ var allRA=getAllSupervisi().filter(function(x){return x.jenjang==='ra'&&x!==state.formData&&(!id.namaGuru||!x.identitas||x.identitas.namaGuru===id.namaGuru);}).sort(function(a,b){return String(b.identitas&&b.identitas.tanggalSupervisi||'').localeCompare(String(a.identitas&&a.identitas.tanggalSupervisi||''));});
+ var jenis=state.formData.jenisSupervisi||'awal';
+ html+='<div class="form-group" style="grid-column:1/-1"><label><b>Jenis Supervisi</b></label><select onchange="setJenisSupervisi(this.value)"><option value="awal" '+(jenis==='awal'?'selected':'')+'>Supervisi Awal</option><option value="tindak_lanjut" '+(jenis==='tindak_lanjut'?'selected':'')+'>Supervisi Tindak Lanjut</option></select></div>';
+ if(jenis==='tindak_lanjut'){
+  html+='<div class="form-group" style="grid-column:1/-1"><label>Pilih Supervisi Sebelumnya</label><select onchange="setParentSupervisi(this.value)"><option value="">-- Pilih supervisi pembanding --</option>';
+  allRA.forEach(function(x){var oi=getAllSupervisi().indexOf(x),p=calcTotal(x);html+='<option value="'+oi+'" '+(state.formData.parentSupervisiId===x.id?'selected':'')+'>'+escHtml((x.identitas&&x.identitas.tanggalSupervisi)||'-')+' — '+escHtml((x.identitas&&x.identitas.namaGuru)||'-')+' — '+escHtml((x.identitas&&x.identitas.namaMadrasah)||'-')+' — '+p.toFixed(1)+'% — '+getPredikat(p)+'</option>';});
+  html+='</select></div>';
+ }
+}
 // Jenjang selector (untuk switching instrumen RA vs standar)
 html+='<div class="form-group" style="grid-column:1/-1"><label><b>Jenjang Madrasah</b></label><select onchange="changeJenjang(this.value)"><option value="mi" '+(state.jenjang==='mi'?'selected':'')+'>MI / MTs / MA</option><option value="ra" '+(state.jenjang==='ra'?'selected':'')+'>RA (Raudhatul Athfal)</option></select></div>';
 // Madrasah dropdown
@@ -1838,6 +1848,8 @@ function changeJenjang(j){
 state.jenjang=j||'mi';
 render();
 }
+function setJenisSupervisi(v){state.formData.jenisSupervisi=v||'awal';if(v!=='tindak_lanjut'){delete state.formData.parentSupervisiId;}render();}
+function setParentSupervisi(idx){var x=getAllSupervisi()[parseInt(idx)];if(x)state.formData.parentSupervisiId=x.id||('__legacy_'+parseInt(idx));state.formData.parentSupervisiRef=JSON.parse(JSON.stringify(x||null));render();}
 
 function selectMadrasah(idx){
 if(idx==='')return;
@@ -2020,6 +2032,8 @@ h+='</tbody></table><h3>Kesimpulan Supervisi</h3><textarea rows="4" onchange="se
 function setRAAnalysisField(field,v){if(!state.formData.raAnalysis)state.formData.raAnalysis={};state.formData.raAnalysis[field]=v;}
 function setRAAnalysisNote(v){setRAAnalysisField('note',v);}
 
+function getRAPrevious(){var id=state.formData.parentSupervisiId;if(!id)return null;var found=getAllSupervisi().find(function(x){return x.jenjang==='ra'&&x.id===id;});return found||state.formData.parentSupervisiRef||null;}
+function raCompareHtml(){if(!isRAJenjang()||state.formData.jenisSupervisi!=='tindak_lanjut')return '';var old=getRAPrevious();if(!old)return '<div class="card"><b>Pilih supervisi sebelumnya untuk menampilkan perbandingan.</b></div>';var groups=[['perencanaan','Perencanaan Pembelajaran RA',getIndikator('perencanaan')],['pelaksanaan','Pelaksanaan Pembelajaran RA',getIndikatorPelaksanaanFlat()],['asesmen','Asesmen & Dokumentasi Perkembangan RA',getIndikator('asesmen')]],up=0,same=0,down=0,h='<div class="card"><h2>Perkembangan Hasil Supervisi</h2><p>Supervisi sebelumnya: '+escHtml(old.identitas&&old.identitas.tanggalSupervisi||'-')+' — '+calcTotal(old).toFixed(1)+'% ('+getPredikat(calcTotal(old))+')</p><table><thead><tr><th>Bagian</th><th>Sebelumnya</th><th>Tindak Lanjut</th><th>Perubahan</th><th>Status</th></tr></thead><tbody>';groups.forEach(function(g){var os=old[g[0]]&&old[g[0]].scores||[],ns=state.formData[g[0]]&&state.formData[g[0]].scores||[],om=g[2].length*4,n=g[2].length*4,oa=os.reduce(function(a,b){return a+(b==null?0:b+1)},0),na=ns.reduce(function(a,b){return a+(b==null?0:b+1)},0),delta=na-oa,status=delta>0?'Meningkat':delta<0?'Menurun':'Tetap';h+='<tr><td>'+g[1]+'</td><td>'+((oa/om)*100).toFixed(1)+'%</td><td>'+((na/n)*100).toFixed(1)+'%</td><td>'+(delta>=0?'+':'')+((na/ n-oa/om)*100).toFixed(1)+'</td><td>'+status+'</td></tr>';g[2].forEach(function(_,i){var a=os[i],b=ns[i];if(a!=null&&b!=null){if(b>a)up++;else if(b<a)down++;else same++;}});});h+='</tbody></table><h3>Perbandingan Per Indikator</h3><div style="font-size:.85rem">';groups.forEach(function(g){var os=old[g[0]]&&old[g[0]].scores||[],ns=state.formData[g[0]]&&state.formData[g[0]].scores||[];g[2].forEach(function(item,i){if(os[i]!=null&&ns[i]!=null){var delta=ns[i]-os[i],st=delta>0?'↑ Meningkat':delta<0?'↓ Menurun':'→ Tetap';h+='<div>'+escHtml(item)+' — Sebelumnya: '+(os[i]+1)+' → Sekarang: '+(ns[i]+1)+' — <b>'+st+'</b></div>';}});});h+='</div><p><b>Perbandingan indikator terisi:</b> '+(up+same+down)+' dari '+(groups[0][2].length+groups[1][2].length+groups[2][2].length)+' — ↑ Meningkat: '+up+' | → Tetap: '+same+' | ↓ Menurun: '+down+'</p><h3>Evaluasi Rencana Tindak Lanjut Sebelumnya</h3><p>Indikator prioritas yang meningkat berstatus <b>Tercapai</b>; yang meningkat namun masih bernilai 1–3 berstatus <b>Berkembang</b>; yang tetap atau menurun berstatus <b>Perlu Pendampingan Lanjutan</b>.</p></div>';return h;}
 function renderRekap(){
 var komps=[
 {key:'perencanaan',label:getRALabelFor('perencanaan'),max:getIndikator('perencanaan').length*4},
@@ -2051,7 +2065,7 @@ html+='</div></div>';
 html+='<div class="btn-group no-print" style="justify-content:center">';
 html+='<button class="btn btn-secondary" onclick="printRekap()">&#128424; Cetak Rekap</button>';
 html+='<button class="btn btn-info" onclick="exportRekapPDF()">&#128196; Export PDF Rekap</button>';
-html+='</div>'+renderRAAnalysis();
+html+='</div>'+renderRAAnalysis()+raCompareHtml();
 return html;
 }
 
@@ -2247,7 +2261,7 @@ state.activeTab='supervisi';
 state.view=isRAJenjang()?'form-ra':'form';
 state.currentStep=0;state.editId=null;
 var pengawas=getPengawas();
-state.formData={identitas:{namaSupervisor:pengawas.nama||'',nipSupervisor:pengawas.nip||'',jabatanSupervisor:pengawas.jabatan||''},perencanaan:{scores:[],catatan:[],manualCatatan:[]},pelaksanaan:{scores:[],catatan:[],manualCatatan:[]},asesmen:{scores:[],catatan:[],manualCatatan:[]},rekap:{}};
+state.formData={identitas:{namaSupervisor:pengawas.nama||'',nipSupervisor:pengawas.nip||'',jabatanSupervisor:pengawas.jabatan||''},jenisSupervisi:isRAJenjang()?'awal':undefined,perencanaan:{scores:[],catatan:[],manualCatatan:[]},pelaksanaan:{scores:[],catatan:[],manualCatatan:[]},asesmen:{scores:[],catatan:[],manualCatatan:[]},rekap:{}};
 render();
 }
 function backToDashboard(){state.view='input-observasi';state.activeTab='supervisi';state.jenjang='mi';render()}
@@ -2331,6 +2345,8 @@ if(field==='tindakLanjut')state.formData.rekap[komp].manualTindakLanjut=true;
 
 function saveForm(){
 var data=getData();
+if(isRAJenjang()&&!state.formData.id)state.formData.id='ra_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+if(isRAJenjang()&&!state.formData.jenisSupervisi)state.formData.jenisSupervisi='awal';
 if(state.editId!==null){data[state.editId]=state.formData;}
 else{data.push(state.formData);}
 saveData(data);state.view='input-observasi';state.activeTab='supervisi';render();
