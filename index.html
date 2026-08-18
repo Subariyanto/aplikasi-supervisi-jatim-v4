@@ -1184,13 +1184,20 @@ if(!sync.synced){alert('Kode BELUM diterbitkan karena gagal disinkronkan ke serv
 saveActivationCodes(next);alert('Kode aktivasi '+role+' berhasil diterbitkan dan siap digunakan di perangkat lain:\n\n'+code);navigate('activation-codes');
 }
 function makeActivationCode(role){return 'SUPERVISI-'+(role==='kepala'?'KAMAD':'PENGAWAS')+'-'+Math.random().toString(36).slice(2,8).toUpperCase();}
-function issueBulkActivationCodes(){
+async function issueBulkActivationCodes(){
 var role=prompt('Role untuk 10 kode:\nKetik pengawas atau kepala','pengawas');if(role===null)return;role=role.trim().toLowerCase();
 if(role!=='pengawas'&&role!=='kepala'){alert('Role harus pengawas atau kepala.');return;}
 var user=prompt('Nama pengguna/penerima (boleh dikosongkan):','');if(user===null)return;
-var a=getActivationCodes(),list=[];
-for(var i=0;i<10;i++){var code=makeActivationCode(role);while(a.some(function(x){return x.code===code}))code=makeActivationCode(role);a.push({code:code,role:role,user:user.trim(),used:false,createdAt:new Date().toISOString()});list.push(code);}
-saveActivationCodes(a);alert('10 kode berhasil diterbitkan:\n\n'+list.join('\n'));navigate('activation-codes');
+if(!firebaseReady){alert('Kode BELUM diterbitkan karena Firebase belum siap.');return;}
+try{
+ if(!firebase.auth().currentUser)await firebase.auth().signInAnonymously();
+ var a=getActivationCodes(),list=[],items=[];
+ for(var i=0;i<10;i++){var code=makeActivationCode(role);while(a.some(function(x){return x.code===code})||items.some(function(x){return x.code===code}))code=makeActivationCode(role);var item={code:code,role:role,user:user.trim(),used:false,createdAt:new Date().toISOString()};items.push(item);list.push(code);}
+ for(var j=0;j<items.length;j++)await firebaseDb.collection('activation_codes').doc(items[j].code).set({code:items[j].code,role:items[j].role,user:items[j].user,status:'available',createdAt:firebase.firestore.FieldValue.serverTimestamp()});
+ var next=a.concat(items),sync=window.GithubSync?await GithubSync.pushIfConfigured(next,'terbitkan 10 kode aktivasi '+role):{synced:false};
+ if(!sync.synced){alert('Kode BELUM diterbitkan ke daftar lokal karena gagal sinkron GitHub.\\n\\n'+(sync.error||'Atur PAT di menu Sinkronisasi.'));return;}
+ saveActivationCodes(next);alert('10 kode '+role+' berhasil diterbitkan dan siap dipakai lintas perangkat:\\n\\n'+list.join('\\n'));navigate('activation-codes');
+}catch(e){console.error(e);alert('Kode BELUM diterbitkan karena Firebase gagal menyimpan penguncian server.\\n\\n'+(e.message||e));}
 }
 function roleCanNavigate(view){
 var s=getSession(), role=s&&s.role||'pengawas';
