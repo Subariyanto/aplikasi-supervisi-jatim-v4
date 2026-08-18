@@ -1607,7 +1607,9 @@ html+='<div class="grid-2">';
 html+='<div class="form-group"><label>Nama Pengawas</label><input type="text" id="pNama" value="'+escHtml(p.nama||'')+'"></div>';
 html+='<div class="form-group"><label>NIP</label><input type="text" id="pNip" value="'+escHtml(p.nip||'')+'"></div>';
 html+='<div class="form-group"><label>Jabatan</label><input type="text" id="pJabatan" value="'+escHtml(p.jabatan||'Pengawas Madrasah')+'"></div>';
-var pangkatOptions=['Gol III/a','Gol III/b','Gol III/c','Gol III/d','Gol IV/a','Gol IV/b','Gol IV/c','Gol IV/d','Gol IV/e'];
+var pangkatOptions=[
+'Penata, Gol III/c','Penata Tingkat I, Gol III/d','Pembina, Gol IV/a','Pembina Tingkat I, Gol IV/b','Pembina Utama Muda, Gol IV/c','Pembina Utama Madya, Gol IV/d','Pembina Utama, Gol IV/e'
+];
 var pangkatValue=p.pangkat||'';
 var pangkatSelect='<select id="pPangkat"><option value="">-- Pilih Pangkat/Golongan --</option>';
 pangkatOptions.forEach(function(opt){pangkatSelect+='<option value="'+opt+'" '+(pangkatValue===opt?'selected':'')+'>'+opt+'</option>';});
