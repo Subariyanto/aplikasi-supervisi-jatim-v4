@@ -6,7 +6,14 @@
       "user": "Neni",
       "used": false,
       "createdAt": "2026-08-18T05:12:47.519Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-78TXQV",
+      "role": "kepala",
+      "user": "kamad1",
+      "used": false,
+      "createdAt": "2026-08-18T05:13:34.881Z"
     }
   ],
-  "updatedAt": "2026-08-18T05:12:48.933Z"
+  "updatedAt": "2026-08-18T05:13:36.754Z"
 }
