@@ -1961,6 +1961,65 @@ return html;
 }
 
 // ===== REKAP =====
+function getRAAnalysis(){
+if(!isRAJenjang())return null;
+var groups=[
+ {key:'perencanaan',label:'Perencanaan Pembelajaran RA',items:getIndikator('perencanaan')},
+ {key:'pelaksanaan',label:'Pelaksanaan Pembelajaran RA',items:getIndikatorPelaksanaanFlat()},
+ {key:'asesmen',label:'Asesmen & Dokumentasi Perkembangan RA',items:getIndikator('asesmen')}
+];
+var all=[];
+groups.forEach(function(g){
+ var scores=state.formData[g.key]&&state.formData[g.key].scores?state.formData[g.key].scores:[];
+ g.items.forEach(function(item,i){var raw=scores[i];if(raw!==null&&raw!==undefined&&raw>=0)all.push({key:g.key,label:g.label,item:item,score:raw+1,index:i});});
+});
+var strengths=all.filter(function(x){return x.score===4}).sort(function(a,b){return a.index-b.index}).slice(0,5);
+if(strengths.length<5)all.filter(function(x){return x.score===3&&!strengths.some(function(y){return y.item===x.item})}).slice(0,5-strengths.length).forEach(function(x){strengths.push(x)});
+var priorities=all.filter(function(x){return x.score<=2}).sort(function(a,b){return a.score-b.score||a.index-b.index}).slice(0,5);
+var recs=[];var seen={};
+all.filter(function(x){return x.score<=2}).sort(function(a,b){return a.score-b.score}).forEach(function(x){
+ var t=(x.item+'').toLowerCase(), r='';
+ if(x.key==='perencanaan'){
+  if(/karakteristik|minat|kebutuhan|kesiapan|perkembangan/.test(t))r='Perkuat identifikasi minat, kebutuhan, kesiapan, dan tahap perkembangan setiap anak sebelum menyusun rencana pembelajaran.';
+  else if(/capaian pembelajaran|fase fondasi|elemen cp/.test(t))r='Perkuat keterkaitan tujuan dan kegiatan dengan tiga elemen Capaian Pembelajaran Fase Fondasi secara holistik.';
+  else if(/panca cinta|kbc/.test(t))r='Integrasikan nilai Panca Cinta melalui pengalaman nyata, pembiasaan, interaksi, cerita, permainan, dan keteladanan.';
+  else if(/bermain|eksplorasi|percobaan/.test(t))r='Tingkatkan pengalaman bermain, eksplorasi, percobaan, gerak, seni, dan penggunaan benda nyata.';
+  else if(/lingkungan|ape|bahan/.test(t))r='Optimalkan penggunaan APE, bahan alam, bahan terbuka, buku, dan lingkungan sekitar yang aman serta mudah dijangkau anak.';
+  else r='Perkuat perencanaan pembelajaran agar lebih responsif terhadap kebutuhan dan tahap perkembangan anak.';
+ }else if(x.key==='pelaksanaan'){
+  if(/interaksi|hangat|responsif/.test(t))r='Bangun interaksi yang lebih hangat, responsif, serta menghargai suara, pilihan, ide, dan perasaan anak.';
+  else if(/ingin tahu|pemantik|pertanyaan/.test(t))r='Gunakan pertanyaan pemantik, benda nyata, cerita, eksperimen sederhana, dan fenomena di sekitar anak.';
+  else if(/bermain|memilih|mencoba|eksplorasi/.test(t))r='Berikan waktu yang memadai agar anak dapat memilih, mencoba, mengulang, mengeksplorasi, dan mengembangkan gagasannya.';
+  else if(/disiplin|bentakan|ancaman/.test(t))r='Gunakan pendekatan disiplin positif dengan komunikasi tenang dan menghargai anak.';
+  else r='Perkuat pelaksanaan pembelajaran yang berpusat pada anak, responsif, dan menggembirakan.';
+ }else{
+  if(/autentik|tes/.test(t))r='Alihkan fokus asesmen menuju observasi autentik terhadap proses bermain, interaksi, perilaku, dan karya anak.';
+  else if(/variasi|teknik/.test(t))r='Gunakan kombinasi observasi, ceklis, catatan anekdot, hasil karya, portofolio, percakapan, dan dokumentasi.';
+  else if(/objektif|spesifik|fakta/.test(t))r='Catat perilaku atau karya anak secara spesifik berdasarkan fakta yang diamati dan konteks kegiatan.';
+  else if(/orang tua|komunikasi/.test(t))r='Perkuat komunikasi perkembangan anak dengan orang tua menggunakan contoh bukti dan saran tindak lanjut.';
+  else r='Perkuat asesmen autentik sebagai dasar menentukan stimulasi dan perencanaan kegiatan berikutnya.';
+ }
+ if(r&&!seen[r]){seen[r]=1;recs.push(r);}
+});
+var total=all.reduce(function(a,x){return a+x.score},0), max=all.length*4, pct=max?total/max*100:0;
+var saved=state.formData.raAnalysis||{};
+var conclusion=pct>=91?'Secara umum pelaksanaan pembelajaran di RA telah menunjukkan praktik yang sangat baik dan sesuai dengan karakteristik Fase Fondasi. Praktik baik perlu dipertahankan dan dikembangkan secara berkelanjutan.':pct>=81?'Secara umum praktik pembelajaran telah berjalan dengan baik dan sesuai karakteristik pembelajaran RA. Beberapa aspek masih perlu diperkuat agar pengalaman belajar anak semakin bermakna dan konsisten.':pct>=71?'Praktik pembelajaran telah menunjukkan beberapa komponen yang sesuai dengan karakteristik RA, namun masih terdapat area yang memerlukan penguatan dan pendampingan.':'Hasil supervisi menunjukkan perlunya pendampingan bertahap pada beberapa aspek utama agar praktik pembelajaran semakin sesuai dengan karakteristik anak usia dini.';
+return {groups:groups,all:all,strengths:strengths,priorities:priorities,recs:saved.recs||recs.slice(0,5),total:total,max:max,pct:pct,category:getPredikat(pct),conclusion:saved.conclusion||conclusion,rtl:saved.rtl||'',note:saved.note||''};
+}
+function renderRAAnalysis(){
+var a=getRAAnalysis();if(!a)return '';
+var h='<div class="card ra-analysis"><h2>Analisis Hasil Supervisi RA</h2><h3>Kekuatan Praktik Pembelajaran</h3><ol>';
+if(a.strengths.length) a.strengths.forEach(function(x){h+='<li>'+escHtml(x.item)+'</li>'}); else h+='<li>Belum ada indikator skor 3 atau 4 yang dapat ditampilkan.</li>';
+h+='</ol><h3>Area Prioritas Penguatan</h3><ol>';
+if(a.priorities.length)a.priorities.forEach(function(x){h+='<li><b>Skor '+x.score+' — '+escHtml(x.label)+':</b> '+escHtml(x.item)+'</li>'});else h+='<li>Secara umum praktik pembelajaran telah terlaksana dengan baik. Penguatan diarahkan pada konsistensi dan peningkatan kualitas praktik yang sudah berjalan.</li>';
+h+='</ol><h3>Rekomendasi Pembinaan</h3><ol>';(a.recs.length?a.recs:['Pertahankan praktik baik dan lakukan refleksi berkala.']).forEach(function(x){h+='<li>'+escHtml(x)+'</li>'});
+h+='</ol><h3>Rencana Tindak Lanjut</h3><div class="form-group"><label>RTL editable supervisor</label><textarea rows="4" placeholder="Tuliskan rencana tindak lanjut, target waktu, dan bukti tindak lanjut." onchange="setRAAnalysisField(\'rtl\',this.value)">'+escHtml(a.rtl||'')+'</textarea></div><table><thead><tr><th>No</th><th>Area yang Dikuatkan</th><th>Rencana Tindak Lanjut</th><th>Target Waktu</th><th>Bukti Tindak Lanjut</th></tr></thead><tbody>';
+(a.priorities.slice(0,3).length?a.priorities.slice(0,3):[{item:'Penguatan praktik baik',label:'Semua area'}]).forEach(function(x,i){h+='<tr><td>'+(i+1)+'</td><td>'+escHtml(x.label)+'</td><td>'+escHtml(a.recs[i]||'Pertahankan dan tingkatkan praktik yang sudah baik.')+'</td><td>2–4 minggu</td><td>Catatan pembinaan dan dokumentasi praktik</td></tr>'});
+h+='</tbody></table><h3>Kesimpulan Supervisi</h3><textarea rows="4" onchange="setRAAnalysisField(\'conclusion\',this.value)">'+escHtml(a.conclusion)+'</textarea><h3>Catatan Supervisor</h3><textarea rows="4" placeholder="Tuliskan temuan penting, apresiasi, hal yang perlu diperkuat, atau informasi kontekstual yang tidak tercakup dalam indikator." onchange="setRAAnalysisNote(this.value)">'+escHtml(a.note||'')+'</textarea></div>';return h;
+}
+function setRAAnalysisField(field,v){if(!state.formData.raAnalysis)state.formData.raAnalysis={};state.formData.raAnalysis[field]=v;}
+function setRAAnalysisNote(v){setRAAnalysisField('note',v);}
+
 function renderRekap(){
 var komps=[
 {key:'perencanaan',label:getRALabelFor('perencanaan'),max:getIndikator('perencanaan').length*4},
@@ -1992,7 +2051,7 @@ html+='</div></div>';
 html+='<div class="btn-group no-print" style="justify-content:center">';
 html+='<button class="btn btn-secondary" onclick="printRekap()">&#128424; Cetak Rekap</button>';
 html+='<button class="btn btn-info" onclick="exportRekapPDF()">&#128196; Export PDF Rekap</button>';
-html+='</div>';
+html+='</div>'+renderRAAnalysis();
 return html;
 }
 
@@ -2424,6 +2483,7 @@ setTimeout(function(){w.print();},500);
 }
 
 function cetakRekapDetail(d){
+if(d&&d.jenjang==='ra'){state.formData=d;state.jenjang='ra';}
 var id=d.identitas||{};
 var w=window.open('','_blank');
 var html='<html><head><title>Cetak Rekap Supervisi</title><style>';
@@ -2471,6 +2531,16 @@ html+='<h4 style="margin-top:10px">Rencana Tindak Lanjut - '+k.label+':</h4>';
 html+='<p class="narasi">'+escHtml(rekapData.tindakLanjut)+'</p>';
 }
 });
+if(d&&d.jenjang==='ra'){
+var analysis=getRAAnalysis();
+html+='<h3 style="margin-top:24px">Kekuatan Praktik Pembelajaran</h3><ol>';
+if(analysis.strengths.length)analysis.strengths.forEach(function(x){html+='<li>'+escHtml(x.item)+'</li>'});else html+='<li>Belum ada indikator skor 3 atau 4 yang dapat ditampilkan.</li>';
+html+='</ol><h3>Area Prioritas Penguatan</h3><ol>';
+if(analysis.priorities.length)analysis.priorities.forEach(function(x){html+='<li><b>Skor '+x.score+' — '+escHtml(x.label)+':</b> '+escHtml(x.item)+'</li>'});else html+='<li>Secara umum praktik pembelajaran telah terlaksana dengan baik. Penguatan diarahkan pada konsistensi dan peningkatan kualitas praktik yang sudah berjalan.</li>';
+html+='</ol><h3>Rekomendasi Pembinaan</h3><ol>';
+(analysis.recs.length?analysis.recs:['Pertahankan praktik baik dan lakukan refleksi berkala.']).forEach(function(x){html+='<li>'+escHtml(x)+'</li>'});
+html+='</ol><h3>Rencana Tindak Lanjut</h3><p class="narasi">'+escHtml(analysis.rtl||'Target waktu: 2–4 minggu. Bukti tindak lanjut: catatan pembinaan dan dokumentasi praktik.')+'</p><h3>Kesimpulan Supervisi</h3><p class="narasi">'+escHtml(analysis.conclusion)+'</p><h3>Catatan Supervisor</h3><p class="narasi">'+escHtml(analysis.note||'-')+'</p>';
+}
 html+='<table class="ttd-table"><tr>';
 html+='<td style="width:50%"><p>Guru Mata Pelajaran,</p><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(id.namaGuru||'.........................')+'</p>';
