@@ -20,7 +20,14 @@
       "user": "kamad2",
       "used": false,
       "createdAt": "2026-08-18T05:14:48.295Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-V6I4WV",
+      "role": "pengawas",
+      "user": "yanto",
+      "used": false,
+      "createdAt": "2026-08-18T05:29:45.901Z"
     }
   ],
-  "updatedAt": "2026-08-18T05:20:36.666Z"
+  "updatedAt": "2026-08-18T05:29:49.696Z"
 }
