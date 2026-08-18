@@ -379,11 +379,12 @@ saveUsers(users);
 
 function checkAuth(){
 initDefaultAdmin();
-if(!getActivation()){
- showActivation();
- return;
-}
 var session=getSession();
+if(!getActivation()&&!session){
+ // Admin bawaan dapat login lintas browser tanpa registrasi/kode aktivasi.
+ var users=getUsers();
+ if(!users.some(function(u){return u.username==='admin'&&u.role==='admin';})){showActivation();return;}
+}
 if(session&&session.username){
 showApp(session);
 }else{
@@ -450,7 +451,6 @@ if(el)el.onkeydown=function(e){if(e.key==='Enter')doRegister()};
 }
 
 function doLogin(){
-if(!getActivation()){showActivation();return;}
 var username=document.getElementById('loginUsername').value.trim();
 var password=document.getElementById('loginPassword').value;
 var errEl=document.getElementById('authError');
