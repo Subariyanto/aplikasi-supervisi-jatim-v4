@@ -1,33 +1,147 @@
 {
   "codes": [
     {
-      "code": "SUPERVISI-PENGAWAS-J36OEE",
+      "code": "SUPERVISI-PENGAWAS-GMQEFU",
       "role": "pengawas",
       "user": "Neni",
       "used": false,
-      "createdAt": "2026-08-18T05:12:47.519Z"
+      "createdAt": "2026-08-18T05:31:50.077Z",
+      "editedAt": "2026-08-18T05:32:47.516Z"
     },
     {
-      "code": "SUPERVISI-KAMAD-78TXQV",
-      "role": "kepala",
-      "user": "kamad1",
-      "used": false,
-      "createdAt": "2026-08-18T05:13:34.881Z"
-    },
-    {
-      "code": "SUPERVISI-KAMAD-7ZJTN1",
-      "role": "kepala",
-      "user": "kamad2",
-      "used": false,
-      "createdAt": "2026-08-18T05:14:48.295Z"
-    },
-    {
-      "code": "SUPERVISI-PENGAWAS-V6I4WV",
+      "code": "SUPERVISI-PENGAWAS-D0RP2I",
       "role": "pengawas",
-      "user": "yanto",
+      "user": "",
       "used": false,
-      "createdAt": "2026-08-18T05:29:45.901Z"
+      "createdAt": "2026-08-18T05:31:50.077Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-OQT8QA",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:31:50.077Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-JJL4W7",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:31:50.077Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-V5USEC",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:31:50.077Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-DCHSB2",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:31:50.077Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-8ZDL1L",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:31:50.077Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-3NJZ97",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:31:50.077Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-VHB71D",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:31:50.077Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-QCD3PW",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:31:50.077Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-QQOF76",
+      "role": "kepala",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:32:33.423Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-FFZCM8",
+      "role": "kepala",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:32:33.423Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-TU3FIR",
+      "role": "kepala",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:32:33.423Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-A61JES",
+      "role": "kepala",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:32:33.423Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-1CW9X2",
+      "role": "kepala",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:32:33.423Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-1XM18T",
+      "role": "kepala",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:32:33.423Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-V7G5GM",
+      "role": "kepala",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:32:33.423Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-A3CK2H",
+      "role": "kepala",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:32:33.423Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-10FQ6U",
+      "role": "kepala",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-18T05:32:33.423Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-0FONLH",
+      "role": "kepala",
+      "user": "Coba1",
+      "used": false,
+      "createdAt": "2026-08-18T05:32:33.423Z",
+      "editedAt": "2026-08-18T05:34:26.743Z"
     }
   ],
-  "updatedAt": "2026-08-18T05:29:49.696Z"
+  "updatedAt": "2026-08-18T05:35:16.557Z"
 }
