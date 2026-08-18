@@ -2316,7 +2316,7 @@ html+='<button class="btn btn-sm btn-danger" onclick="event.stopPropagation();de
 html+='</div></div>';
 });
 }
-html+='<div style="text-align:center;margin-top:20px"><button class="btn btn-primary" onclick="newForm()">+ Supervisi Baru</button></div></div>';
+html+='<div class="btn-group no-print" style="justify-content:flex-end;margin-top:20px"><button class="btn btn-danger btn-sm" onclick="deleteAllSupervisi()">🗑️ Hapus Semua Hasil Supervisi</button></div></div>';
 return html;
 }
 // ===== INPUT OBSERVASI (KONSOLIDASI 4 FORM INPUT) =====
@@ -2329,6 +2329,7 @@ items.forEach(function(it){
 var cls='obs-tab'+(tab===it[0]?' active':'');
 html+='<div class="'+cls+'" onclick="setActiveTab(\''+it[0]+'\')">'+it[1]+'</div>';
 });
+if(tab==='supervisi')html+='<div class="obs-tab obs-tab-action" onclick="newForm()">➕ Supervisi Baru</div>';
 html+='</div></div>';
 html+='<div class="obs-content">';
 if(tab==='supervisi')html+=renderSupervisiList();
@@ -2406,6 +2407,12 @@ state.view=isRAJenjang()?'form-ra':'form';
 state.currentStep=0;render();
 }
 
+function deleteAllSupervisi(){
+var all=getAllSupervisi();
+if(!all.length){alert('Belum ada hasil supervisi untuk dihapus.');return;}
+if(!confirm('Hapus SEMUA hasil supervisi? Data tidak dapat dikembalikan.'))return;
+localStorage.removeItem(APP_KEY);localStorage.removeItem(APP_KEY_RA);state.view='input-observasi';state.activeTab='supervisi';state.jenjang='mi';render();
+}
 function deleteItem(idx){
 if(!confirm('Hapus data supervisi ini?'))return;
 var all=getAllSupervisi();
