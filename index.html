@@ -798,6 +798,25 @@ const PENGGALIAN_EVALUASI_RA=[
 const SKOR_LABELS=['1 - Kurang','2 - Cukup','3 - Baik','4 - Sangat Baik'];
 const SKOR_CATATAN=['Belum terlaksana/tidak sesuai','Terlaksana sebagian kecil','Terlaksana dengan baik','Terlaksana dengan sangat baik dan konsisten'];
 
+// ===== RA-AWARE HELPERS =====
+const SKOR_LABELS_RA=['1 - Kurang','2 - Cukup','3 - Baik','4 - Sangat Baik'];
+const SKOR_CATATAN_RA=['Praktik belum tampak atau belum sesuai karakteristik pembelajaran RA.','Praktik sudah tampak sebagian tetapi belum konsisten atau belum sepenuhnya berpusat pada anak.','Praktik terlaksana dengan baik, sesuai perkembangan anak dan konsisten pada sebagian besar kegiatan.','Praktik terlaksana sangat baik, konsisten, berpusat pada anak, responsif terhadap kebutuhan individual, dan didukung bukti yang kuat.'];
+const SKOR_NOTE_RA='Skor merupakan penilaian terhadap praktik pembelajaran guru, bukan skor perkembangan anak.';
+function getRALabel(key){
+  if(!isRAJenjang())return null;
+  var m={perencanaan:'PERENCANAAN PEMBELAJARAN RA',pelaksanaan:'PELAKSANAAN PEMBELAJARAN RA',asesmen:'ASESMEN & DOKUMENTASI PERKEMBANGAN RA'};
+  return m[key]||null;
+}
+function getRALabelFor(key){
+  return getRALabel(key)||(key==='perencanaan'?'Perencanaan Pembelajaran':key==='pelaksanaan'?'Pelaksanaan Pembelajaran':key==='asesmen'?'Asesmen Pembelajaran':key);
+}
+function getRAInstrumenTitle(){return isRAJenjang()?'INSTRUMEN SUPERVISI PEMBELAJARAN RA':'INSTRUMEN SUPERVISI PEMBELAJARAN';}
+function getRARekapTitle(){return isRAJenjang()?'REKAP HASIL SUPERVISI PEMBELAJARAN RA':'REKAP HASIL SUPERVISI PEMBELAJARAN';}
+function getRASubtitle(){return isRAJenjang()?'Raudhatul Athfal — Fase Fondasi':'';}
+function getRASkorLabels(){return isRAJenjang()?SKOR_LABELS_RA:SKOR_LABELS;}
+function getRASkorCatatan(){return isRAJenjang()?SKOR_CATATAN_RA:SKOR_CATATAN;}
+function getRAAutoCatatan(skor){if(skor===null||skor===undefined)return'';var arr=getRASkorCatatan();return arr[skor]||'';}
+
 // ===== DEFAULT INDIKATOR (immutable reference) =====
 const DEFAULT_PERENCANAAN=[...PERENCANAAN];
 const DEFAULT_PELAKSANAAN=[...PELAKSANAAN];
@@ -1067,7 +1086,7 @@ function getMadrasahJenjang(nama){if(!nama)return 'mi';var all=getAllMadrasah();
 
 // ===== UTILITY =====
 function getPredikat(pct){if(pct>=91)return'Sangat Baik';if(pct>=81)return'Baik';if(pct>=71)return'Cukup';return'Kurang'}
-function getAutoCatatan(skor){if(skor===null||skor===undefined)return'';return SKOR_CATATAN[skor]||''}
+function getAutoCatatan(skor){if(skor===null||skor===undefined)return'';var arr=isRAJenjang()?SKOR_CATATAN_RA:SKOR_CATATAN;return arr[skor]||''}
 function getPredikatClass(p){return'predikat-'+p.toLowerCase().replace(' ','-')}
 function calcTotal(d){let sum=0,max=0;['perencanaan','pelaksanaan','asesmen'].forEach(k=>{const scores=d[k]&&d[k].scores?d[k].scores:[];const itemCount=k==='pelaksanaan'?getIndikatorPelaksanaanFlat().length:getIndikator(k).length;const effectiveLen=Math.min(scores.length,itemCount);for(let i=0;i<effectiveLen;i++){const s=scores[i];if(s!==null&&s!==undefined){sum+=s+1;max+=4}}});return max>0?(sum/max)*100:0}
 function calcKomponen(d,key){const scores=d[key]&&d[key].scores?d[key].scores:[];const itemCount=key==='pelaksanaan'?getIndikatorPelaksanaanFlat().length:getIndikator(key).length;let sum=0,max=0;const effectiveLen=Math.min(scores.length,itemCount);for(let i=0;i<effectiveLen;i++){const s=scores[i];if(s!==null&&s!==undefined){sum+=s+1;max+=4}}return max>0?(sum/max)*100:0}
@@ -1774,7 +1793,9 @@ if(state.currentStep>0){nav+='<button class="btn btn-secondary" onclick="prevSte
 if(isLast){nav+='<button class="btn btn-success" onclick="saveForm()">&#128190; Simpan</button>';nav+='<button class="btn btn-info" onclick="saveForm();setActiveTab(\'kokurikuler\')" style="margin-left:8px">Lanjut ke Kokurikuler →</button>';}
 else{nav+='<button class="btn btn-primary" onclick="nextStep()">Lanjut &#8594;</button>';}
 nav+='</div></div>';
-return '<div class="card">'+progress+'<h2 style="margin-bottom:20px">'+steps[state.currentStep]+'</h2>'+content+nav+'</div>';
+var banner='';
+if(isRAJenjang()){banner='<div style="background:linear-gradient(135deg,#ecfdf5,#fef3c7);border:2px solid #10b981;border-radius:12px;padding:14px 18px;margin-bottom:16px"><div style="font-weight:700;color:#065f46;font-size:1rem;margin-bottom:4px">Instrumen Supervisi Pembelajaran RA — Fase Fondasi</div><div style="color:#374151;font-size:.85rem">Berorientasi pada bermain bermakna, perkembangan anak secara holistik, Pembelajaran Mendalam, dan Kurikulum Berbasis Cinta.</div></div>';}
+return '<div class="card">'+progress+banner+'<h2 style="margin-bottom:20px">'+steps[state.currentStep]+'</h2>'+content+nav+'</div>';
 }
 
 function renderIdentitas(){
@@ -1852,6 +1873,9 @@ html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-s
 }else{
 html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-warning" onclick="resetSkor(\''+key+'\')">🔄 Reset Skor</button></div>';
 }
+var skorTooltip='';
+if(isRAJenjang()){skorTooltip='<div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.8rem;color:#78350f"><b>Panduan Skor RA:</b><br>1 — Kurang: Praktik belum tampak atau belum sesuai karakteristik pembelajaran RA.<br>2 — Cukup: Praktik sudah tampak sebagian tetapi belum konsisten atau belum sepenuhnya berpusat pada anak.<br>3 — Baik: Praktik terlaksana dengan baik, sesuai perkembangan anak dan konsisten pada sebagian besar kegiatan.<br>4 — Sangat Baik: Praktik terlaksana sangat baik, konsisten, berpusat pada anak, responsif terhadap kebutuhan individual, dan didukung bukti yang kuat.<br><i>'+SKOR_NOTE_RA+'</i></div>';}
+html+=skorTooltip;
 html+='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th class="col-aspek">Indikator</th><th class="col-skor">1</th><th class="col-skor">2</th><th class="col-skor">3</th><th class="col-skor">4</th><th class="col-catatan">Catatan</th></tr></thead><tbody>';
 items.forEach(function(item,i){
 var score=(d.scores&&d.scores[i]!==undefined)?d.scores[i]:null;
@@ -1892,6 +1916,9 @@ html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-s
 }else{
 html+='<div class="no-print" style="margin-bottom:12px"><button class="btn btn-sm btn-warning" onclick="resetSkor(\'pelaksanaan\')">🔄 Reset Skor</button></div>';
 }
+var skorTooltip='';
+if(isRAJenjang()){skorTooltip='<div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:.8rem;color:#78350f"><b>Panduan Skor RA:</b><br>1 — Kurang: Praktik belum tampak atau belum sesuai karakteristik pembelajaran RA.<br>2 — Cukup: Praktik sudah tampak sebagian tetapi belum konsisten atau belum sepenuhnya berpusat pada anak.<br>3 — Baik: Praktik terlaksana dengan baik, sesuai perkembangan anak dan konsisten pada sebagian besar kegiatan.<br>4 — Sangat Baik: Praktik terlaksana sangat baik, konsisten, berpusat pada anak, responsif terhadap kebutuhan individual, dan didukung bukti yang kuat.<br><i>'+SKOR_NOTE_RA+'</i></div>';}
+html+=skorTooltip;
 var idx=0;
 var pelItems=getIndikatorPelaksanaanFlat();
 html+='<table class="instrumen-table"><thead><tr><th class="col-no">No</th><th class="col-aspek">Indikator</th><th class="col-skor">1</th><th class="col-skor">2</th><th class="col-skor">3</th><th class="col-skor">4</th><th class="col-catatan">Catatan</th></tr></thead><tbody>';
@@ -1929,9 +1956,9 @@ return html;
 // ===== REKAP =====
 function renderRekap(){
 var komps=[
-{key:'perencanaan',label:'Perencanaan Pembelajaran',max:getIndikator('perencanaan').length*4},
-{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:getIndikatorPelaksanaanFlat().length*4},
-{key:'asesmen',label:'Asesmen Pembelajaran',max:getIndikator('asesmen').length*4}
+{key:'perencanaan',label:getRALabelFor('perencanaan'),max:getIndikator('perencanaan').length*4},
+{key:'pelaksanaan',label:getRALabelFor('pelaksanaan'),max:getIndikatorPelaksanaanFlat().length*4},
+{key:'asesmen',label:getRALabelFor('asesmen'),max:getIndikator('asesmen').length*4}
 ];
 // Auto-generate catatan and tindak lanjut
 autoGenerateRekap();
@@ -1965,9 +1992,9 @@ return html;
 function autoGenerateRekapForKey(key){
 if(!state.formData.rekap)state.formData.rekap={};
 var instrumenMap={
-perencanaan:{items:getIndikator('perencanaan'),label:'Perencanaan Pembelajaran'},
-pelaksanaan:{items:getIndikatorPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
-asesmen:{items:getIndikator('asesmen'),label:'Asesmen Pembelajaran'}
+perencanaan:{items:getIndikator('perencanaan'),label:getRALabelFor('perencanaan')},
+pelaksanaan:{items:getIndikatorPelaksanaanFlat(),label:getRALabelFor('pelaksanaan')},
+asesmen:{items:getIndikator('asesmen'),label:getRALabelFor('asesmen')}
 };
 var info=instrumenMap[key];
 if(!info)return;
@@ -2037,9 +2064,9 @@ rekapObj.tindakLanjut=rtl;
 function autoGenerateRekap(){
 if(!state.formData.rekap)state.formData.rekap={};
 var instrumenMap={
-perencanaan:{items:getIndikator('perencanaan'),label:'Perencanaan Pembelajaran'},
-pelaksanaan:{items:getIndikatorPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
-asesmen:{items:getIndikator('asesmen'),label:'Asesmen Pembelajaran'}
+perencanaan:{items:getIndikator('perencanaan'),label:getRALabelFor('perencanaan')},
+pelaksanaan:{items:getIndikatorPelaksanaanFlat(),label:getRALabelFor('pelaksanaan')},
+asesmen:{items:getIndikator('asesmen'),label:getRALabelFor('asesmen')}
 };
 Object.keys(instrumenMap).forEach(function(key){
 if(!state.formData.rekap[key])state.formData.rekap[key]={};
@@ -2113,10 +2140,11 @@ function renderDetail(){
 var data=getAllSupervisi();
 var d=data[state.detailIdx];
 if(!d){state.view='dashboard';render();return '';}
+state.jenjang=d.jenjang==='ra'?'ra':'mi';
 var komps=[
-{key:'perencanaan',label:'Perencanaan Pembelajaran',max:getIndikator('perencanaan').length*4,items:getIndikator('perencanaan')},
-{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:getIndikatorPelaksanaanFlat().length*4,items:getIndikatorPelaksanaanFlat()},
-{key:'asesmen',label:'Asesmen Pembelajaran',max:getIndikator('asesmen').length*4,items:getIndikator('asesmen')}
+{key:'perencanaan',label:getRALabelFor('perencanaan'),max:getIndikator('perencanaan').length*4,items:getIndikator('perencanaan')},
+{key:'pelaksanaan',label:getRALabelFor('pelaksanaan'),max:getIndikatorPelaksanaanFlat().length*4,items:getIndikatorPelaksanaanFlat()},
+{key:'asesmen',label:getRALabelFor('asesmen'),max:getIndikator('asesmen').length*4,items:getIndikator('asesmen')}
 ];
 var html='<div class="card">';
 html+='<button class="btn btn-secondary btn-sm no-print" onclick="backToDashboard()">&#8592; Kembali</button>';
@@ -2298,6 +2326,7 @@ var data=getData();
 var d=data[idx];
 if(!d)return;
 state.formData=d;
+state.jenjang=d.jenjang==='ra'?'ra':'mi';
 if(bagian==='semua'){
 cetakSemua(d);
 }else if(bagian==='rekap'){
@@ -2326,11 +2355,14 @@ html+='.ttd-table{border:none;margin-top:40px}';
 html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
 html+='</style></head><body>';
 var sections=['perencanaan','pelaksanaan','asesmen'];
-var labels={perencanaan:'Perencanaan Pembelajaran',pelaksanaan:'Pelaksanaan Pembelajaran',asesmen:'Asesmen Pembelajaran'};
+var labels={perencanaan:getRALabelFor('perencanaan'),pelaksanaan:getRALabelFor('pelaksanaan'),asesmen:getRALabelFor('asesmen')};
 var itemsMap={perencanaan:getIndikator('perencanaan'),pelaksanaan:getIndikatorPelaksanaanFlat(),asesmen:getIndikator('asesmen')};
+var instrTitle=getRAInstrumenTitle();
+var instrSub=getRASubtitle();
 sections.forEach(function(key,si){
 if(si>0)html+='<div class="page-break"></div>';
-html+='<h2>INSTRUMEN SUPERVISI PEMBELAJARAN</h2>';
+html+='<h2>'+instrTitle+'</h2>';
+if(instrSub)html+='<h3>'+instrSub+'</h3>';
 html+='<h3>'+labels[key]+'</h3>';
 html+='<table style="border:none;margin-bottom:0;width:100%;border-spacing:0"><tbody>';
 html+='<tr><td style="border:none;width:130px;text-align:left;padding:2px 5px 2px 0"><b>Nama Guru</b></td><td style="border:none;width:10px;text-align:left;padding:2px 0">:</td><td style="border:none;text-align:left;padding:2px 5px 2px 0">'+(id.namaGuru||'-')+'</td><td style="border:none;width:40px;text-align:left;padding:2px 5px 2px 0"><b>NIP</b></td><td style="border:none;width:10px;text-align:left;padding:2px 0">:</td><td style="border:none;text-align:left;padding:2px 5px 2px 0">'+(id.nipGuru||'-')+'</td></tr>';
@@ -2393,7 +2425,8 @@ html+='.narasi{text-align:justify;line-height:1.6;margin:10px 0}';
 html+='.ttd-table{border:none;margin-top:40px}';
 html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
 html+='</style></head><body>';
-html+='<h2>REKAP HASIL SUPERVISI PEMBELAJARAN</h2>';
+html+='<h2>'+getRARekapTitle()+'</h2>';
+if(getRASubtitle())html+='<h3 style="text-align:center;margin-bottom:10px">'+getRASubtitle()+'</h3>';
 html+='<table style="border:none;margin-bottom:0;width:100%;border-spacing:0"><tbody>';
 html+='<tr><td style="border:none;width:130px;text-align:left;padding:2px 5px 2px 0"><b>Nama Guru</b></td><td style="border:none;width:10px;text-align:left;padding:2px 0">:</td><td style="border:none;text-align:left;padding:2px 5px 2px 0">'+(id.namaGuru||'-')+'</td><td style="border:none;width:40px;text-align:left;padding:2px 5px 2px 0"><b>NIP</b></td><td style="border:none;width:10px;text-align:left;padding:2px 0">:</td><td style="border:none;text-align:left;padding:2px 5px 2px 0">'+(id.nipGuru||'-')+'</td></tr>';
 html+='<tr><td style="border:none;text-align:left;padding:2px 5px 2px 0"><b>Mata Pelajaran</b></td><td style="border:none;text-align:left;padding:2px 5px 2px 0">:</td><td style="border:none;text-align:left;padding:2px 5px 2px 0">'+(id.mataPelajaran||'-')+'</td><td style="border:none;text-align:left;padding:2px 5px 2px 0"><b>Kelas/Semester</b></td><td style="border:none;text-align:left;padding:2px 5px 2px 0">:</td><td style="border:none;text-align:left;padding:2px 5px 2px 0">'+(id.kelasSemester||'-')+'</td></tr>';
@@ -2401,7 +2434,7 @@ html+='<tr><td style="border:none;text-align:left;padding:2px 5px 2px 0"><b>Madr
 html+='<tr><td style="border:none;text-align:left;padding:2px 5px 2px 0"><b>Supervisor</b></td><td style="border:none;text-align:left;padding:2px 5px 2px 0">:</td><td style="border:none;text-align:left;padding:2px 5px 2px 0">'+(id.namaSupervisor||'-')+'</td><td style="border:none;text-align:left;padding:2px 5px 2px 0"><b>Tanggal</b></td><td style="border:none;text-align:left;padding:2px 5px 2px 0">:</td><td style="border:none;text-align:left;padding:2px 5px 2px 0">'+(id.tanggalSupervisi||'-')+'</td></tr>';
 html+='</tbody></table>';
 html+='<table><thead><tr><th>No</th><th>Komponen</th><th>Skor</th><th>Maks</th><th>%</th><th>Predikat</th></tr></thead><tbody>';
-var komps=[{key:'perencanaan',label:'Perencanaan Pembelajaran',max:getIndikator('perencanaan').length*4},{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:getIndikatorPelaksanaanFlat().length*4},{key:'asesmen',label:'Asesmen Pembelajaran',max:getIndikator('asesmen').length*4}];
+var komps=[{key:'perencanaan',label:getRALabelFor('perencanaan'),max:getIndikator('perencanaan').length*4},{key:'pelaksanaan',label:getRALabelFor('pelaksanaan'),max:getIndikatorPelaksanaanFlat().length*4},{key:'asesmen',label:getRALabelFor('asesmen'),max:getIndikator('asesmen').length*4}];
 var totalSum=0,totalMax=0;
 komps.forEach(function(k,i){
 var scores=(d[k.key]&&d[k.key].scores)?d[k.key].scores:[];
@@ -2441,9 +2474,9 @@ setTimeout(function(){w.print();},500);
 // ===== PRINT FUNCTIONS =====
 function printInstrumen(key){
 var instrumenMap={
-perencanaan:{items:getIndikator('perencanaan'),label:'Perencanaan Pembelajaran'},
-pelaksanaan:{items:getIndikatorPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
-asesmen:{items:getIndikator('asesmen'),label:'Asesmen Pembelajaran'}
+perencanaan:{items:getIndikator('perencanaan'),label:getRALabelFor('perencanaan')},
+pelaksanaan:{items:getIndikatorPelaksanaanFlat(),label:getRALabelFor('pelaksanaan')},
+asesmen:{items:getIndikator('asesmen'),label:getRALabelFor('asesmen')}
 };
 var info=instrumenMap[key];
 var id=state.formData.identitas||{};
@@ -2460,7 +2493,8 @@ html+='td:last-child{text-align:left}';
 html+='.header-info{margin-bottom:15px}';
 html+='.header-info p{margin:3px 0}';
 html+='</style></head><body>';
-html+='<h2>INSTRUMEN SUPERVISI PEMBELAJARAN</h2>';
+html+='<h2>'+getRAInstrumenTitle()+'</h2>';
+if(getRASubtitle())html+='<h3 style="text-align:center">'+getRASubtitle()+'</h3>';
 html+='<h3 style="text-align:center">'+info.label+'</h3>';
 html+='<table style="border:none;margin-bottom:0;width:100%;border-spacing:0"><tbody>';
 html+='<tr><td style="border:none;width:130px;text-align:left;padding:2px 5px 2px 0"><b>Nama Guru</b></td><td style="border:none;width:10px;text-align:left;padding:2px 0">:</td><td style="border:none;text-align:left;padding:2px 5px 2px 0">'+(id.namaGuru||'-')+'</td><td style="border:none;width:40px;text-align:left;padding:2px 5px 2px 0"><b>NIP</b></td><td style="border:none;width:10px;text-align:left;padding:2px 0">:</td><td style="border:none;text-align:left;padding:2px 5px 2px 0">'+(id.nipGuru||'-')+'</td></tr>';
@@ -2531,11 +2565,12 @@ kelasSemester:id.kelasSemester||'-'
 
 function addPDFHeader(doc,title,headerInfo){
 doc.setFontSize(14);
-doc.text('INSTRUMEN SUPERVISI PEMBELAJARAN',doc.internal.pageSize.getWidth()/2,15,{align:'center'});
+doc.text(getRAInstrumenTitle(),doc.internal.pageSize.getWidth()/2,15,{align:'center'});
+if(getRASubtitle()){doc.setFontSize(9);doc.text(getRASubtitle(),doc.internal.pageSize.getWidth()/2,20,{align:'center'});}
 doc.setFontSize(11);
-doc.text(title,doc.internal.pageSize.getWidth()/2,22,{align:'center'});
+doc.text(title,doc.internal.pageSize.getWidth()/2,getRASubtitle()?25:22,{align:'center'});
 doc.setFontSize(9);
-var y=30;
+var y=getRASubtitle()?33:30;
 doc.text('Nama Guru: '+headerInfo.namaGuru+'    NIP: '+headerInfo.nipGuru,14,y);
 doc.text('Mata Pelajaran: '+headerInfo.mataPelajaran+'    Kelas/Semester: '+headerInfo.kelasSemester,14,y+5);
 doc.text('Madrasah: '+headerInfo.namaMadrasah,14,y+10);
@@ -2548,9 +2583,9 @@ if(typeof window.jspdf==='undefined'){alert('jsPDF belum dimuat. Pastikan koneks
 var jsPDF=window.jspdf.jsPDF;
 var doc=new jsPDF('p','mm','a4');
 var instrumenMap={
-perencanaan:{items:getIndikator('perencanaan'),label:'Perencanaan Pembelajaran'},
-pelaksanaan:{items:getIndikatorPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran'},
-asesmen:{items:getIndikator('asesmen'),label:'Asesmen Pembelajaran'}
+perencanaan:{items:getIndikator('perencanaan'),label:getRALabelFor('perencanaan')},
+pelaksanaan:{items:getIndikatorPelaksanaanFlat(),label:getRALabelFor('pelaksanaan')},
+asesmen:{items:getIndikator('asesmen'),label:getRALabelFor('asesmen')}
 };
 var info=instrumenMap[key];
 var headerInfo=getHeaderInfo();
@@ -2600,9 +2635,9 @@ var doc=new jsPDF('p','mm','a4');
 var headerInfo=getHeaderInfo();
 var startY=addPDFHeader(doc,'Rekap Hasil Supervisi',headerInfo);
 var komps=[
-{key:'perencanaan',label:'Perencanaan Pembelajaran',max:getIndikator('perencanaan').length*4},
-{key:'pelaksanaan',label:'Pelaksanaan Pembelajaran',max:getIndikatorPelaksanaanFlat().length*4},
-{key:'asesmen',label:'Asesmen Pembelajaran',max:getIndikator('asesmen').length*4}
+{key:'perencanaan',label:getRALabelFor('perencanaan'),max:getIndikator('perencanaan').length*4},
+{key:'pelaksanaan',label:getRALabelFor('pelaksanaan'),max:getIndikatorPelaksanaanFlat().length*4},
+{key:'asesmen',label:getRALabelFor('asesmen'),max:getIndikator('asesmen').length*4}
 ];
 var rekapTable=[];
 komps.forEach(function(k){
@@ -2650,6 +2685,8 @@ function exportDetailPDF(idx){
 var data=getData();
 var d=data[idx];
 if(!d)return;
+// Set jenjang from data for RA-aware labels
+state.jenjang=d.jenjang==='ra'?'ra':'mi';
 // Temporarily set formData to this record for PDF generation
 var backup=JSON.parse(JSON.stringify(state.formData));
 state.formData=JSON.parse(JSON.stringify(d));
