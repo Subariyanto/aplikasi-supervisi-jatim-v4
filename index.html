@@ -2726,7 +2726,7 @@ KOKURIKULER.forEach(function(item,i){
 var score=(scores[i]!==undefined&&scores[i]!==null)?scores[i]:null;
 var cat=(catatan[i])?catatan[i]:getAutoCatatan(score);
 var hasInfo=false;
-html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek clickable" onclick="showPenggalianGeneric(\''+key+'\','+i+')">'+item+'</td>';
+html+='<tr><td class="col-no">'+(i+1)+'</td><td class="col-aspek clickable" onclick="showPenggalianGeneric(\'kokurikuler\','+i+')">'+item+'</td>';
 for(var s=0;s<4;s++){
 html+='<td class="col-skor"><button class="skor-radio '+(score===s?'selected':'')+'" onclick="setSkorKokurikuler('+idx+','+i+','+s+')">'+(score===s?'✓':'')+'</button></td>';
 }
