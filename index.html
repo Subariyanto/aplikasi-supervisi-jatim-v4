@@ -302,8 +302,9 @@ function activationRole(code){
 var c=(code||'').trim().toUpperCase();
 var builtins={'SUPERVISI-ADMIN-2026':'admin','SUPERVISI-PENGAWAS-2026':'pengawas','SUPERVISI-KAMAD-2026':'kepala'};
 if(builtins[c])return builtins[c];
-var found=getActivationCodes().find(function(x){return x.code===c&&!x.used});
-if(found)return found.role;
+var all=getActivationCodes().concat(Array.isArray(window.REMOTE_CODES)?window.REMOTE_CODES:[]);
+var found=all.find(function(x){return String(x.code||'').trim().toUpperCase()===c&&!x.used&&!x.revoked&&x.status!=='disabled'});
+if(found)return found.role||found.tier||'pengawas';
 if(/^SUPERVISI-PENGAWAS-[A-Z0-9]{6}$/.test(c))return 'pengawas';
 if(/^SUPERVISI-KAMAD-[A-Z0-9]{6}$/.test(c))return 'kepala';
 return null;
@@ -322,6 +323,15 @@ async function doActivation(){
   // Jangan dipaksa mencari dokumen Firestore karena kode ini bersifat lokal bawaan.
   var builtinRole=({'SUPERVISI-ADMIN-2026':'admin','SUPERVISI-PENGAWAS-2026':'pengawas','SUPERVISI-KAMAD-2026':'kepala'})[code];
   if(builtinRole){saveActivation({code:code,role:builtinRole,deviceId:deviceId,activatedAt:now,source:'builtin'});showLogin();return;}
+  // Kode yang diterbitkan admin disinkronkan ke codes.json GitHub Pages.
+  // Validasi juga terhadap cache publik agar dapat dipakai di perangkat lain.
+  var publicCode=(Array.isArray(window.REMOTE_CODES)?window.REMOTE_CODES:[]).find(function(x){return String(x.code||'').trim().toUpperCase()===code&&!x.revoked&&x.status!=='disabled'});
+  if(publicCode){
+   var publicRole=publicCode.role||publicCode.tier||activationRole(code);
+   if(publicCode.usedBy&&publicCode.usedBy!==deviceId)throw new Error('USED_CODE');
+   saveActivation({code:code,role:publicRole,deviceId:deviceId,activatedAt:now,source:'github-public'});
+   showLogin();return;
+  }
   if(firebaseReady){
    if(!firebase.auth().currentUser)await firebase.auth().signInAnonymously();
    var ref=firebaseDb.collection('activation_codes').doc(code), role;
