@@ -302,8 +302,9 @@ function activationRole(code){
 var c=(code||'').trim().toUpperCase();
 var builtins={'SUPERVISI-ADMIN-2026':'admin','SUPERVISI-PENGAWAS-2026':'pengawas','SUPERVISI-KAMAD-2026':'kepala'};
 if(builtins[c])return builtins[c];
-var found=getActivationCodes().find(function(x){return x.code===c&&!x.used});
-if(found)return found.role;
+var all=getActivationCodes().concat(Array.isArray(window.REMOTE_CODES)?window.REMOTE_CODES:[]);
+var found=all.find(function(x){return String(x.code||'').trim().toUpperCase()===c&&!x.used&&!x.revoked&&x.status!=='disabled'});
+if(found)return found.role||found.tier||'pengawas';
 if(/^SUPERVISI-PENGAWAS-[A-Z0-9]{6}$/.test(c))return 'pengawas';
 if(/^SUPERVISI-KAMAD-[A-Z0-9]{6}$/.test(c))return 'kepala';
 return null;
@@ -322,6 +323,15 @@ async function doActivation(){
   // Jangan dipaksa mencari dokumen Firestore karena kode ini bersifat lokal bawaan.
   var builtinRole=({'SUPERVISI-ADMIN-2026':'admin','SUPERVISI-PENGAWAS-2026':'pengawas','SUPERVISI-KAMAD-2026':'kepala'})[code];
   if(builtinRole){saveActivation({code:code,role:builtinRole,deviceId:deviceId,activatedAt:now,source:'builtin'});showLogin();return;}
+  // Kode yang diterbitkan admin disinkronkan ke codes.json GitHub Pages.
+  // Validasi juga terhadap cache publik agar dapat dipakai di perangkat lain.
+  var publicCode=(Array.isArray(window.REMOTE_CODES)?window.REMOTE_CODES:[]).find(function(x){return String(x.code||'').trim().toUpperCase()===code&&!x.revoked&&x.status!=='disabled'});
+  if(publicCode){
+   var publicRole=publicCode.role||publicCode.tier||activationRole(code);
+   if(publicCode.usedBy&&publicCode.usedBy!==deviceId)throw new Error('USED_CODE');
+   saveActivation({code:code,role:publicRole,deviceId:deviceId,activatedAt:now,source:'github-public'});
+   showLogin();return;
+  }
   if(firebaseReady){
    if(!firebase.auth().currentUser)await firebase.auth().signInAnonymously();
    var ref=firebaseDb.collection('activation_codes').doc(code), role;
@@ -335,19 +345,12 @@ async function doActivation(){
    });
    saveActivation({code:code,role:role,deviceId:deviceId,activatedAt:now,source:'firebase'});showLogin();return;
   }
-  var role=activationRole(code);if(!role)throw new Error('INVALID_CODE');
-  var codes=getActivationCodes(),item=codes.find(function(x){return x.code===code});
-  if(item){if(item.used&&item.deviceId!==deviceId)throw new Error('USED_CODE');item.used=true;item.deviceId=deviceId;item.activatedAt=now;saveActivationCodes(codes)}
-  saveActivation({code:code,role:role,deviceId:deviceId,activatedAt:now,source:'local'});showLogin();
+  // Kode non-bawaan wajib dikunci melalui Firestore; tidak ada fallback localStorage.
+  throw new Error('FIREBASE_REQUIRED');
  }catch(e){
   console.error(e);
-  // Jika Firebase belum tersedia, gunakan daftar kode publik hasil sinkronisasi GitHub.
-  // Ini memungkinkan aktivasi kode yang diterbitkan admin dari HP/perangkat lain.
-  if(e.message==='INVALID_CODE' || e.message.indexOf('Firebase')>=0 || e.code==='permission-denied'){
-   var localRole=activationRole(code);
-   if(localRole){saveActivation({code:code,role:localRole,deviceId:deviceId,activatedAt:now,source:'github-sync'});showLogin();return;}
-  }
-  err.textContent=e.message==='USED_CODE'?'Kode sudah digunakan pada perangkat lain.':e.message==='DISABLED_CODE'?'Kode sudah dinonaktifkan.':'Kode tidak valid atau Firebase belum terkonfigurasi.';err.style.display='block';
+  err.textContent=e.message==='USED_CODE'?'Kode sudah digunakan pada perangkat lain.':e.message==='DISABLED_CODE'?'Kode sudah dinonaktifkan.':e.message==='FIREBASE_REQUIRED'?'Layanan aktivasi belum tersedia. Hubungi administrator.':'Kode tidak valid atau Firebase belum terkonfigurasi.';
+  err.style.display='block';
  }
 }
 function deviceFingerprint(){var raw=[navigator.userAgent,screen.width+'x'+screen.height,navigator.language,navigator.platform].join('|');var h=0;for(var i=0;i<raw.length;i++)h=((h<<5)-h)+raw.charCodeAt(i)|0;return 'web-'+Math.abs(h).toString(36)+'-'+btoa(raw).slice(0,16);}
@@ -1129,6 +1132,7 @@ var restricted=['activation-codes','input-kokurikuler','rekap-kokurikuler','lapo
 var readOnly=['rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler','laporan-kokurikuler-madrasah','laporan-kokurikuler-kkma','rekap-ekstrakurikuler','laporan-ekstrakurikuler','laporan-ekstrakurikuler-madrasah','laporan-ekstrakurikuler-kkma','rekap-iklim-madrasah','laporan-iklim-madrasah','laporan-iklim-madrasah-madrasah','laporan-iklim-madrasah-kkma'];
  document.querySelectorAll('[data-nav]').forEach(function(el){
   var nav=el.getAttribute('data-nav'), hide=false;
+  if(!isAdmin && nav==='activation-codes') hide=true;
   if(!isAdmin && nav==='backup-restore') hide=true;
   if(role==='kepala' && restricted.indexOf(nav)!==-1) hide=true;
   el.style.display=hide?'none':'';
