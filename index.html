@@ -430,6 +430,7 @@ function showRegister(){
 hideApp();
 var card=document.getElementById('authCard');
 card.innerHTML='<h2>📝 Daftar Akun</h2>'+
+'<div class="form-group"><label>Kode Aktivasi</label><input type="text" id="regActivationCode" placeholder="Masukkan kode aktivasi" autocomplete="off"></div>'+ 
 '<p class="auth-subtitle">Buat akun baru untuk mengakses aplikasi</p>'+
 '<div class="auth-error" id="authError"></div>'+
 '<div class="auth-success" id="authSuccess"></div>'+
@@ -440,7 +441,7 @@ card.innerHTML='<h2>📝 Daftar Akun</h2>'+
 '<div class="form-group"><label>Konfirmasi Password</label><input type="password" id="regConfirm" placeholder="Ulangi password" autocomplete="new-password"></div>'+
 '<button class="btn-auth" onclick="doRegister()">Daftar</button>'+
 '<div class="auth-link">Sudah punya akun? <a onclick="showLogin()">Login</a></div>';
-setTimeout(function(){document.getElementById('regNama').focus()},100);
+setTimeout(function(){document.getElementById('regActivationCode').focus()},100);
 setTimeout(function(){
 var el=document.getElementById('regConfirm');
 if(el)el.onkeydown=function(e){if(e.key==='Enter')doRegister()};
@@ -470,7 +471,8 @@ showApp(session);
 render();
 }
 
-function doRegister(){
+async function doRegister(){
+var activationCode=(document.getElementById('regActivationCode').value||'').trim().toUpperCase();
 var nama=document.getElementById('regNama').value.trim();
 var username=document.getElementById('regUsername').value.trim();
 var password=document.getElementById('regPassword').value;
@@ -479,6 +481,10 @@ var errEl=document.getElementById('authError');
 var sucEl=document.getElementById('authSuccess');
 errEl.style.display='none';
 sucEl.style.display='none';
+if(!activationCode||!nama||!username||!password||!confirm){
+errEl.textContent='Kode aktivasi dan semua field harus diisi.';
+errEl.style.display='block';return;
+}
 if(!nama||!username||!password||!confirm){
 errEl.textContent='Semua field harus diisi.';
 errEl.style.display='block';return;
@@ -501,8 +507,17 @@ if(exists){
 errEl.textContent='Username sudah digunakan.';
 errEl.style.display='block';return;
 }
-var roleEl=document.getElementById('regRole');var role=roleEl?roleEl.value:'pengawas';users.push({nama:nama,username:username,password:password,role:role});
-saveUsers(users);
+var roleEl=document.getElementById('regRole');var role=roleEl?roleEl.value:'pengawas';
+var expectedRole=activationRole(activationCode);
+if(!expectedRole||expectedRole==='admin'){errEl.textContent='Kode aktivasi tidak valid.';errEl.style.display='block';return;}
+if(expectedRole!==role){errEl.textContent='Role tidak sesuai dengan kode aktivasi.';errEl.style.display='block';return;}
+if(!firebaseReady){errEl.textContent='Layanan aktivasi belum tersedia.';errEl.style.display='block';return;}
+try{
+ if(!firebase.auth().currentUser)await firebase.auth().signInAnonymously();
+ var ref=firebaseDb.collection('activation_codes').doc(activationCode),deviceId=deviceFingerprint();
+ await firebaseDb.runTransaction(async function(tx){var snap=await tx.get(ref);if(!snap.exists)throw new Error('INVALID_CODE');var d=snap.data();if(d.status==='used')throw new Error(d.deviceId===deviceId?'ALREADY_USED':'USED_CODE');if(d.status==='disabled'||d.revoked)throw new Error('DISABLED_CODE');tx.update(ref,{status:'used',deviceId:deviceId,activatedAt:firebase.firestore.FieldValue.serverTimestamp(),username:username});});
+ users.push({nama:nama,username:username,password:password,role:role});saveUsers(users);saveActivation({code:activationCode,role:role,deviceId:deviceId,activatedAt:new Date().toISOString(),source:'firebase'});
+}catch(e){errEl.textContent=e.message==='USED_CODE'?'Kode sudah digunakan pada perangkat lain.':e.message==='DISABLED_CODE'?'Kode sudah dinonaktifkan.':'Kode aktivasi tidak valid atau belum terdaftar di server.';errEl.style.display='block';return;}
 sucEl.textContent='Registrasi berhasil! Silakan login.';
 sucEl.style.display='block';
 setTimeout(function(){showLogin()},1500);
