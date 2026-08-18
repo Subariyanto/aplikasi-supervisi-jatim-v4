@@ -3,9 +3,10 @@
     {
       "code": "SUPERVISI-PENGAWAS-9UBCHX",
       "role": "pengawas",
-      "user": "",
+      "user": "Sitawati",
       "used": false,
-      "createdAt": "2026-08-18T06:08:43.138Z"
+      "createdAt": "2026-08-18T06:08:43.138Z",
+      "editedAt": "2026-08-18T11:11:41.614Z"
     },
     {
       "code": "SUPERVISI-PENGAWAS-6HO07X",
@@ -62,7 +63,14 @@
       "user": "MI DARUSSALAM 03",
       "used": false,
       "createdAt": "2026-08-18T08:26:14.173Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-76HUQ9",
+      "role": "pengawas",
+      "user": "Sitawati2",
+      "used": false,
+      "createdAt": "2026-08-18T11:40:01.989Z"
     }
   ],
-  "updatedAt": "2026-08-18T08:26:16.239Z"
+  "updatedAt": "2026-08-18T11:40:04.978Z"
 }
