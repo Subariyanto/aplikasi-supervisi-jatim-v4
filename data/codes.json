@@ -55,7 +55,14 @@
       "user": "",
       "used": false,
       "createdAt": "2026-08-18T07:11:11.529Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-6PWSDJ",
+      "role": "kepala",
+      "user": "MI DARUSSALAM 02",
+      "used": false,
+      "createdAt": "2026-08-18T08:20:47.395Z"
     }
   ],
-  "updatedAt": "2026-08-18T08:20:04.221Z"
+  "updatedAt": "2026-08-18T08:20:50.277Z"
 }
