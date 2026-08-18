@@ -2239,6 +2239,10 @@ saveData(data);state.view='input-observasi';state.activeTab='supervisi';render()
 }
 
 function editItem(idx){
+var all=getAllSupervisi();
+var item=all[idx];
+if(!item){alert('Data tidak ditemukan.');return;}
+state.jenjang=item.jenjang==='ra'?'ra':'mi';
 var data=getData();
 state.activeTab='supervisi';
 state.formData=JSON.parse(JSON.stringify(data[idx]));
@@ -2249,6 +2253,10 @@ state.currentStep=0;render();
 
 function deleteItem(idx){
 if(!confirm('Hapus data supervisi ini?'))return;
+var all=getAllSupervisi();
+var item=all[idx];
+if(!item)return;
+state.jenjang=item.jenjang==='ra'?'ra':'mi';
 var data=getData();data.splice(idx,1);saveData(data);render();
 }
 
