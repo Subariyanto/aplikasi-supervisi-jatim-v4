@@ -1803,6 +1803,8 @@ var id=state.formData.identitas||{};
 var madrasahList=getAllMadrasah();
 var guruList=getAllGuru();
 var html='<div class="grid-2">';
+// Jenjang selector (untuk switching instrumen RA vs standar)
+html+='<div class="form-group" style="grid-column:1/-1"><label><b>Jenjang Madrasah</b></label><select onchange="changeJenjang(this.value)"><option value="mi" '+(state.jenjang==='mi'?'selected':'')+'>MI / MTs / MA</option><option value="ra" '+(state.jenjang==='ra'?'selected':'')+'>RA (Raudhatul Athfal)</option></select></div>';
 // Madrasah dropdown
 html+='<div class="form-group"><label>Pilih Madrasah (dari data)</label><select onchange="selectMadrasah(this.value)"><option value="">-- Pilih atau isi manual --</option>';
 madrasahList.forEach(function(m,i){html+='<option value="'+i+'" '+(id.selectedMadrasahIdx==i?'selected':'')+'>'+escHtml(m.nama)+'</option>';});
@@ -1830,6 +1832,11 @@ html+='<div class="form-group"><label>'+f[1]+'</label><input type="text" value="
 html+='<div class="form-group"><label>Tanggal Supervisi</label><input type="date" value="'+(id.tanggalSupervisi||'')+'" onchange="updateIdentitas(\'tanggalSupervisi\',this.value)"></div>';
 html+='</div>';
 return html;
+}
+
+function changeJenjang(j){
+state.jenjang=j||'mi';
+render();
 }
 
 function selectMadrasah(idx){
