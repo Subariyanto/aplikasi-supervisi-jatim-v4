@@ -229,6 +229,7 @@ canvas{max-width:100%;margin:20px 0}
 <div class="dropdown">
 <a onclick="navigate('supervisi')" data-nav="supervisi">📋 Daftar Supervisi</a>
 <a onclick="navigate('rekap')" data-nav="rekap">📊 Rekap Hasil</a>
+<a onclick="navigate('analisis-ra')" data-nav="analisis-ra">📈 Analisis Supervisi RA</a>
 <a onclick="navigate('cetak')" data-nav="cetak">🖨️ Cetak Hasil</a>
 <a onclick="navigate('laporan')" data-nav="laporan">📄 Laporan</a>
 </div>
@@ -1283,6 +1284,7 @@ case 'input-observasi':app.innerHTML=renderInputObservasi();break;
 case 'form':app.innerHTML=renderForm();break;
 case 'detail':app.innerHTML=renderDetail();break;
 case 'rekap':app.innerHTML=renderRekapAllPage();break;
+case 'analisis-ra':app.innerHTML=renderAnalisisRA();break;
 case 'cetak':app.innerHTML=renderCetakPage();break;
 case 'kokurikuler':app.innerHTML=renderKokurikulerPage();break;
 case 'kokurikuler-form':app.innerHTML=renderKokurikulerForm(state.kokurikulerIdx);break;
@@ -1674,6 +1676,26 @@ alert('Data pengawas berhasil disimpan!');
 }
 
 // ===== REKAP HASIL SUPERVISI =====
+function renderAnalisisRA(){
+var all=getAllSupervisi().filter(function(d){return d.jenjang==='ra';});
+var f=state.raFilter||{madrasah:'',guru:'',tahun:'',jenis:''};
+var rows=all.filter(function(d){var id=d.identitas||{};return (!f.madrasah||id.namaMadrasah===f.madrasah)&&(!f.guru||id.namaGuru===f.guru)&&(!f.tahun||String(id.tanggalSupervisi||'').slice(0,4)===f.tahun)&&(!f.jenis||(d.jenisSupervisi||'awal')===f.jenis);});
+var h='<div class="card"><h2>DASHBOARD ANALISIS SUPERVISI PEMBELAJARAN RA</h2><p style="color:#64748b">Monitoring Mutu Pembelajaran — Fase Fondasi</p><p style="font-size:.85rem">Data ditampilkan berdasarkan hasil supervisi guru RA yang tersimpan dalam aplikasi.</p>';
+var vals=function(k,d){var s=d[k]&&d[k].scores||[],n=k==='pelaksanaan'?getIndikatorPelaksanaanFlat().length:getIndikator(k).length,sum=s.reduce(function(a,x){return a+(x==null?0:x+1)},0);return n?sum/(n*4)*100:0;};
+var madrasah=[...new Set(all.map(function(d){return (d.identitas||{}).namaMadrasah||'';}).filter(Boolean))],guru=[...new Set(all.map(function(d){return (d.identitas||{}).namaGuru||'';}).filter(Boolean))],tahun=[...new Set(all.map(function(d){return String((d.identitas||{}).tanggalSupervisi||'').slice(0,4);}).filter(Boolean))];
+h+='<div class="grid-2"><div class="form-group"><label>Madrasah</label><select onchange="setRAFilter(\'madrasah\',this.value)"><option value="">Semua RA</option>'+madrasah.map(function(x){return '<option '+(f.madrasah===x?'selected':'')+'>'+escHtml(x)+'</option>';}).join('')+'</select></div><div class="form-group"><label>Guru</label><select onchange="setRAFilter(\'guru\',this.value)"><option value="">Semua Guru</option>'+guru.map(function(x){return '<option '+(f.guru===x?'selected':'')+'>'+escHtml(x)+'</option>';}).join('')+'</select></div><div class="form-group"><label>Tahun</label><select onchange="setRAFilter(\'tahun\',this.value)"><option value="">Semua Periode</option>'+tahun.map(function(x){return '<option '+(f.tahun===x?'selected':'')+'>'+x+'</option>';}).join('')+'</select></div><div class="form-group"><label>Jenis Supervisi</label><select onchange="setRAFilter(\'jenis\',this.value)"><option value="">Semua</option><option value="awal" '+(f.jenis==='awal'?'selected':'')+'>Supervisi Awal</option><option value="tindak_lanjut" '+(f.jenis==='tindak_lanjut'?'selected':'')+'>Supervisi Tindak Lanjut</option></select></div></div>';
+if(!rows.length){h+='<div class="empty-state"><p>Belum tersedia data Supervisi Pembelajaran RA.</p><small>Silakan lakukan supervisi pembelajaran RA terlebih dahulu agar analisis dapat ditampilkan.</small></div></div>';return h;}
+var avg=rows.length?rows.reduce(function(a,d){return a+calcTotal(d)},0)/rows.length:0, names=[...new Set(rows.map(function(d){return (d.identitas||{}).namaMadrasah||'';}).filter(Boolean))], teachers=[...new Set(rows.map(function(d){return (d.identitas||{}).namaGuru||'';}).filter(Boolean))], follow=rows.filter(function(d){return d.jenisSupervisi==='tindak_lanjut';}).length;
+h+='<div class="grid-3"><div class="stat-card"><div class="stat-number">'+names.length+'</div><div class="stat-label">RA Disupervisi</div></div><div class="stat-card"><div class="stat-number">'+teachers.length+'</div><div class="stat-label">Guru Disupervisi</div></div><div class="stat-card"><div class="stat-number">'+rows.length+'</div><div class="stat-label">Jumlah Supervisi</div></div><div class="stat-card"><div class="stat-number">'+avg.toFixed(1)+'%</div><div class="stat-label">Rata-rata Nilai</div></div><div class="stat-card"><div class="stat-number">'+follow+'</div><div class="stat-label">Supervisi Tindak Lanjut</div></div></div>';
+var gs=[['perencanaan','Perencanaan Pembelajaran RA'],['pelaksanaan','Pelaksanaan Pembelajaran RA'],['asesmen','Asesmen & Dokumentasi Perkembangan RA']], avgs=gs.map(function(g){return {label:g[1],value:rows.length?rows.reduce(function(a,d){return a+vals(g[0],d)},0)/rows.length:0};});
+h+='<h3>Rata-rata Per Aspek</h3><table><thead><tr><th>Aspek</th><th>Rata-rata</th><th>Status</th></tr></thead><tbody>'+avgs.map(function(x){return '<tr><td>'+x.label+'</td><td>'+x.value.toFixed(1)+'%</td><td>'+getPredikat(x.value)+'</td></tr>';}).join('')+'</tbody></table>';
+var defs=[];gs.forEach(function(g){var items=g[0]==='pelaksanaan'?getIndikatorPelaksanaanFlat():getIndikator(g[0]);items.forEach(function(item,i){var scored=rows.map(function(d){return d[g[0]]&&d[g[0]].scores?d[g[0]].scores[i]:null;}).filter(function(x){return x!=null;}),mean=scored.length?scored.reduce(function(a,x){return a+x+1},0)/scored.length:0;defs.push({aspect:g[1],item:item,mean:mean,low:scored.filter(function(x){return x<=1;}).length});});});
+var weak=defs.filter(function(x){return x.mean>0;}).sort(function(a,b){return a.mean-b.mean;}).slice(0,5), strong=defs.filter(function(x){return x.mean>0;}).sort(function(a,b){return b.mean-a.mean;}).slice(0,5);
+h+='<h3>5 Prioritas Pembinaan RA</h3><ol>'+ (weak.length?weak:['Belum tersedia data Supervisi Pembelajaran RA.']).map(function(x){return typeof x==='string'?'<li>'+x+'</li>':'<li><b>'+escHtml(x.item)+'</b> — '+escHtml(x.aspect)+' — rata-rata '+x.mean.toFixed(2)+'</li>';}).join('')+'</ol><h3>5 Praktik Baik Utama</h3><ol>'+ (strong.length?strong:['Belum tersedia data pembanding.']).map(function(x){return typeof x==='string'?'<li>'+x+'</li>':'<li><b>'+escHtml(x.item)+'</b> — rata-rata '+x.mean.toFixed(2)+'</li>';}).join('')+'</ol>';
+h+='<h3>Rekomendasi Program Pembinaan</h3><p>'+ (weak.length?'Prioritaskan pendampingan pada '+escHtml(weak[0].aspect)+', khususnya indikator “'+escHtml(weak[0].item)+'”, melalui coaching, diskusi reflektif, dan supervisi tindak lanjut.':'Belum tersedia data Supervisi Pembelajaran RA. Silakan lakukan supervisi terlebih dahulu agar analisis dapat ditampilkan.')+'</p><button class="btn btn-secondary no-print" onclick="printAnalisisRA()">🖨️ Cetak Analisis RA</button></div>';return h;
+}
+function setRAFilter(k,v){if(!state.raFilter)state.raFilter={};state.raFilter[k]=v;render();}
+function printAnalisisRA(){var body=document.querySelector('#app').innerHTML.replace(/<button[\s\S]*?<\/button>/g,'');var w=window.open('','_blank');w.document.write('<html><head><title>Laporan Analisis Hasil Supervisi Pembelajaran RA</title><style>body{font-family:Arial;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #333;padding:6px;text-align:left}</style></head><body>'+body+'</body></html>');w.document.close();setTimeout(function(){w.print();},300);}
 function renderRekapAllPage(){
 var data=getAllSupervisi();
 var madrasahList=getAllMadrasah();
