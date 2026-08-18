@@ -1805,15 +1805,13 @@ progress+='<div class="step-indicator '+cls+'" style="cursor:pointer" onclick="g
 });
 progress+='</div>';
 var content='';
-if(isRAJenjang()&&state.formData.modePengisian==='cepat'&&state.currentStep>=1&&state.currentStep<=3)content=renderRAQuick();
-else if(state.currentStep===0)content=renderIdentitas();
+if(state.currentStep===0)content=renderIdentitas();
 else if(state.currentStep===1)content=renderInstrumen('perencanaan',getIndikator('perencanaan'));
 else if(state.currentStep===2)content=renderPelaksanaan();
 else if(state.currentStep===3)content=renderInstrumen('asesmen',getIndikator('asesmen'));
 else if(state.currentStep===4)content=renderRekap();
 var isLast=state.currentStep===4;
 var nav='<div style="display:flex;justify-content:space-between;margin-top:20px">';
-if(isRAJenjang()&&state.formData.modePengisian==='cepat'&&state.currentStep>=1&&state.currentStep<=3)nav='';
 nav+='<button class="btn btn-danger" onclick="backToDashboard()">✕ Batal</button>';
 nav+='<div style="display:flex;gap:8px">';
 if(state.currentStep>0){nav+='<button class="btn btn-secondary" onclick="prevStep()">&#8592; Kembali</button>';}
@@ -1841,7 +1839,7 @@ if(isRAJenjang()){
  }
 }
 // Jenjang selector (untuk switching instrumen RA vs standar)
-html+='<div class="form-group" style="grid-column:1/-1"><label><b>Mode Pengisian</b></label><select onchange="setModePengisian(this.value)"><option value="lengkap" '+(state.formData.modePengisian!=='cepat'?'selected':'')+'>Supervisi Lengkap</option><option value="cepat" '+(state.formData.modePengisian==='cepat'?'selected':'')+'>Supervisi Cepat</option></select></div>';
+
 html+='<div class="form-group" style="grid-column:1/-1"><label><b>Jenjang Madrasah</b></label><select onchange="changeJenjang(this.value)"><option value="mi" '+(state.jenjang==='mi'?'selected':'')+'>MI / MTs / MA</option><option value="ra" '+(state.jenjang==='ra'?'selected':'')+'>RA (Raudhatul Athfal)</option></select></div>';
 // Madrasah dropdown
 html+='<div class="form-group"><label>Pilih Madrasah (dari data)</label><select onchange="selectMadrasah(this.value)"><option value="">-- Pilih atau isi manual --</option>';
