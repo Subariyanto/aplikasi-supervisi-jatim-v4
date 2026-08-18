@@ -1677,7 +1677,7 @@ alert('Data pengawas berhasil disimpan!');
 
 // ===== REKAP HASIL SUPERVISI =====
 function renderAnalisisRA(){
-var all=getAllSupervisi().filter(function(d){return d.jenjang==='ra';});
+var all=getAllSupervisi().filter(function(d){return d.jenjang==='ra'&&(!d.statusSupervisi||d.statusSupervisi==='selesai');});
 var f=state.raFilter||{madrasah:'',guru:'',tahun:'',jenis:''};
 var rows=all.filter(function(d){var id=d.identitas||{};return (!f.madrasah||id.namaMadrasah===f.madrasah)&&(!f.guru||id.namaGuru===f.guru)&&(!f.tahun||String(id.tanggalSupervisi||'').slice(0,4)===f.tahun)&&(!f.jenis||(d.jenisSupervisi||'awal')===f.jenis);});
 var h='<div class="card"><h2>DASHBOARD ANALISIS SUPERVISI PEMBELAJARAN RA</h2><p style="color:#64748b">Monitoring Mutu Pembelajaran — Fase Fondasi</p><p style="font-size:.85rem">Data ditampilkan berdasarkan hasil supervisi guru RA yang tersimpan dalam aplikasi.</p>';
@@ -1802,13 +1802,15 @@ progress+='<div class="step-indicator '+cls+'" style="cursor:pointer" onclick="g
 });
 progress+='</div>';
 var content='';
-if(state.currentStep===0)content=renderIdentitas();
+if(isRAJenjang()&&state.formData.modePengisian==='cepat'&&state.currentStep>=1&&state.currentStep<=3)content=renderRAQuick();
+else if(state.currentStep===0)content=renderIdentitas();
 else if(state.currentStep===1)content=renderInstrumen('perencanaan',getIndikator('perencanaan'));
 else if(state.currentStep===2)content=renderPelaksanaan();
 else if(state.currentStep===3)content=renderInstrumen('asesmen',getIndikator('asesmen'));
 else if(state.currentStep===4)content=renderRekap();
 var isLast=state.currentStep===4;
 var nav='<div style="display:flex;justify-content:space-between;margin-top:20px">';
+if(isRAJenjang()&&state.formData.modePengisian==='cepat'&&state.currentStep>=1&&state.currentStep<=3)nav='';
 nav+='<button class="btn btn-danger" onclick="backToDashboard()">✕ Batal</button>';
 nav+='<div style="display:flex;gap:8px">';
 if(state.currentStep>0){nav+='<button class="btn btn-secondary" onclick="prevStep()">&#8592; Kembali</button>';}
@@ -1836,6 +1838,7 @@ if(isRAJenjang()){
  }
 }
 // Jenjang selector (untuk switching instrumen RA vs standar)
+html+='<div class="form-group" style="grid-column:1/-1"><label><b>Mode Pengisian</b></label><select onchange="setModePengisian(this.value)"><option value="lengkap" '+(state.formData.modePengisian!=='cepat'?'selected':'')+'>Supervisi Lengkap</option><option value="cepat" '+(state.formData.modePengisian==='cepat'?'selected':'')+'>Supervisi Cepat</option></select></div>';
 html+='<div class="form-group" style="grid-column:1/-1"><label><b>Jenjang Madrasah</b></label><select onchange="changeJenjang(this.value)"><option value="mi" '+(state.jenjang==='mi'?'selected':'')+'>MI / MTs / MA</option><option value="ra" '+(state.jenjang==='ra'?'selected':'')+'>RA (Raudhatul Athfal)</option></select></div>';
 // Madrasah dropdown
 html+='<div class="form-group"><label>Pilih Madrasah (dari data)</label><select onchange="selectMadrasah(this.value)"><option value="">-- Pilih atau isi manual --</option>';
@@ -1866,10 +1869,16 @@ html+='</div>';
 return html;
 }
 
-function changeJenjang(j){
-state.jenjang=j||'mi';
-render();
-}
+function changeJenjang(j){state.jenjang=j||'mi';render();}
+function setModePengisian(v){state.formData.modePengisian=v||'lengkap';state.formData.lastIndicatorIndex=0;render();}
+function raQuickItems(){return [{key:'perencanaan',items:getIndikator('perencanaan'),label:'Perencanaan Pembelajaran RA'},{key:'pelaksanaan',items:getIndikatorPelaksanaanFlat(),label:'Pelaksanaan Pembelajaran RA'},{key:'asesmen',items:getIndikator('asesmen'),label:'Asesmen & Dokumentasi Perkembangan RA'}];}
+function raQuickPosition(){var groups=raQuickItems(),pos=0;for(var i=0;i<groups.length;i++){var d=state.formData[groups[i].key]||{},scores=d.scores||[];for(var j=0;j<groups[i].items.length;j++){if(pos===state.formData.lastIndicatorIndex)return {g:groups[i],i:j,n:pos};pos++;}}return {g:groups[0],i:0,n:0};}
+function raQuickProgress(){var groups=raQuickItems(),done=0,total=0;groups.forEach(function(g){total+=g.items.length;var s=(state.formData[g.key]||{}).scores||[];g.items.forEach(function(_,i){if(s[i]!==null&&s[i]!==undefined)done++;});});return {done:done,total:total};}
+function renderRAQuick(){var p=raQuickPosition(),d=state.formData[p.g.key]||{scores:[],catatan:[]},score=d.scores&&d.scores[p.i]!=null?d.scores[p.i]:null,pr=raQuickProgress(),h='<div class="ra-quick no-print"><div style="display:flex;justify-content:space-between;align-items:center"><b>Supervisi Cepat RA</b><span>Tersimpan otomatis</span></div><div class="progress-track"><div class="progress-fill" style="width:'+(pr.done/pr.total*100)+'%"></div></div><p><b>'+pr.done+' dari '+pr.total+' indikator telah dinilai</b> · Indikator '+(p.n+1)+' dari '+pr.total+'</p><h3>'+escHtml(p.g.label)+'</h3><p style="font-size:1.05rem">'+escHtml(p.g.items[p.i])+'</p><button class="btn btn-sm btn-secondary" onclick="toggleRAExcavation()">Lihat Penggalian Data</button><div id="ra-excavation" style="display:none;margin:10px 0;padding:10px;background:#f8fafc">'+escHtml(getPenggalian(p.g.key,p.i))+'</div><div class="quick-scores">';for(var s=0;s<4;s++)h+='<button class="skor-radio '+(score===s?'selected':'')+'" title="'+(s+1)+' — '+SKOR_LABELS[s]+'" onclick="setSkor(\''+p.g.key+'\','+p.i+','+s+')">'+(s+1)+'<small>'+SKOR_LABELS[s]+'</small></button>';h+='</div><textarea rows="3" placeholder="+ Catatan (opsional)" onchange="setCatatan(\''+p.g.key+'\','+p.i+',this.value)">'+escHtml(d.catatan&&d.catatan[p.i]||'')+'</textarea><div class="quick-nav"><button class="btn btn-secondary" onclick="raQuickMove(-1)">← Sebelumnya</button><button class="btn btn-primary" onclick="raQuickMove(1)">Berikutnya →</button></div><button class="btn btn-success" onclick="finalizeRA()" style="margin-top:12px">Selesaikan Supervisi</button></div>';return h;}
+function toggleRAExcavation(){var e=document.getElementById('ra-excavation');if(e)e.style.display=e.style.display==='none'?'block':'none';}
+function raQuickMove(delta){var p=raQuickPosition(),pr=raQuickProgress();state.formData.lastIndicatorIndex=Math.max(0,Math.min(pr.total-1,p.n+delta));render();}
+function autosaveRA(){if(!isRAJenjang())return;var data=getData(),idx=-1;if(state.formData.id)idx=data.findIndex(function(x){return x&&x.id===state.formData.id;});if(idx<0&&state.editId!==null)idx=state.editId;if(idx>=0)data[idx]=state.formData;else data.push(state.formData);saveData(data);}
+function finalizeRA(){var p=raQuickProgress();if(p.done<p.total){alert('Masih terdapat '+(p.total-p.done)+' indikator yang belum dinilai.');return;}state.formData.statusSupervisi='selesai';autosaveRA();alert('Supervisi Berhasil Diselesaikan');state.view='detail';render();}
 function setJenisSupervisi(v){state.formData.jenisSupervisi=v||'awal';if(v!=='tindak_lanjut'){delete state.formData.parentSupervisiId;}render();}
 function setParentSupervisi(idx){var x=getAllSupervisi()[parseInt(idx)];if(x)state.formData.parentSupervisiId=x.id||('__legacy_'+parseInt(idx));state.formData.parentSupervisiRef=JSON.parse(JSON.stringify(x||null));render();}
 
@@ -2283,7 +2292,7 @@ state.activeTab='supervisi';
 state.view=isRAJenjang()?'form-ra':'form';
 state.currentStep=0;state.editId=null;
 var pengawas=getPengawas();
-state.formData={identitas:{namaSupervisor:pengawas.nama||'',nipSupervisor:pengawas.nip||'',jabatanSupervisor:pengawas.jabatan||''},jenisSupervisi:isRAJenjang()?'awal':undefined,perencanaan:{scores:[],catatan:[],manualCatatan:[]},pelaksanaan:{scores:[],catatan:[],manualCatatan:[]},asesmen:{scores:[],catatan:[],manualCatatan:[]},rekap:{}};
+state.formData={identitas:{namaSupervisor:pengawas.nama||'',nipSupervisor:pengawas.nip||'',jabatanSupervisor:pengawas.jabatan||''},statusSupervisi:isRAJenjang()?'draft':undefined,jenisSupervisi:isRAJenjang()?'awal':undefined,perencanaan:{scores:[],catatan:[],manualCatatan:[]},pelaksanaan:{scores:[],catatan:[],manualCatatan:[]},asesmen:{scores:[],catatan:[],manualCatatan:[]},rekap:{}};
 render();
 }
 function backToDashboard(){state.view='input-observasi';state.activeTab='supervisi';state.jenjang='mi';render()}
@@ -2340,6 +2349,7 @@ if(!state.formData[key].scores)state.formData[key].scores=[];
 if(!state.formData[key].catatan)state.formData[key].catatan=[];
 if(!state.formData[key].manualCatatan)state.formData[key].manualCatatan=[];
 state.formData[key].scores[idx]=val;
+if(isRAJenjang()){state.formData.statusSupervisi='draft';autosaveRA();}
 if(!state.formData[key].manualCatatan[idx]){state.formData[key].catatan[idx]=getAutoCatatan(val);}
 // Reset auto-generated rekap
 if(state.formData.rekap&&state.formData.rekap[key]){
@@ -2355,6 +2365,7 @@ if(!state.formData[key].catatan)state.formData[key].catatan=[];
 if(!state.formData[key].manualCatatan)state.formData[key].manualCatatan=[];
 state.formData[key].catatan[idx]=val;
 state.formData[key].manualCatatan[idx]=true;
+if(isRAJenjang())autosaveRA();
 }
 
 function setRekapNote(komp,field,val){
@@ -2363,11 +2374,13 @@ if(!state.formData.rekap[komp])state.formData.rekap[komp]={};
 state.formData.rekap[komp][field]=val;
 if(field==='catatan')state.formData.rekap[komp].manualCatatan=true;
 if(field==='tindakLanjut')state.formData.rekap[komp].manualTindakLanjut=true;
+if(isRAJenjang())autosaveRA();
 }
 
 function saveForm(){
 var data=getData();
 if(isRAJenjang()&&!state.formData.id)state.formData.id='ra_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+if(isRAJenjang()&&!state.formData.statusSupervisi)state.formData.statusSupervisi='draft';
 if(isRAJenjang()&&!state.formData.jenisSupervisi)state.formData.jenisSupervisi='awal';
 if(state.editId!==null){data[state.editId]=state.formData;}
 else{data.push(state.formData);}
