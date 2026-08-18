@@ -225,7 +225,11 @@ canvas{max-width:100%;margin:20px 0}
 <a onclick="navigate('guru')" data-nav="guru">👨‍🏫 Data Guru</a>
 </div>
 </li>
-<li><span onclick="toggleDropdown(this)">📝 Supervisi ▾</span>
+<li class="kepala-only kepala-flat"><span onclick="navigate('supervisi')" data-nav="supervisi">📋 Daftar Supervisi</span></li>
+<li class="kepala-only kepala-flat"><span onclick="navigate('rekap')" data-nav="rekap">📊 Rekap Hasil</span></li>
+<li class="kepala-only kepala-flat"><span onclick="navigate('cetak')" data-nav="cetak">🖨️ Cetak Hasil</span></li>
+<li class="kepala-only kepala-flat"><span onclick="navigate('laporan')" data-nav="laporan">📄 Laporan</span></li>
+<li class="pengawas-only supervisi-dropdown"><span onclick="toggleDropdown(this)">📝 Supervisi ▾</span>
 <div class="dropdown">
 <a onclick="navigate('supervisi')" data-nav="supervisi">📋 Daftar Supervisi</a>
 <a onclick="navigate('rekap')" data-nav="rekap">📊 Rekap Hasil</a>
@@ -1147,6 +1151,7 @@ var readOnly=['rekap','cetak','laporan','rekap-kokurikuler','laporan-kokurikuler
   if(role==='kepala' && restricted.indexOf(nav)!==-1) hide=true;
   if(el.classList.contains('pengawas-only') && role==='kepala') hide=true;
   if(el.classList.contains('kepala-only') && role!=='kepala') hide=true;
+  if(el.closest('.supervisi-dropdown') && role==='kepala') hide=true;
   if(role==='kepala' && nav==='kepala-madrasah') hide=false;
   el.style.display=hide?'none':'';
   var li=el.closest('li'); if(li){var visible=Array.from(li.querySelectorAll('[data-nav]')).some(function(x){return x.style.display!=='none'}); if(el===li.querySelector(':scope>span')) li.style.display=visible?'':'none';}
@@ -1251,6 +1256,7 @@ switch(state.view){
 case 'dashboard':app.innerHTML=renderDashboard();setTimeout(drawChart,100);break;
 case 'pengawas':app.innerHTML=renderPengawasPage();break;
 case 'madrasah':app.innerHTML=renderMadrasahPage();break;
+case 'kepala-madrasah':app.innerHTML=renderPengawasPage();break;
 case 'guru':app.innerHTML=renderGuruPage();break;
 case 'supervisi':app.innerHTML=renderSupervisiList();break;
 case 'input-observasi':app.innerHTML=renderInputObservasi();break;
