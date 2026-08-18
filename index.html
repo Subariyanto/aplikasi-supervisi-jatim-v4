@@ -216,10 +216,10 @@ canvas{max-width:100%;margin:20px 0}
 <div class="navbar-inner">
 <ul class="navbar-list">
 <li class="active"><span onclick="navigate('dashboard')" data-nav="dashboard">🏠 Beranda</span></li>
-<li class="pengawas-only"><span onclick="navigate('madrasah')" data-nav="madrasah">🏫 Data Madrasah</span></li>
 <li><span onclick="navigate('input-observasi')" data-nav="input-observasi">📝 Input Observasi</span></li>
 <li><span onclick="toggleDropdown(this)">🗂️ Data Master ▾</span>
 <div class="dropdown">
+<a onclick="navigate('madrasah')" data-nav="madrasah" class="pengawas-only">🏫 Data Madrasah</a>
 <a onclick="navigate('pengawas')" data-nav="pengawas" class="pengawas-only">👤 Data Pengawas</a>
 <a onclick="navigate('madrasah')" data-nav="kepala-madrasah" class="kepala-only">👤 Data Kepala Madrasah</a>
 <a onclick="navigate('guru')" data-nav="guru">👨‍🏫 Data Guru</a>
