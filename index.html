@@ -466,7 +466,7 @@ errEl.textContent='Username atau password salah.';
 errEl.style.display='block';return;
 }
 var active=getActivation();
-var session={username:user.username,nama:user.nama,role:(active.role||'pengawas')};
+var session={username:user.username,nama:user.nama,role:(active&&active.role)||user.role||'pengawas'};
 saveSession(session);
 showApp(session);
 render();
