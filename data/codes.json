@@ -70,7 +70,14 @@
       "user": "Sitawati2",
       "used": false,
       "createdAt": "2026-08-18T11:40:01.989Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-IF0E5H",
+      "role": "pengawas",
+      "user": "Syahru Maulana",
+      "used": false,
+      "createdAt": "2026-08-19T03:53:32.641Z"
     }
   ],
-  "updatedAt": "2026-08-19T03:52:39.589Z"
+  "updatedAt": "2026-08-19T03:53:35.671Z"
 }
