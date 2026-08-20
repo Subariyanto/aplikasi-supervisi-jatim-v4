@@ -1,4 +1,75 @@
 {
-  "codes": [],
-  "updatedAt": "2026-08-20T14:09:02.357Z"
+  "codes": [
+    {
+      "code": "SUPERVISI-PENGAWAS-FPJCRS",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-3YU4KV",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-5PI971",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-7ZMI07",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-2CIVVT",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-YTXPOL",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-K731Z4",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-QYW1Q0",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-T87CG1",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-PMSZ1Y",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    }
+  ],
+  "updatedAt": "2026-08-20T14:09:25.656Z"
 }
