@@ -83,7 +83,14 @@
       "user": "Ahmad Thohir",
       "used": false,
       "createdAt": "2026-08-31T01:01:28.175Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-5SUSDC",
+      "role": "pengawas",
+      "user": "Desi",
+      "used": false,
+      "createdAt": "2026-09-02T02:43:29.654Z"
     }
   ],
-  "updatedAt": "2026-09-02T02:43:06.700Z"
+  "updatedAt": "2026-09-02T02:43:31.684Z"
 }
