@@ -3,9 +3,10 @@
     {
       "code": "SUPERVISI-PENGAWAS-FPJCRS",
       "role": "pengawas",
-      "user": "",
+      "user": "Sennawati",
       "used": false,
-      "createdAt": "2026-08-20T14:09:22.127Z"
+      "createdAt": "2026-08-20T14:09:22.127Z",
+      "editedAt": "2026-09-03T02:31:11.276Z"
     },
     {
       "code": "SUPERVISI-PENGAWAS-3YU4KV",
@@ -90,7 +91,77 @@
       "user": "Desi",
       "used": false,
       "createdAt": "2026-09-02T02:43:29.654Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-6842H3",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-POYPSQ",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-31ROZB",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-M2VWSA",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-420COZ",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-C8WRIU",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-OK3I4H",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-FWEFI8",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-TFY8MW",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-G734JE",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
     }
   ],
-  "updatedAt": "2026-09-02T02:43:31.684Z"
+  "updatedAt": "2026-09-03T22:54:26.142Z"
 }
