@@ -167,7 +167,14 @@
       "user": "Kamad",
       "used": false,
       "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-NSMODG",
+      "role": "kepala",
+      "user": "Yosi Kamad",
+      "used": false,
+      "createdAt": "2026-09-09T12:56:28.313Z"
     }
   ],
-  "updatedAt": "2026-09-09T12:56:04.607Z"
+  "updatedAt": "2026-09-09T12:56:32.749Z"
 }
