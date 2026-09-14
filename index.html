@@ -232,6 +232,7 @@ canvas{max-width:100%;margin:20px 0}
 <a onclick="navigate('analisis-ra')" data-nav="analisis-ra">📈 Analisis Supervisi RA</a>
 <a onclick="navigate('cetak')" data-nav="cetak">🖨️ Cetak Hasil</a>
 <a onclick="navigate('laporan')" data-nav="laporan">📄 Laporan</a>
+<a onclick="navigate('laporan-tahun-ajaran')" data-nav="laporan-tahun-ajaran">📅 Laporan Tahun Ajaran</a>
 </div>
 </li>
 <li><span onclick="toggleDropdown(this)">📋 Kokurikuler ▾</span>
@@ -1316,6 +1317,7 @@ case 'iklim-madrasah':app.innerHTML=renderIklimMadrasahPage();break;
 case 'iklim-madrasah-form':app.innerHTML=renderIklimMadrasahForm(state.iklimMadrasahIdx);break;
 case 'rekap-iklim-madrasah':app.innerHTML=renderRekapIklimMadrasahPage();break;
 case 'laporan':app.innerHTML=renderLaporanPage();break;
+case 'laporan-tahun-ajaran':app.innerHTML=renderLaporanTahunAjaranPage();break;
 case 'laporan-kokurikuler':app.innerHTML=renderLaporanKokurikulerPage();break;
 case 'laporan-kokurikuler-madrasah':app.innerHTML=renderLaporanKokurikulerPerMadrasahPage();break;
 case 'laporan-kokurikuler-kkma':app.innerHTML=renderLaporanKokurikulerPerKKMAPage();break;
@@ -1672,6 +1674,7 @@ html+='<div class="form-group"><label>Pangkat/Golongan</label>'+pangkatSelect+'<
 html+='<div class="form-group"><label>Instansi</label><input type="text" id="pInstansi" value="'+escHtml(p.instansi||'')+'"></div>';
 html+='<div class="form-group"><label>Kabupaten/Kota</label><input type="text" id="pKabupaten" value="'+escHtml(p.kabupaten||'')+'"></div>';
 html+='<div class="form-group"><label>Tempat Tugas</label><input type="text" id="pTempatTugas" value="'+escHtml(p.tempatTugas||'')+'" placeholder="Contoh: KKMA 04"></div>';
+html+='<div class="form-group"><label>Tahun Ajaran Default Laporan</label><input type="text" id="pTahunAjaran" value="'+escHtml(p.tahunAjaran||'')+'" placeholder="Contoh: 2025-2026"><small style="color:#64748b">Dipakai bila belum ada tanggal/data isian.</small></div>';
 html+='</div>';
 html+='<div style="margin-top:15px"><button class="btn btn-primary" onclick="updatePengawas()">\ud83d\udcbe Simpan</button></div>';
 html+='</div>';
@@ -1689,7 +1692,8 @@ jabatan:document.getElementById('pJabatan')?document.getElementById('pJabatan').
 pangkat:document.getElementById('pPangkat')?document.getElementById('pPangkat').value:'',
 instansi:document.getElementById('pInstansi')?document.getElementById('pInstansi').value:'',
 kabupaten:document.getElementById('pKabupaten')?document.getElementById('pKabupaten').value:'',
-tempatTugas:document.getElementById('pTempatTugas')?document.getElementById('pTempatTugas').value:''
+tempatTugas:document.getElementById('pTempatTugas')?document.getElementById('pTempatTugas').value:'',
+tahunAjaran:document.getElementById('pTahunAjaran')?document.getElementById('pTahunAjaran').value:''
 };
 savePengawas(p);
 alert('Data pengawas berhasil disimpan!');
@@ -2074,12 +2078,47 @@ if(a.strengths.length) a.strengths.forEach(function(x){h+='<li>'+escHtml(x.item)
 h+='</ol><h3>Area Prioritas Penguatan</h3><ol>';
 if(a.priorities.length)a.priorities.forEach(function(x){h+='<li><b>Skor '+x.score+' — '+escHtml(x.label)+':</b> '+escHtml(x.item)+'</li>'});else h+='<li>Secara umum praktik pembelajaran telah terlaksana dengan baik. Penguatan diarahkan pada konsistensi dan peningkatan kualitas praktik yang sudah berjalan.</li>';
 h+='</ol><h3>Rekomendasi Pembinaan</h3><ol>';(a.recs.length?a.recs:['Pertahankan praktik baik dan lakukan refleksi berkala.']).forEach(function(x){h+='<li>'+escHtml(x)+'</li>'});
-h+='</ol><h3>Rencana Tindak Lanjut</h3><div class="form-group"><label>RTL editable supervisor</label><textarea rows="4" placeholder="Tuliskan rencana tindak lanjut, target waktu, dan bukti tindak lanjut." onchange="setRAAnalysisField(\'rtl\',this.value)">'+escHtml(a.rtl||'')+'</textarea></div><table><thead><tr><th>No</th><th>Area yang Dikuatkan</th><th>Rencana Tindak Lanjut</th><th>Target Waktu</th><th>Bukti Tindak Lanjut</th></tr></thead><tbody>';
+h+='</ol><h3>Rencana Tindak Lanjut</h3><div class="form-group"><label>RTL editable supervisor</label><div class="no-print" style="margin-bottom:8px"><button class="btn btn-sm btn-info" onclick="autoFillRTL()">✨ Isi Otomatis</button></div><textarea rows="6" style="width:100%;min-height:150px" placeholder="Tuliskan rencana tindak lanjut, target waktu, dan bukti tindak lanjut." onchange="setRAAnalysisField(\'rtl\',this.value)">'+escHtml(a.rtl||'')+'</textarea></div><table><thead><tr><th>No</th><th>Area yang Dikuatkan</th><th>Rencana Tindak Lanjut</th><th>Target Waktu</th><th>Bukti Tindak Lanjut</th></tr></thead><tbody>';
 (a.priorities.slice(0,3).length?a.priorities.slice(0,3):[{item:'Penguatan praktik baik',label:'Semua area'}]).forEach(function(x,i){h+='<tr><td>'+(i+1)+'</td><td>'+escHtml(x.label)+'</td><td>'+escHtml(a.recs[i]||'Pertahankan dan tingkatkan praktik yang sudah baik.')+'</td><td>2–4 minggu</td><td>Catatan pembinaan dan dokumentasi praktik</td></tr>'});
-h+='</tbody></table><h3>Kesimpulan Supervisi</h3><textarea rows="4" onchange="setRAAnalysisField(\'conclusion\',this.value)">'+escHtml(a.conclusion)+'</textarea><h3>Catatan Supervisor</h3><textarea rows="4" placeholder="Tuliskan temuan penting, apresiasi, hal yang perlu diperkuat, atau informasi kontekstual yang tidak tercakup dalam indikator." onchange="setRAAnalysisNote(this.value)">'+escHtml(a.note||'')+'</textarea></div>';return h;
+h+='</tbody></table><h3>Kesimpulan Supervisi</h3><div class="form-group"><div class="no-print" style="margin-bottom:8px"><button class="btn btn-sm btn-info" onclick="autoFillKesimpulan()">✨ Isi Otomatis</button></div><textarea rows="8" style="width:100%;min-height:180px" onchange="setRAAnalysisField(\'conclusion\',this.value)">'+escHtml(a.conclusion)+'</textarea></div><h3>Catatan Supervisor</h3><div class="form-group"><textarea rows="8" style="width:100%;min-height:180px" placeholder="Tuliskan temuan penting, apresiasi, hal yang perlu diperkuat, atau informasi kontekstual yang tidak tercakup dalam indikator." onchange="setRAAnalysisNote(this.value)">'+escHtml(a.note||'')+'</textarea></div></div>';return h;
 }
 function setRAAnalysisField(field,v){if(!state.formData.raAnalysis)state.formData.raAnalysis={};state.formData.raAnalysis[field]=v;}
 function setRAAnalysisNote(v){setRAAnalysisField('note',v);}
+
+function autoFillRTL(){
+if(!state.formData.raAnalysis)state.formData.raAnalysis={};
+var a=state.formData.raAnalysis;
+if(!a.priorities||a.priorities.length===0){alert('Belum ada data analisis prioritas. Pastikan skor sudah terisi.');return;}
+var rtlText='Berdasarkan hasil supervisi, berikut rencana tindak lanjut yang perlu dilakukan:\n\n';
+a.priorities.slice(0,3).forEach(function(p,i){
+var rec=a.recs&&a.recs[i]?a.recs[i]:'Lakukan pembinaan dan pendampingan terkait '+p.label.toLowerCase()+'.';
+rtlText+=(i+1)+'. '+p.label+': '+rec+'\n';
+});
+rtlText+='\nTarget waktu: 2–4 minggu ke depan.\nBukti tindak lanjut: Catatan pembinaan, dokumentasi praktik, dan hasil observasi lanjutan.';
+setRAAnalysisField('rtl',rtlText);
+render();
+}
+
+function autoFillKesimpulan(){
+if(!state.formData.raAnalysis)state.formData.raAnalysis={};
+var a=state.formData.raAnalysis;
+var totalPct=calcTotal(state.formData);
+var pred=getPredikat(totalPct);
+var kesimpulan='Berdasarkan hasil supervisi pembelajaran, capaian keseluruhan adalah '+totalPct.toFixed(1)+'% dengan predikat '+pred+'.\n\n';
+if(a.strengths&&a.strengths.length>0){
+kesimpulan+='Kekuatan praktik pembelajaran yang sudah terlaksana dengan baik meliputi: ';
+kesimpulan+=a.strengths.map(function(s){return s.item;}).join(', ')+'.';
+kesimpulan+='\n\n';
+}
+if(a.priorities&&a.priorities.length>0){
+kesimpulan+='Area yang masih memerlukan penguatan meliputi: ';
+kesimpulan+=a.priorities.slice(0,3).map(function(p){return p.label.toLowerCase();}).join(', ')+'.';
+kesimpulan+='\n\n';
+}
+kesimpulan+='Guru/madrasah menunjukkan komitmen dalam melaksanakan pembelajaran berkualitas. Dengan pendampingan dan pembinaan yang berkelanjutan, diharapkan semua indikator dapat mencapai standar optimal.';
+setRAAnalysisField('conclusion',kesimpulan);
+render();
+}
 
 function getRAPrevious(){var id=state.formData.parentSupervisiId;if(!id)return null;var found=getAllSupervisi().find(function(x){return x.jenjang==='ra'&&x.id===id;});return found||state.formData.parentSupervisiRef||null;}
 function raCompareHtml(){if(!isRAJenjang()||state.formData.jenisSupervisi!=='tindak_lanjut')return '';var old=getRAPrevious();if(!old)return '<div class="card"><b>Pilih supervisi sebelumnya untuk menampilkan perbandingan.</b></div>';var groups=[['perencanaan','Perencanaan Pembelajaran RA',getIndikator('perencanaan')],['pelaksanaan','Pelaksanaan Pembelajaran RA',getIndikatorPelaksanaanFlat()],['asesmen','Asesmen & Dokumentasi Perkembangan RA',getIndikator('asesmen')]],up=0,same=0,down=0,h='<div class="card"><h2>Perkembangan Hasil Supervisi</h2><p>Supervisi sebelumnya: '+escHtml(old.identitas&&old.identitas.tanggalSupervisi||'-')+' — '+calcTotal(old).toFixed(1)+'% ('+getPredikat(calcTotal(old))+')</p><table><thead><tr><th>Bagian</th><th>Sebelumnya</th><th>Tindak Lanjut</th><th>Perubahan</th><th>Status</th></tr></thead><tbody>';groups.forEach(function(g){var os=old[g[0]]&&old[g[0]].scores||[],ns=state.formData[g[0]]&&state.formData[g[0]].scores||[],om=g[2].length*4,n=g[2].length*4,oa=os.reduce(function(a,b){return a+(b==null?0:b+1)},0),na=ns.reduce(function(a,b){return a+(b==null?0:b+1)},0),delta=na-oa,status=delta>0?'Meningkat':delta<0?'Menurun':'Tetap';h+='<tr><td>'+g[1]+'</td><td>'+((oa/om)*100).toFixed(1)+'%</td><td>'+((na/n)*100).toFixed(1)+'%</td><td>'+(delta>=0?'+':'')+((na/ n-oa/om)*100).toFixed(1)+'</td><td>'+status+'</td></tr>';g[2].forEach(function(_,i){var a=os[i],b=ns[i];if(a!=null&&b!=null){if(b>a)up++;else if(b<a)down++;else same++;}});});h+='</tbody></table><h3>Perbandingan Per Indikator</h3><div style="font-size:.85rem">';groups.forEach(function(g){var os=old[g[0]]&&old[g[0]].scores||[],ns=state.formData[g[0]]&&state.formData[g[0]].scores||[];g[2].forEach(function(item,i){if(os[i]!=null&&ns[i]!=null){var delta=ns[i]-os[i],st=delta>0?'↑ Meningkat':delta<0?'↓ Menurun':'→ Tetap';h+='<div>'+escHtml(item)+' — Sebelumnya: '+(os[i]+1)+' → Sekarang: '+(ns[i]+1)+' — <b>'+st+'</b></div>';}});});h+='</div><p><b>Perbandingan indikator terisi:</b> '+(up+same+down)+' dari '+(groups[0][2].length+groups[1][2].length+groups[2][2].length)+' — ↑ Meningkat: '+up+' | → Tetap: '+same+' | ↓ Menurun: '+down+'</p><h3>Evaluasi Rencana Tindak Lanjut Sebelumnya</h3><p>Indikator prioritas yang meningkat berstatus <b>Tercapai</b>; yang meningkat namun masih bernilai 1–3 berstatus <b>Berkembang</b>; yang tetap atau menurun berstatus <b>Perlu Pendampingan Lanjutan</b>.</p></div>';return h;}
@@ -2317,7 +2356,7 @@ render();
 function backToDashboard(){state.view='input-observasi';state.activeTab='supervisi';state.jenjang='mi';render()}
 function renderSupervisiList(){
 var data=getAllSupervisi();
-var html='<div class="card"><h2 style="margin-bottom:20px">📝 Daftar Supervisi Pembelajaran</h2>';
+var html='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="margin:0">📝 Daftar Supervisi Pembelajaran</h2><button class="btn btn-success" onclick="newSupervisi()">+ Supervisi Baru</button></div>';
 if(data.length===0){
 html+='<div class="empty-state"><p>Belum ada data supervisi.<br>Klik tombol di bawah untuk mulai.</p></div>';
 }else{
@@ -3958,6 +3997,94 @@ setTimeout(function(){w.print();},500);
 
 
 // ===== LAPORAN HASIL SUPERVISI =====
+function renderLaporanTahunAjaranPage(){
+var p=getPengawas();
+var curTgl="";
+try{curTgl=(typeof state!=="undefined"&&state&&state.taDate)||localStorage.getItem(TA_LAPORAN_KEY)||"";}catch(e){}
+var list=taSemua();
+var pTA=p.tahunAjaran||"";
+if(pTA&&list.indexOf(pTA)<0)list.push(pTA);
+var cur=taLaporan();
+var html='<div class="card"><h2 style="margin-bottom:8px">&#128197; Laporan Tahun Ajaran</h2>';
+html+='<p style="color:#64748b;margin-bottom:15px">Atur tahun ajaran laporan di sini. Tahun ajaran pada <b>semua laporan</b> (Supervisi Pembelajaran, Kokurikuler, Ekstrakurikuler, Iklim Madrasah, Laporan Lengkap, Per Madrasah, dan Per KKMA) akan otomatis mengikuti. Bulan <b>Juli&ndash;Desember</b> dihitung tahun ajaran berjalan, <b>Januari&ndash;Juni</b> masuk tahun ajaran sebelumnya.</p>';
+html+='<div style="background:#f0f9ff;border:2px solid #0ea5e9;border-radius:12px;padding:20px;margin-bottom:20px">';
+html+='<div class="grid-2">';
+html+='<div class="form-group"><label><b>Tanggal Laporan</b></label><input type="date" id="taTanggal" value="'+escHtml(curTgl||'')+'" onchange="setTaLaporan(this.value)"></div>';
+html+='<div class="form-group"><label><b>Tahun Ajaran Aktif</b></label><input type="text" value="'+escHtml(cur)+'" readonly style="background:#f1f5f9;font-weight:bold"></div>';
+html+='</div>';
+html+='<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">';
+html+='<span style="color:#475569">Pilih cepat:</span>';
+if(list.length===0){html+='<span style="color:#94a3b8">Belum ada data isian bertanggal.</span>';}
+list.forEach(function(ta){
+var aktif=(ta===cur)?' btn-success':' btn-secondary';
+html+='<button class="btn btn-sm'+aktif+'" onclick="setTaLaporan(\''+ta+'\')">'+escHtml(ta)+'</button>';
+});
+html+='<button class="btn btn-sm btn-info" onclick="isiOtomatisTA()">&#10024; Isi Otomatis dari Data Isian</button>';
+html+='</div>';
+html+='<div style="margin-top:15px"><button class="btn btn-primary" onclick="navigate(\'laporan\')">&#128424; Buka Menu Laporan</button></div>';
+html+='</div>';
+html+='</div>';
+html+='<div class="no-print" style="margin-top:20px;text-align:right"><button class="btn btn-danger" onclick="navigate(\'dashboard\')" style="padding:8px 20px">&#10005; Tutup</button></div>';
+return html;
+}
+
+// ===== TAHUN AJARAN LAPORAN (dinamis) =====
+const TA_LAPORAN_KEY="supervisi_ta_laporan";
+function bulanRomawi(m){return ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII"][m]||"";}
+function taDariTanggal(t){
+if(!t)return "";
+var s=String(t).trim();var m=s.match(/^(\d{4})-(\d{1,2})/);
+if(m){var y=parseInt(m[1],10),mo=parseInt(m[2],10);if(!mo)return "";return mo>=7?(y+"-"+(y+1)):((y-1)+"-"+y);}
+m=s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{4})/);
+if(m){var mo2=parseInt(m[2],10),y2=parseInt(m[3],10);if(!mo2)return "";return mo2>=7?(y2+"-"+(y2+1)):((y2-1)+"-"+y2);}
+m=s.match(/(\d{4})\s*[\/-]\s*(\d{4})/);
+if(m)return m[1]+"-"+m[2];
+return "";
+}
+function taSemua(){
+var out=[],seen={};
+function push(t){var ta=taDariTanggal(t);if(ta&&!seen[ta]){seen[ta]=1;out.push(ta);}}
+try{((typeof getAllSupervisi==="function"?getAllSupervisi():[])).forEach(function(d){push((d.identitas||{}).tanggalSupervisi||(d.identitas||{}).tanggal);});}catch(e){}
+["getKokurikuler","getEkstrakurikuler","getIklimMadrasah"].forEach(function(fn){
+try{((typeof window[fn]==="function")?window[fn]():[]).forEach(function(d){push(d.tanggal);});}catch(e){}
+});
+return out.sort().reverse();
+}
+function taLaporan(){
+var tgl="";
+try{if(typeof state!=="undefined"&&state&&state.view==="laporan-tahun-ajaran")tgl=state.taDate||"";}catch(e){}
+if(!tgl){try{tgl=localStorage.getItem(TA_LAPORAN_KEY)||"";}catch(e){}}
+var ta=tgl?taDariTanggal(tgl):"";
+if(!ta){try{ta=getPengawas().tahunAjaran||"";}catch(e){}}
+if(!ta){var arr=taSemua();if(arr.length)ta=arr[0];}
+if(!ta){var now=new Date();ta=taDariTanggal(now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0")+"-01");}
+return ta;
+}
+function setTaLaporan(v){
+if(!v){return;}
+try{localStorage.setItem(TA_LAPORAN_KEY,v);}catch(e){}
+if(typeof state!=="undefined"&&state){state.taDate=v;}
+if(typeof render==="function")render();
+}
+function taLabel(tgl){
+var ta=tgl?taDariTanggal(tgl):"";
+return ta?("Tahun Ajaran "+ta):"";
+}
+
+function isiOtomatisTA(){
+var semua=[];
+try{(typeof getAllSupervisi==="function"?getAllSupervisi():[]).forEach(function(d){var t=(d.identitas||{}).tanggalSupervisi||(d.identitas||{}).tanggal;if(t)semua.push(t);});}catch(e){}
+["getKokurikuler","getEkstrakurikuler","getIklimMadrasah"].forEach(function(fn){
+try{if(typeof window[fn]==="function"){window[fn]().forEach(function(d){if(d.tanggal)semua.push(d.tanggal);});}}catch(e){}
+});
+if(semua.length===0){alert('Belum ada data isian bertanggal. Silakan isi supervisi/kokurikuler/ekstrakurikuler/iklim madrasah terlebih dahulu.');return;}
+var terbaru=semua[0];
+semua.forEach(function(t){if(String(t).slice(0,10)>String(terbaru).slice(0,10))terbaru=t;});
+setTaLaporan(String(terbaru).slice(0,10));
+alert('Tahun ajaran laporan diset otomatis dari data isian terbaru: '+taLaporan());
+}
+
+
 function renderLaporanPage(){
 var data=getAllSupervisi();
 var pengawas=getPengawas();
@@ -4039,7 +4166,7 @@ html+='</style></head><body>';
 html+='<div class="cover">';
 html+='<h1>LAPORAN</h1>';
 html+='<h1>SUPERVISI PEMBELAJARAN</h1>';
-html+='<h2>Tahun Ajaran 2025-2026</h2>';
+html+='<h2>Tahun Ajaran '+taLaporan()+'</h2>';
 html+='<br><br><br>';
 html+='<p style="text-align:center;font-size:14pt"><b>'+escHtml(madrasahObj.nama||mName)+'</b></p>';
 html+='<p style="text-align:center">Alamat: '+(madrasahObj.alamat||'..........................................')+'</p>';
@@ -4252,7 +4379,7 @@ html+='</style></head><body>';
 html+='<div class="cover">';
 html+='<h1>LAPORAN</h1>';
 html+='<h1>SUPERVISI PEMBELAJARAN</h1>';
-html+='<h2>Tahun Ajaran 2025-2026</h2>';
+html+='<h2>Tahun Ajaran '+taLaporan()+'</h2>';
 html+='<br><br><br>';
 html+='<p style="text-align:center;font-size:14pt"><b>'+(pengawas.tempatTugas||'...............................')+'</b></p>';
 html+='<br><br><br>';
@@ -4585,7 +4712,7 @@ html+='.page-break{page-break-before:always}';
 html+='.ttd{margin-top:50px;text-align:center;margin-left:auto;margin-right:0;width:fit-content;min-width:250px}';
 html+='</style></head><body>';
 // COVER
-html+='<div class="cover"><h1>LAPORAN</h1><h1>PENDAMPINGAN KOKURIKULER</h1><h2>Tahun Ajaran 2025-2026</h2><br><br><br>';
+html+='<div class="cover"><h1>LAPORAN</h1><h1>PENDAMPINGAN KOKURIKULER</h1><h2>Tahun Ajaran '+taLaporan()+'</h2><br><br><br>';
 html+='<p style="text-align:center;font-size:14pt"><b>'+(pengawas.tempatTugas||'KKMA')+'</b></p><br><br><br>';
 html+='<p style="text-align:center">Disusun oleh:</p>';
 html+='<p style="text-align:center;font-size:13pt"><b>'+(pengawas.nama||'...')+'</b></p>';
@@ -4593,7 +4720,7 @@ html+='<p style="text-align:center">NIP. '+(pengawas.nip||'...')+'</p>';
 html+='<p style="text-align:center">'+(pengawas.jabatan||'Pengawas Madrasah')+'</p></div>';
 // KATA PENGANTAR
 html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>KATA PENGANTAR</h2>';
-html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan Pendampingan Kokurikuler Tahun Ajaran 2025-2026 ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan pendampingan kegiatan kokurikuler yang telah dilakukan di madrasah.</p>';
+html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan Pendampingan Kokurikuler Tahun Ajaran '+taLaporan()+' ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan pendampingan kegiatan kokurikuler yang telah dilakukan di madrasah.</p>';
 html+='<p>Pendampingan kokurikuler merupakan bagian penting dari upaya peningkatan mutu pendidikan secara holistik. Kegiatan kokurikuler dirancang untuk memperkuat dan memperdalam pemahaman peserta didik terhadap materi pembelajaran melalui kegiatan-kegiatan yang terintegrasi dengan kurikulum. Melalui pendampingan ini, diharapkan pelaksanaan kokurikuler dapat berjalan lebih efektif dan bermakna.</p>';
 html+='<p>Kami menyadari bahwa laporan ini masih jauh dari sempurna. Kritik dan saran yang membangun sangat kami harapkan demi perbaikan di masa mendatang.</p>';
 html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
@@ -4625,7 +4752,7 @@ html+='<li>Undang-Undang Nomor 20 Tahun 2003 tentang Sistem Pendidikan Nasional;
 html+='<li>Peraturan Pemerintah Nomor 57 Tahun 2021 tentang Standar Nasional Pendidikan;</li>';
 html+='<li>Keputusan Menteri Agama tentang Kurikulum Merdeka pada Madrasah;</li>';
 html+='<li>Peraturan Menteri Agama Nomor 62 Tahun 2023 tentang Pengawas Madrasah;</li>';
-html+='<li>Program Kerja Pengawas Madrasah Tahun 2025-2026.</li>';
+html+='<li>Program Kerja Pengawas Madrasah Tahun '+taLaporan()+'.</li>';
 html+='</ol>';
 html+='<h3>C. Tujuan</h3>';
 html+='<ol>';
@@ -4646,7 +4773,7 @@ html+='</ol>';
 // BAB II
 html+='<div class="page-break"></div><h2>BAB II<br>PELAKSANAAN PENDAMPINGAN KOKURIKULER</h2>';
 html+='<h3>A. Waktu dan Tempat</h3>';
-html+='<p>Pendampingan kokurikuler dilaksanakan pada Tahun Ajaran 2025-2026 di madrasah-madrasah binaan.</p>';
+html+='<p>Pendampingan kokurikuler dilaksanakan pada Tahun Ajaran '+taLaporan()+' di madrasah-madrasah binaan.</p>';
 html+='<h3>B. Instrumen Pendampingan</h3>';
 html+='<p>Instrumen yang digunakan dalam pendampingan kokurikuler mencakup aspek-aspek berikut:</p>';
 html+='<ol>';
@@ -4800,7 +4927,7 @@ html+='.page-break{page-break-before:always}';
 html+='.ttd{margin-top:50px;text-align:center;margin-left:auto;margin-right:0;width:fit-content;min-width:250px}';
 html+='</style></head><body>';
 // COVER
-html+='<div class="cover"><h1>LAPORAN</h1><h1>PENDAMPINGAN EKSTRAKURIKULER</h1><h2>Tahun Ajaran 2025-2026</h2><br><br><br>';
+html+='<div class="cover"><h1>LAPORAN</h1><h1>PENDAMPINGAN EKSTRAKURIKULER</h1><h2>Tahun Ajaran '+taLaporan()+'</h2><br><br><br>';
 html+='<p style="text-align:center;font-size:14pt"><b>'+(pengawas.tempatTugas||'KKMA')+'</b></p><br><br><br>';
 html+='<p style="text-align:center">Disusun oleh:</p>';
 html+='<p style="text-align:center;font-size:13pt"><b>'+(pengawas.nama||'...')+'</b></p>';
@@ -4808,7 +4935,7 @@ html+='<p style="text-align:center">NIP. '+(pengawas.nip||'...')+'</p>';
 html+='<p style="text-align:center">'+(pengawas.jabatan||'Pengawas Madrasah')+'</p></div>';
 // KATA PENGANTAR
 html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>KATA PENGANTAR</h2>';
-html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan Pendampingan Ekstrakurikuler Tahun Ajaran 2025-2026 ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan pendampingan kegiatan ekstrakurikuler yang telah dilakukan di madrasah.</p>';
+html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan Pendampingan Ekstrakurikuler Tahun Ajaran '+taLaporan()+' ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan pendampingan kegiatan ekstrakurikuler yang telah dilakukan di madrasah.</p>';
 html+='<p>Kegiatan ekstrakurikuler merupakan wadah pengembangan potensi, minat, dan bakat peserta didik di luar kegiatan intrakurikuler. Melalui pendampingan ini, diharapkan pelaksanaan ekstrakurikuler dapat lebih terencana, terarah, dan memberikan dampak positif bagi pengembangan karakter dan kompetensi peserta didik.</p>';
 html+='<p>Kami menyadari bahwa laporan ini masih jauh dari sempurna. Kritik dan saran yang membangun sangat kami harapkan.</p>';
 html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
@@ -4840,7 +4967,7 @@ html+='<li>Undang-Undang Nomor 20 Tahun 2003 tentang Sistem Pendidikan Nasional;
 html+='<li>Peraturan Pemerintah Nomor 57 Tahun 2021 tentang Standar Nasional Pendidikan;</li>';
 html+='<li>Peraturan Menteri Pendidikan dan Kebudayaan Nomor 62 Tahun 2014 tentang Kegiatan Ekstrakurikuler;</li>';
 html+='<li>Peraturan Menteri Agama Nomor 62 Tahun 2023 tentang Pengawas Madrasah;</li>';
-html+='<li>Program Kerja Pengawas Madrasah Tahun 2025-2026.</li>';
+html+='<li>Program Kerja Pengawas Madrasah Tahun '+taLaporan()+'.</li>';
 html+='</ol>';
 html+='<h3>C. Tujuan</h3>';
 html+='<ol>';
@@ -4861,7 +4988,7 @@ html+='</ol>';
 // BAB II
 html+='<div class="page-break"></div><h2>BAB II<br>PELAKSANAAN PENDAMPINGAN EKSTRAKURIKULER</h2>';
 html+='<h3>A. Waktu dan Tempat</h3>';
-html+='<p>Pendampingan ekstrakurikuler dilaksanakan pada Tahun Ajaran 2025-2026 di madrasah-madrasah binaan.</p>';
+html+='<p>Pendampingan ekstrakurikuler dilaksanakan pada Tahun Ajaran '+taLaporan()+' di madrasah-madrasah binaan.</p>';
 html+='<h3>B. Instrumen Pendampingan</h3>';
 html+='<p>Instrumen yang digunakan dalam pendampingan ekstrakurikuler mencakup aspek-aspek berikut:</p>';
 html+='<ol>';
@@ -5015,7 +5142,7 @@ html+='.page-break{page-break-before:always}';
 html+='.ttd{margin-top:50px;text-align:center;margin-left:auto;margin-right:0;width:fit-content;min-width:250px}';
 html+='</style></head><body>';
 // COVER
-html+='<div class="cover"><h1>LAPORAN</h1><h1>SUPERVISI IKLIM MADRASAH</h1><h2>Tahun Ajaran 2025-2026</h2><br><br><br>';
+html+='<div class="cover"><h1>LAPORAN</h1><h1>SUPERVISI IKLIM MADRASAH</h1><h2>Tahun Ajaran '+taLaporan()+'</h2><br><br><br>';
 html+='<p style="text-align:center;font-size:14pt"><b>'+(pengawas.tempatTugas||'KKMA')+'</b></p><br><br><br>';
 html+='<p style="text-align:center">Disusun oleh:</p>';
 html+='<p style="text-align:center;font-size:13pt"><b>'+(pengawas.nama||'...')+'</b></p>';
@@ -5023,7 +5150,7 @@ html+='<p style="text-align:center">NIP. '+(pengawas.nip||'...')+'</p>';
 html+='<p style="text-align:center">'+(pengawas.jabatan||'Pengawas Madrasah')+'</p></div>';
 // KATA PENGANTAR
 html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>KATA PENGANTAR</h2>';
-html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan Supervisi Iklim Madrasah Tahun Ajaran 2025-2026 ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan supervisi budaya dan iklim madrasah.</p>';
+html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan Supervisi Iklim Madrasah Tahun Ajaran '+taLaporan()+' ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan supervisi budaya dan iklim madrasah.</p>';
 html+='<p>Iklim madrasah yang kondusif merupakan prasyarat penting bagi terciptanya proses pembelajaran yang efektif dan bermakna. Budaya madrasah yang positif akan mendorong seluruh warga madrasah untuk berprestasi, berkolaborasi, dan mengembangkan potensi secara optimal. Melalui supervisi ini, diharapkan dapat teridentifikasi kekuatan dan area perbaikan dalam menciptakan iklim madrasah yang ideal.</p>';
 html+='<p>Kami menyadari bahwa laporan ini masih jauh dari sempurna. Kritik dan saran yang membangun sangat kami harapkan.</p>';
 html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
@@ -5056,7 +5183,7 @@ html+='<li>Peraturan Pemerintah Nomor 57 Tahun 2021 tentang Standar Nasional Pen
 html+='<li>Peraturan Menteri Agama Nomor 58 Tahun 2017 tentang Kepala Madrasah;</li>';
 html+='<li>Peraturan Menteri Agama Nomor 62 Tahun 2023 tentang Pengawas Madrasah;</li>';
 html+='<li>Keputusan Direktur Jenderal Pendidikan Islam tentang Standar Pengelolaan Madrasah;</li>';
-html+='<li>Program Kerja Pengawas Madrasah Tahun 2025-2026.</li>';
+html+='<li>Program Kerja Pengawas Madrasah Tahun '+taLaporan()+'.</li>';
 html+='</ol>';
 html+='<h3>C. Tujuan</h3>';
 html+='<ol>';
@@ -5080,7 +5207,7 @@ html+='</ol>';
 // BAB II
 html+='<div class="page-break"></div><h2>BAB II<br>PELAKSANAAN SUPERVISI IKLIM MADRASAH</h2>';
 html+='<h3>A. Waktu dan Tempat</h3>';
-html+='<p>Supervisi iklim madrasah dilaksanakan pada Tahun Ajaran 2025-2026 di madrasah-madrasah binaan.</p>';
+html+='<p>Supervisi iklim madrasah dilaksanakan pada Tahun Ajaran '+taLaporan()+' di madrasah-madrasah binaan.</p>';
 html+='<h3>B. Instrumen Supervisi</h3>';
 html+='<p>Instrumen yang digunakan dalam supervisi iklim madrasah mencakup aspek-aspek berikut:</p>';
 html+='<ol>';
@@ -5332,7 +5459,7 @@ html+='.page-break{page-break-before:always}';
 html+='.ttd{margin-top:50px;text-align:center;margin-left:auto;margin-right:0;width:fit-content;min-width:250px}';
 html+='</style></head><body>';
 // COVER
-html+='<div class="cover"><h1>LAPORAN</h1><h1>'+title.toUpperCase()+'</h1><h2>Tahun Ajaran 2025-2026</h2><br><br><br>';
+html+='<div class="cover"><h1>LAPORAN</h1><h1>'+title.toUpperCase()+'</h1><h2>Tahun Ajaran '+taLaporan()+'</h2><br><br><br>';
 html+='<p style="text-align:center;font-size:14pt"><b>'+escHtml(mName)+'</b></p>';
 html+='<p style="text-align:center">Alamat: '+(madrasahObj.alamat||'...')+'</p><br><br><br>';
 html+='<p style="text-align:center">Disusun oleh:</p>';
@@ -5341,7 +5468,7 @@ html+='<p style="text-align:center">NIP. '+(pengawas.nip||'...')+'</p>';
 html+='<p style="text-align:center">'+(pengawas.jabatan||'Pengawas Madrasah')+'</p></div>';
 // KATA PENGANTAR
 html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>KATA PENGANTAR</h2>';
-html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan '+title+' Tahun Ajaran 2025-2026 untuk '+escHtml(mName)+' ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan supervisi yang telah dilakukan.</p>';
+html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan '+title+' Tahun Ajaran '+taLaporan()+' untuk '+escHtml(mName)+' ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan supervisi yang telah dilakukan.</p>';
 html+='<p>Kami menyadari bahwa laporan ini masih jauh dari sempurna. Kritik dan saran yang membangun sangat kami harapkan demi perbaikan di masa mendatang.</p>';
 html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
 html+='</div>';
@@ -5363,7 +5490,7 @@ html+='<div class="page-break"></div><h2>BAB I<br>PENDAHULUAN</h2>';
 html+='<h3>A. Latar Belakang</h3>';
 html+='<p>Supervisi merupakan bagian penting dari upaya peningkatan mutu pendidikan. Laporan ini menyajikan hasil supervisi '+title.toLowerCase()+' yang dilaksanakan di '+escHtml(mName)+' sebagai bahan evaluasi dan perencanaan perbaikan.</p>';
 html+='<h3>B. Dasar Hukum</h3>';
-html+='<ol><li>Undang-Undang Nomor 20 Tahun 2003 tentang Sistem Pendidikan Nasional;</li><li>Peraturan Pemerintah Nomor 57 Tahun 2021 tentang Standar Nasional Pendidikan;</li><li>Peraturan Menteri Agama Nomor 62 Tahun 2023 tentang Pengawas Madrasah;</li><li>Program Kerja Pengawas Madrasah Tahun 2025-2026.</li></ol>';
+html+='<ol><li>Undang-Undang Nomor 20 Tahun 2003 tentang Sistem Pendidikan Nasional;</li><li>Peraturan Pemerintah Nomor 57 Tahun 2021 tentang Standar Nasional Pendidikan;</li><li>Peraturan Menteri Agama Nomor 62 Tahun 2023 tentang Pengawas Madrasah;</li><li>Program Kerja Pengawas Madrasah Tahun '+taLaporan()+'.</li></ol>';
 html+='<h3>C. Tujuan</h3>';
 html+='<ol><li>Memastikan pelaksanaan kegiatan sesuai dengan perencanaan dan tujuan kurikulum.</li><li>Memberikan pembinaan dan pendampingan kepada guru.</li><li>Mengevaluasi efektivitas kegiatan dalam mendukung pencapaian kompetensi peserta didik.</li><li>Menyusun rekomendasi perbaikan untuk peningkatan kualitas.</li></ol>';
 html+='<h3>D. Sasaran</h3>';
@@ -5371,7 +5498,7 @@ html+='<p>Sasaran supervisi ini adalah '+escHtml(mName)+'. Total penilaian yang 
 // BAB II
 html+='<div class="page-break"></div><h2>BAB II<br>PELAKSANAAN SUPERVISI</h2>';
 html+='<h3>A. Waktu dan Tempat</h3>';
-html+='<p>Supervisi dilaksanakan pada Tahun Ajaran 2025-2026 di '+escHtml(mName)+'.</p>';
+html+='<p>Supervisi dilaksanakan pada Tahun Ajaran '+taLaporan()+' di '+escHtml(mName)+'.</p>';
 html+='<h3>B. Instrumen Supervisi</h3>';
 html+='<p>Instrumen yang digunakan mencakup aspek-aspek berikut:</p><ol>';
 INDIKATOR.forEach(function(item,i){html+='<li>'+escHtml(item)+'</li>'});
@@ -5449,14 +5576,14 @@ html+='.page-break{page-break-before:always}';
 html+='.ttd{margin-top:50px;text-align:center;margin-left:auto;margin-right:0;width:fit-content;min-width:250px}';
 html+='</style></head><body>';
 // COVER
-html+='<div class="cover"><h1>LAPORAN</h1><h1>'+title.toUpperCase()+'</h1><h2>'+escHtml(kkma)+'</h2><h2>Tahun Ajaran 2025-2026</h2><br><br><br>';
+html+='<div class="cover"><h1>LAPORAN</h1><h1>'+title.toUpperCase()+'</h1><h2>'+escHtml(kkma)+'</h2><h2>Tahun Ajaran '+taLaporan()+'</h2><br><br><br>';
 html+='<p style="text-align:center">Disusun oleh:</p>';
 html+='<p style="text-align:center;font-size:13pt"><b>'+(pengawas.nama||'...')+'</b></p>';
 html+='<p style="text-align:center">NIP. '+(pengawas.nip||'...')+'</p>';
 html+='<p style="text-align:center">'+(pengawas.jabatan||'Pengawas Madrasah')+'</p></div>';
 // KATA PENGANTAR
 html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>KATA PENGANTAR</h2>';
-html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan '+title+' '+escHtml(kkma)+' Tahun Ajaran 2025-2026 ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan supervisi yang telah dilakukan di seluruh madrasah binaan dalam wilayah '+escHtml(kkma)+'.</p>';
+html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan '+title+' '+escHtml(kkma)+' Tahun Ajaran '+taLaporan()+' ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan supervisi yang telah dilakukan di seluruh madrasah binaan dalam wilayah '+escHtml(kkma)+'.</p>';
 html+='<p>Kami menyadari bahwa laporan ini masih jauh dari sempurna. Kritik dan saran yang membangun sangat kami harapkan demi perbaikan di masa mendatang.</p>';
 html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
 html+='</div>';
@@ -5478,7 +5605,7 @@ html+='<div class="page-break"></div><h2>BAB I<br>PENDAHULUAN</h2>';
 html+='<h3>A. Latar Belakang</h3>';
 html+='<p>Supervisi merupakan bagian penting dari upaya peningkatan mutu pendidikan. Laporan ini menyajikan hasil supervisi '+title.toLowerCase()+' yang dilaksanakan di seluruh madrasah binaan dalam wilayah '+escHtml(kkma)+' sebagai bahan evaluasi dan perencanaan perbaikan.</p>';
 html+='<h3>B. Dasar Hukum</h3>';
-html+='<ol><li>Undang-Undang Nomor 20 Tahun 2003 tentang Sistem Pendidikan Nasional;</li><li>Peraturan Pemerintah Nomor 57 Tahun 2021 tentang Standar Nasional Pendidikan;</li><li>Peraturan Menteri Agama Nomor 62 Tahun 2023 tentang Pengawas Madrasah;</li><li>Program Kerja Pengawas Madrasah Tahun 2025-2026.</li></ol>';
+html+='<ol><li>Undang-Undang Nomor 20 Tahun 2003 tentang Sistem Pendidikan Nasional;</li><li>Peraturan Pemerintah Nomor 57 Tahun 2021 tentang Standar Nasional Pendidikan;</li><li>Peraturan Menteri Agama Nomor 62 Tahun 2023 tentang Pengawas Madrasah;</li><li>Program Kerja Pengawas Madrasah Tahun '+taLaporan()+'.</li></ol>';
 html+='<h3>C. Tujuan</h3>';
 html+='<ol><li>Memastikan pelaksanaan kegiatan sesuai dengan perencanaan dan tujuan kurikulum di seluruh madrasah binaan.</li><li>Memberikan pembinaan dan pendampingan kepada guru.</li><li>Mengevaluasi efektivitas kegiatan dalam mendukung pencapaian kompetensi peserta didik.</li><li>Menyusun rekomendasi perbaikan untuk peningkatan kualitas.</li></ol>';
 html+='<h3>D. Sasaran</h3>';
@@ -5488,7 +5615,7 @@ html+='<p>Sasaran supervisi meliputi <b>'+madrasahNames.length+' madrasah</b> da
 // BAB II
 html+='<div class="page-break"></div><h2>BAB II<br>PELAKSANAAN SUPERVISI</h2>';
 html+='<h3>A. Waktu dan Tempat</h3>';
-html+='<p>Supervisi dilaksanakan pada Tahun Ajaran 2025-2026 di madrasah-madrasah binaan wilayah '+escHtml(kkma)+':</p><ol>';
+html+='<p>Supervisi dilaksanakan pada Tahun Ajaran '+taLaporan()+' di madrasah-madrasah binaan wilayah '+escHtml(kkma)+':</p><ol>';
 madrasahNames.forEach(function(n){html+='<li>'+escHtml(n)+'</li>';});
 html+='</ol>';
 html+='<h3>B. Instrumen Supervisi</h3>';
