@@ -1106,8 +1106,11 @@ function getMadrasahJenjang(nama){if(!nama)return 'mi';var all=getAllMadrasah();
 function getPredikat(pct){if(pct>=91)return'Sangat Baik';if(pct>=81)return'Baik';if(pct>=71)return'Cukup';return'Kurang'}
 function getAutoCatatan(skor){if(skor===null||skor===undefined)return'';var arr=isRAJenjang()?SKOR_CATATAN_RA:SKOR_CATATAN;return arr[skor]||''}
 function getPredikatClass(p){return'predikat-'+p.toLowerCase().replace(' ','-')}
-function calcTotal(d){let sum=0,max=0;['perencanaan','pelaksanaan','asesmen'].forEach(k=>{const scores=d[k]&&d[k].scores?d[k].scores:[];const itemCount=k==='pelaksanaan'?getIndikatorPelaksanaanFlat().length:getIndikator(k).length;const effectiveLen=Math.min(scores.length,itemCount);for(let i=0;i<effectiveLen;i++){const s=scores[i];if(s!==null&&s!==undefined){sum+=s+1;max+=4}}});return max>0?(sum/max)*100:0}
-function calcKomponen(d,key){const scores=d[key]&&d[key].scores?d[key].scores:[];const itemCount=key==='pelaksanaan'?getIndikatorPelaksanaanFlat().length:getIndikator(key).length;let sum=0,max=0;const effectiveLen=Math.min(scores.length,itemCount);for(let i=0;i<effectiveLen;i++){const s=scores[i];if(s!==null&&s!==undefined){sum+=s+1;max+=4}}return max>0?(sum/max)*100:0}
+function jenjangOf(d){return (d&&d.jenjang)||(typeof state!=='undefined'&&state?state.jenjang:'mi')||'mi';}
+function getIndikatorFor(j,key){var prev=state.jenjang;state.jenjang=j||prev;try{return getIndikator(key);}finally{state.jenjang=prev;}}
+function getPelaksanaanFlatFor(j){var prev=state.jenjang;state.jenjang=j||prev;try{return getIndikatorPelaksanaanFlat();}finally{state.jenjang=prev;}}
+function calcTotal(d){const j=jenjangOf(d);let sum=0,max=0;['perencanaan','pelaksanaan','asesmen'].forEach(k=>{const scores=d[k]&&d[k].scores?d[k].scores:[];const itemCount=k==='pelaksanaan'?getPelaksanaanFlatFor(j).length:getIndikatorFor(j,k).length;const effectiveLen=Math.min(scores.length,itemCount);for(let i=0;i<effectiveLen;i++){const s=scores[i];if(s!==null&&s!==undefined){sum+=s+1;max+=4}}});return max>0?(sum/max)*100:0}
+function calcKomponen(d,key){const j=jenjangOf(d);const scores=d[key]&&d[key].scores?d[key].scores:[];const itemCount=key==='pelaksanaan'?getPelaksanaanFlatFor(j).length:getIndikatorFor(j,key).length;let sum=0,max=0;const effectiveLen=Math.min(scores.length,itemCount);for(let i=0;i<effectiveLen;i++){const s=scores[i];if(s!==null&&s!==undefined){sum+=s+1;max+=4}}return max>0?(sum/max)*100:0}
 function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function formatDateDMY(value){
 if(!value)return'-';
@@ -2526,11 +2529,13 @@ return html;
 }
 
 function cetakPilihan(idx,bagian){
-var data=getData();
-var d=data[idx];
-if(!d)return;
+var all=getAllSupervisi();
+var d=all[idx];
+if(!d){alert('Data supervisi tidak ditemukan.');return;}
 state.formData=d;
+var prevJ=state.jenjang;
 state.jenjang=d.jenjang==='ra'?'ra':'mi';
+try{
 if(bagian==='semua'){
 cetakSemua(d);
 }else if(bagian==='rekap'){
@@ -2538,6 +2543,8 @@ cetakRekapDetail(d);
 }else{
 printInstrumen(bagian);
 }
+}catch(e){alert('Gagal mencetak: '+(e&&e.message||e));}
+state.jenjang=prevJ;
 }
 
 function cetakSemua(d){
@@ -2897,9 +2904,9 @@ doc.save('Rekap_Supervisi_'+(state.formData.identitas&&state.formData.identitas.
 }
 
 function exportDetailPDF(idx){
-var data=getData();
+var data=getAllSupervisi();
 var d=data[idx];
-if(!d)return;
+if(!d){alert('Data supervisi tidak ditemukan.');return;}
 // Set jenjang from data for RA-aware labels
 state.jenjang=d.jenjang==='ra'?'ra':'mi';
 // Temporarily set formData to this record for PDF generation
@@ -4120,9 +4127,10 @@ return html;
 
 
 function cetakLaporanPerMadrasah(mName){
-var allData=getData();
+var allData=getAllSupervisi();
 var data=allData.filter(function(d){return (d.identitas.namaMadrasah||'(Tanpa Madrasah)')===mName;});
 if(data.length===0){alert('Tidak ada data supervisi untuk madrasah ini.');return;}
+if(data[0].jenjang)state.jenjang=data[0].jenjang;
 var pengawas=getPengawas();
 var madrasahList=getAllMadrasah();
 var madrasahObj=madrasahList.find(function(m){return m.nama===mName;})||{nama:mName};
@@ -4327,7 +4335,8 @@ setTimeout(function(){w.print()},500);
 }
 
 function cetakLaporan(){
-var data=getData();
+var data=getAllSupervisi();
+if(data.length>0&&data[0].jenjang)state.jenjang=data[0].jenjang;
 var pengawas=getPengawas();
 var madrasahList=getAllMadrasah();
 var grouped={};
