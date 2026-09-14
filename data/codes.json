@@ -195,7 +195,14 @@
       "user": "MTs Air",
       "used": false,
       "createdAt": "2026-09-14T08:12:00.857Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-UZQ4UI",
+      "role": "kepala",
+      "user": "MTsN 02 BU",
+      "used": false,
+      "createdAt": "2026-09-14T08:17:02.062Z"
     }
   ],
-  "updatedAt": "2026-09-14T08:12:04.114Z"
+  "updatedAt": "2026-09-14T08:17:03.794Z"
 }
