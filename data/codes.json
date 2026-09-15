@@ -237,7 +237,14 @@
       "user": "MTs Darul Ilmi",
       "used": false,
       "createdAt": "2026-09-15T12:38:47.588Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-JPRC2O",
+      "role": "kepala",
+      "user": "MTs Darunnajah",
+      "used": false,
+      "createdAt": "2026-09-15T13:18:44.517Z"
     }
   ],
-  "updatedAt": "2026-09-15T12:38:49.331Z"
+  "updatedAt": "2026-09-15T13:18:46.544Z"
 }
