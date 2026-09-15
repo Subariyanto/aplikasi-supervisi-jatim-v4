@@ -230,7 +230,14 @@
       "user": "MTsN 01 BU",
       "used": false,
       "createdAt": "2026-09-15T12:32:45.038Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-UG3UO1",
+      "role": "kepala",
+      "user": "MTs Darul Ilmi",
+      "used": false,
+      "createdAt": "2026-09-15T12:38:47.588Z"
     }
   ],
-  "updatedAt": "2026-09-15T12:32:46.658Z"
+  "updatedAt": "2026-09-15T12:38:49.331Z"
 }
