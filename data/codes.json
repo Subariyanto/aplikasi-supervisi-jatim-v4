@@ -223,7 +223,14 @@
       "user": "MTs Al Um",
       "used": false,
       "createdAt": "2026-09-15T12:28:24.792Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-LZOFPQ",
+      "role": "kepala",
+      "user": "MTsN 01 BU",
+      "used": false,
+      "createdAt": "2026-09-15T12:32:45.038Z"
     }
   ],
-  "updatedAt": "2026-09-15T12:28:30.433Z"
+  "updatedAt": "2026-09-15T12:32:46.658Z"
 }
