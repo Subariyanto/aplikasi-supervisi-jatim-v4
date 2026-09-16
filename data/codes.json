@@ -181,7 +181,14 @@
       "user": "Mastia2",
       "used": false,
       "createdAt": "2026-09-12T05:33:19.212Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-OQLWHA",
+      "role": "kepala",
+      "user": "Emilia",
+      "used": false,
+      "createdAt": "2026-09-16T05:52:02.535Z"
     }
   ],
-  "updatedAt": "2026-09-16T05:51:47.896Z"
+  "updatedAt": "2026-09-16T05:52:05.063Z"
 }
