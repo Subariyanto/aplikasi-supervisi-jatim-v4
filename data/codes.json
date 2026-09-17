@@ -209,7 +209,14 @@
       "user": "MTA AL MAKMUN",
       "used": false,
       "createdAt": "2026-09-17T00:34:39.195Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-EGRHDV",
+      "role": "kepala",
+      "user": "MIN 01 BU",
+      "used": false,
+      "createdAt": "2026-09-17T05:35:33.279Z"
     }
   ],
-  "updatedAt": "2026-09-17T00:34:42.067Z"
+  "updatedAt": "2026-09-17T05:35:37.305Z"
 }
