@@ -195,7 +195,14 @@
       "user": "MTs 03 BU",
       "used": false,
       "createdAt": "2026-09-17T00:25:14.445Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-958CGT",
+      "role": "kepala",
+      "user": "MTs Al Muttaqin",
+      "used": false,
+      "createdAt": "2026-09-17T00:30:20.485Z"
     }
   ],
-  "updatedAt": "2026-09-17T00:25:17.985Z"
+  "updatedAt": "2026-09-17T00:30:22.530Z"
 }
