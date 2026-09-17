@@ -202,7 +202,14 @@
       "user": "MTs Al Muttaqin",
       "used": false,
       "createdAt": "2026-09-17T00:30:20.485Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-9AUORP",
+      "role": "kepala",
+      "user": "MTA AL MAKMUN",
+      "used": false,
+      "createdAt": "2026-09-17T00:34:39.195Z"
     }
   ],
-  "updatedAt": "2026-09-17T00:30:22.530Z"
+  "updatedAt": "2026-09-17T00:34:42.067Z"
 }
