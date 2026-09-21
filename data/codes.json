@@ -286,7 +286,14 @@
       "user": "MI Darunnajah",
       "used": false,
       "createdAt": "2026-09-21T11:55:00.955Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-K60USQ",
+      "role": "kepala",
+      "user": "MA LAIS",
+      "used": false,
+      "createdAt": "2026-09-21T11:57:15.423Z"
     }
   ],
-  "updatedAt": "2026-09-21T11:55:02.562Z"
+  "updatedAt": "2026-09-21T11:57:17.150Z"
 }
