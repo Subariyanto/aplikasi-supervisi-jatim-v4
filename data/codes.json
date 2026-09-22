@@ -293,7 +293,14 @@
       "user": "MA LAIS",
       "used": false,
       "createdAt": "2026-09-21T11:57:15.423Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-XF1G4X",
+      "role": "kepala",
+      "user": "Emilia",
+      "used": false,
+      "createdAt": "2026-09-22T21:58:47.278Z"
     }
   ],
-  "updatedAt": "2026-09-21T11:57:17.150Z"
+  "updatedAt": "2026-09-22T21:58:50.175Z"
 }
