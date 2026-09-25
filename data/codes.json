@@ -314,7 +314,14 @@
       "user": "Emilia",
       "used": false,
       "createdAt": "2026-09-24T01:36:28.724Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-SAN66D",
+      "role": "kepala",
+      "user": "Emilia",
+      "used": false,
+      "createdAt": "2026-09-25T06:32:22.906Z"
     }
   ],
-  "updatedAt": "2026-09-24T01:36:31.876Z"
+  "updatedAt": "2026-09-25T06:32:26.583Z"
 }
