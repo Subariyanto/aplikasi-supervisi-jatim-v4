@@ -1,4 +1,341 @@
 {
-  "codes": [],
-  "updatedAt": "2026-09-28T03:16:07.637Z"
+  "codes": [
+    {
+      "code": "SUPERVISI-PENGAWAS-FPJCRS",
+      "role": "pengawas",
+      "user": "Sennawati",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z",
+      "editedAt": "2026-09-03T02:31:11.276Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-3YU4KV",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-5PI971",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-7ZMI07",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-2CIVVT",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-YTXPOL",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-K731Z4",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-QYW1Q0",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-T87CG1",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-PMSZ1Y",
+      "role": "pengawas",
+      "user": "",
+      "used": false,
+      "createdAt": "2026-08-20T14:09:22.127Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-RI4HT6",
+      "role": "pengawas",
+      "user": "Ahmad Tahir Tolitoli",
+      "used": false,
+      "createdAt": "2026-08-30T05:56:24.021Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-EC1F9K",
+      "role": "pengawas",
+      "user": "Ahmad Thohir",
+      "used": false,
+      "createdAt": "2026-08-31T01:01:28.175Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-5SUSDC",
+      "role": "pengawas",
+      "user": "Desi",
+      "used": false,
+      "createdAt": "2026-09-02T02:43:29.654Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-6842H3",
+      "role": "kepala",
+      "user": "⁠MTs  An Nahdho",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z",
+      "editedAt": "2026-09-03T22:55:13.299Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-POYPSQ",
+      "role": "kepala",
+      "user": "RA  Purwanida",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z",
+      "editedAt": "2026-09-03T22:55:28.453Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-31ROZB",
+      "role": "kepala",
+      "user": "MTs Raudatul Qur'an",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z",
+      "editedAt": "2026-09-03T22:55:54.422Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-M2VWSA",
+      "role": "kepala",
+      "user": "MTs Islamic Boarding School",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z",
+      "editedAt": "2026-09-04T02:27:47.946Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-420COZ",
+      "role": "kepala",
+      "user": "MTs Baitul Halim",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z",
+      "editedAt": "2026-09-04T02:28:22.765Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-C8WRIU",
+      "role": "kepala",
+      "user": "MTs Babussalam",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z",
+      "editedAt": "2026-09-04T02:41:52.184Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-OK3I4H",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-FWEFI8",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-TFY8MW",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-G734JE",
+      "role": "kepala",
+      "user": "Kamad",
+      "used": false,
+      "createdAt": "2026-09-03T22:54:23.477Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-NSMODG",
+      "role": "kepala",
+      "user": "Yosi Kamad",
+      "used": false,
+      "createdAt": "2026-09-09T12:56:28.313Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-KNO19H",
+      "role": "pengawas",
+      "user": "Mastia1",
+      "used": false,
+      "createdAt": "2026-09-12T11:14:29.501Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-RSZ0DC",
+      "role": "kepala",
+      "user": "Emiliya",
+      "used": false,
+      "createdAt": "2026-09-14T06:57:56.669Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-H8D0YF",
+      "role": "kepala",
+      "user": "MTs Air",
+      "used": false,
+      "createdAt": "2026-09-14T08:12:00.857Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-UZQ4UI",
+      "role": "kepala",
+      "user": "MTsN 02 BU",
+      "used": false,
+      "createdAt": "2026-09-14T08:17:02.062Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-DW1O8J",
+      "role": "kepala",
+      "user": "MTs Al Iqra",
+      "used": false,
+      "createdAt": "2026-09-14T13:06:46.291Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-1MY71V",
+      "role": "kepala",
+      "user": "MTs Tarbiyah",
+      "used": false,
+      "createdAt": "2026-09-14T13:11:04.679Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-HJ7MEU",
+      "role": "kepala",
+      "user": "MTs Al Um",
+      "used": false,
+      "createdAt": "2026-09-15T12:28:24.792Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-LZOFPQ",
+      "role": "kepala",
+      "user": "MTsN 01 BU",
+      "used": false,
+      "createdAt": "2026-09-15T12:32:45.038Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-UG3UO1",
+      "role": "kepala",
+      "user": "MTs Darul Ilmi",
+      "used": false,
+      "createdAt": "2026-09-15T12:38:47.588Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-JPRC2O",
+      "role": "kepala",
+      "user": "MTs Darunnajah",
+      "used": false,
+      "createdAt": "2026-09-15T13:18:44.517Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-FSENHH",
+      "role": "kepala",
+      "user": "MI Darul Ulum",
+      "used": false,
+      "createdAt": "2026-09-15T13:25:26.309Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-3RQTOM",
+      "role": "kepala",
+      "user": "RA Bu Siti",
+      "used": false,
+      "createdAt": "2026-09-19T11:54:03.504Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-PVZ3HP",
+      "role": "kepala",
+      "user": "RA Bu Sholihah",
+      "used": false,
+      "createdAt": "2026-09-19T11:57:02.260Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-ATMOX3",
+      "role": "kepala",
+      "user": "MI Sawang Lebar",
+      "used": false,
+      "createdAt": "2026-09-21T11:48:22.918Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-312MLM",
+      "role": "kepala",
+      "user": "MTs Miftahul Falah",
+      "used": false,
+      "createdAt": "2026-09-21T11:52:20.555Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-VZB5NR",
+      "role": "kepala",
+      "user": "MI Darunnajah",
+      "used": false,
+      "createdAt": "2026-09-21T11:55:00.955Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-K60USQ",
+      "role": "kepala",
+      "user": "MA LAIS",
+      "used": false,
+      "createdAt": "2026-09-21T11:57:15.423Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-XF1G4X",
+      "role": "kepala",
+      "user": "Emilia",
+      "used": false,
+      "createdAt": "2026-09-22T21:58:47.278Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-QPN442",
+      "role": "kepala",
+      "user": "Emilia",
+      "used": false,
+      "createdAt": "2026-09-22T22:15:48.612Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-O4XH9E",
+      "role": "kepala",
+      "user": "Emilia",
+      "used": false,
+      "createdAt": "2026-09-24T01:36:28.724Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-SAN66D",
+      "role": "kepala",
+      "user": "Emilia",
+      "used": false,
+      "createdAt": "2026-09-25T06:32:22.906Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-VP1NWV",
+      "role": "kepala",
+      "user": "Emilia",
+      "used": false,
+      "createdAt": "2026-09-26T04:50:36.587Z"
+    },
+    {
+      "code": "SUPERVISI-PENGAWAS-TPMKTP",
+      "role": "pengawas",
+      "user": "Mustain",
+      "used": false,
+      "createdAt": "2026-09-28T03:16:39.762Z"
+    }
+  ],
+  "updatedAt": "2026-09-28T03:16:42.364Z"
 }
