@@ -342,7 +342,14 @@
       "user": "Emilia",
       "used": false,
       "createdAt": "2026-09-28T06:27:34.907Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-OKQKG2",
+      "role": "kepala",
+      "user": "Emilia",
+      "used": false,
+      "createdAt": "2026-09-28T06:36:44.560Z"
     }
   ],
-  "updatedAt": "2026-09-28T06:27:39.556Z"
+  "updatedAt": "2026-09-28T06:36:46.305Z"
 }
