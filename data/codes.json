@@ -349,7 +349,14 @@
       "user": "MI Tanwirul Muttaqin",
       "used": false,
       "createdAt": "2026-10-01T02:55:56.648Z"
+    },
+    {
+      "code": "SUPERVISI-KAMAD-RUNJHB",
+      "role": "kepala",
+      "user": "Emilia",
+      "used": false,
+      "createdAt": "2026-10-13T09:35:36.191Z"
     }
   ],
-  "updatedAt": "2026-10-13T09:35:18.287Z"
+  "updatedAt": "2026-10-13T09:35:38.091Z"
 }
