@@ -1132,6 +1132,25 @@ var m=String(today.getMonth()+1).padStart(2,'0');
 var y=today.getFullYear();
 return tempat+', '+d+'-'+m+'-'+y;
 }
+function getSupervisorRole(id){
+var record=id||{};
+var identitas=record.identitas||record;
+var role=record.supervisorRole||record.roleSupervisor||record.pelaksanaRole||identitas.supervisorRole||identitas.roleSupervisor||identitas.pelaksanaRole;
+if(!role&&identitas.jabatanSupervisor&&/kepala\s*madrasah|kamad/i.test(String(identitas.jabatanSupervisor)))role='kepala';
+if(!role){var session=getSession();role=session&&session.role;}
+return role==='kepala'?'kepala':'pengawas';
+}
+function getSupervisorSignatureLabel(id){return getSupervisorRole(id)==='kepala'?'Kepala Madrasah,':'Pengawas Madrasah,';}
+function getSupervisiSignatureTable(record,leftTitle,leftName,leftNip){
+var id=record&&record.identitas?record.identitas:(record||{});
+var label=getSupervisorSignatureLabel(record);
+return '<table class="ttd-table"><tr>'+
+'<td style="width:50%"><p class="ttd-date">&nbsp;</p><p class="ttd-label">'+escHtml(leftTitle)+'</p><div class="ttd-space"></div>'+
+'<p class="ttd-name">'+escHtml(leftName||'.........................')+'</p><p class="ttd-nip">NIP. '+escHtml(leftNip||'.........................')+'</p></td>'+
+'<td style="width:50%"><p class="ttd-date">'+escHtml(getTempatTanggalCetak(id))+'</p><p class="ttd-label">'+escHtml(label)+'</p><div class="ttd-space"></div>'+
+'<p class="ttd-name">'+escHtml(id.namaSupervisor||'.........................')+'</p><p class="ttd-nip">NIP. '+escHtml(id.nipSupervisor||'.........................')+'</p></td>'+
+'</tr></table>';
+}
 function formatDateDMY(value){
 if(!value)return'-';
 var s=String(value).trim();
@@ -1781,8 +1800,11 @@ html+='table{width:100%;border-collapse:collapse;margin-top:15px}';
 html+='th,td{border:1px solid #333;padding:6px;text-align:center;vertical-align:middle}';
 html+='td:nth-child(2){text-align:left}';
 html+='th{background:#f0f0f0;font-weight:bold}';
-html+='.ttd-table{border:none;margin-top:40px}';
-html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='.ttd-table{border:none;margin-top:40px;table-layout:fixed}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top;height:125px}';
+html+='.ttd-table p{margin:0;line-height:1.35}';
+html+='.ttd-space{height:58px}';
+html+='.ttd-name{font-weight:bold;text-decoration:underline}';
 html+='</style></head><body>';
 html+='<h2>REKAP HASIL SUPERVISI PEMBELAJARAN</h2>';
 html+='<h3>'+escHtml(mName)+'</h3>';
@@ -1806,14 +1828,7 @@ html+='<td>'+pred+'</td></tr>';
 });
 html+='</tbody></table>';
 // Tanda tangan - cukup 1x di bawah tabel
-html+='<table class="ttd-table" style="margin-top:40px"><tr>';
-html+='<td style="width:50%"><p>Mengetahui,</p><p>Kepala Madrasah,</p><br><br><br>';
-html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">.........................</p>';
-html+='<p style="margin-top:0">NIP. .........................</p></td>';
-html+='<td style="width:50%"><p>&nbsp;</p><p>Pengawas Madrasah,</p><br><br><br>';
-html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(pengawas.nama||'.........................')+'</p>';
-html+='<p style="margin-top:0">NIP. '+(pengawas.nip||'.........................')+'</p></td>';
-html+='</tr></table>';
+html+=getSupervisiSignatureTable(filtered[0]||{},'Mengetahui, Kepala Madrasah,','.........................','.........................');
 html+='</body></html>';
 w.document.write(html);w.document.close();
 setTimeout(function(){w.print();},500);
@@ -2353,7 +2368,8 @@ state.view=isRAJenjang()?'form-ra':'form';
 state.currentStep=0;state.editId=null;
 if(isRAJenjang()&&!state.formData.id)state.formData.id='ra_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
 var pengawas=getPengawas();
-state.formData={identitas:{namaSupervisor:pengawas.nama||'',nipSupervisor:pengawas.nip||'',jabatanSupervisor:pengawas.jabatan||''},statusSupervisi:isRAJenjang()?'draft':undefined,jenisSupervisi:isRAJenjang()?'awal':undefined,perencanaan:{scores:[],catatan:[],manualCatatan:[]},pelaksanaan:{scores:[],catatan:[],manualCatatan:[]},asesmen:{scores:[],catatan:[],manualCatatan:[]},rekap:{}};
+var session=getSession();
+state.formData={supervisorRole:session&&session.role==='kepala'?'kepala':'pengawas',identitas:{namaSupervisor:pengawas.nama||'',nipSupervisor:pengawas.nip||'',jabatanSupervisor:pengawas.jabatan||''},statusSupervisi:isRAJenjang()?'draft':undefined,jenisSupervisi:isRAJenjang()?'awal':undefined,perencanaan:{scores:[],catatan:[],manualCatatan:[]},pelaksanaan:{scores:[],catatan:[],manualCatatan:[]},asesmen:{scores:[],catatan:[],manualCatatan:[]},rekap:{}};
 render();
 }
 function backToDashboard(){state.view='input-observasi';state.activeTab='supervisi';state.jenjang='mi';render()}
@@ -2441,6 +2457,7 @@ if(isRAJenjang())autosaveRA();
 
 function saveForm(){
 var data=getData();
+if(!state.formData.supervisorRole){var session=getSession();state.formData.supervisorRole=session&&session.role==='kepala'?'kepala':'pengawas';}
 if(isRAJenjang()&&!state.formData.id)state.formData.id='ra_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
 if(isRAJenjang()&&!state.formData.statusSupervisi)state.formData.statusSupervisi='draft';
 if(isRAJenjang()&&!state.formData.jenisSupervisi)state.formData.jenisSupervisi='awal';
@@ -2562,8 +2579,11 @@ html+='td:last-child{text-align:left}';
 html+='.header-info{margin-bottom:15px}';
 html+='.header-info p{margin:3px 0}';
 html+='.page-break{page-break-before:always}';
-html+='.ttd-table{border:none;margin-top:40px}';
-html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='.ttd-table{border:none;margin-top:40px;table-layout:fixed}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top;height:125px}';
+html+='.ttd-table p{margin:0;line-height:1.35}';
+html+='.ttd-space{height:58px}';
+html+='.ttd-name{font-weight:bold;text-decoration:underline}';
 html+='</style></head><body>';
 var sections=['perencanaan','pelaksanaan','asesmen'];
 var labels={perencanaan:getRALabelFor('perencanaan'),pelaksanaan:getRALabelFor('pelaksanaan'),asesmen:getRALabelFor('asesmen')};
@@ -2607,14 +2627,7 @@ if(rekapData.tindakLanjut){
 html+='<div style="margin-top:15px"><b>Rencana Tindak Lanjut:</b></div>';
 html+='<p style="text-align:justify;line-height:1.6;margin:5px 0">'+escHtml(rekapData.tindakLanjut)+'</p>';
 }
-html+='<table class="ttd-table"><tr>';
-html+='<td style="width:50%"><p>Guru Mata Pelajaran,</p><br><br><br>';
-html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(id.namaGuru||'.........................')+'</p>';
-html+='<p style="margin-top:0">NIP. '+(id.nipGuru||'.........................')+'</p></td>';
-html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>Pengawas Madrasah,</p><br><br><br>';
-html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(id.namaSupervisor||'.........................')+'</p>';
-html+='<p style="margin-top:0">NIP. '+(id.nipSupervisor||'.........................')+'</p></td>';
-html+='</tr></table>';
+html+=getSupervisiSignatureTable(d,'Guru Mata Pelajaran,',id.namaGuru,id.nipGuru);
 });
 html+='</body></html>';
 w.document.write(html);w.document.close();
@@ -2634,8 +2647,11 @@ html+='th{background:#f0f0f0;font-weight:bold;text-align:center}';
 html+='.header-info{margin-bottom:15px}';
 html+='.header-info p{margin:3px 0}';
 html+='.narasi{text-align:justify;line-height:1.6;margin:10px 0}';
-html+='.ttd-table{border:none;margin-top:40px}';
-html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='.ttd-table{border:none;margin-top:40px;table-layout:fixed}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top;height:125px}';
+html+='.ttd-table p{margin:0;line-height:1.35}';
+html+='.ttd-space{height:58px}';
+html+='.ttd-name{font-weight:bold;text-decoration:underline}';
 html+='</style></head><body>';
 html+='<h2>'+getRARekapTitle()+'</h2>';
 if(getRASubtitle())html+='<h3 style="text-align:center;margin-bottom:10px">'+getRASubtitle()+'</h3>';
@@ -2680,14 +2696,7 @@ html+='</ol><h3>Rekomendasi Pembinaan</h3><ol>';
 (analysis.recs.length?analysis.recs:['Pertahankan praktik baik dan lakukan refleksi berkala.']).forEach(function(x){html+='<li>'+escHtml(x)+'</li>'});
 html+='</ol><h3>Rencana Tindak Lanjut</h3><p class="narasi">'+escHtml(analysis.rtl||'Target waktu: 2–4 minggu. Bukti tindak lanjut: catatan pembinaan dan dokumentasi praktik.')+'</p><h3>Kesimpulan Supervisi</h3><p class="narasi">'+escHtml(analysis.conclusion)+'</p><h3>Catatan Supervisor</h3><p class="narasi">'+escHtml(analysis.note||'-')+'</p>';
 }
-html+='<table class="ttd-table"><tr>';
-html+='<td style="width:50%"><p>Guru Mata Pelajaran,</p><br><br><br>';
-html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(id.namaGuru||'.........................')+'</p>';
-html+='<p style="margin-top:0">NIP. '+(id.nipGuru||'.........................')+'</p></td>';
-html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>Pengawas Madrasah,</p><br><br><br>';
-html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(id.namaSupervisor||'.........................')+'</p>';
-html+='<p style="margin-top:0">NIP. '+(id.nipSupervisor||'.........................')+'</p></td>';
-html+='</tr></table>';
+html+=getSupervisiSignatureTable(d,'Guru Mata Pelajaran,',id.namaGuru,id.nipGuru);
 html+='</body></html>';
 w.document.write(html);w.document.close();
 setTimeout(function(){w.print();},500);
@@ -2750,18 +2759,7 @@ html+='<div style="margin-top:15px"><b>Rencana Tindak Lanjut:</b></div>';
 html+='<p style="text-align:justify;line-height:1.6;margin:5px 0">'+escHtml(rekapData.tindakLanjut)+'</p>';
 }
 // Tanda tangan
-html+='<table style="width:100%;border:none;margin-top:40px"><tr>';
-html+='<td style="border:none;width:50%;text-align:center;vertical-align:top">';
-html+='<p>Guru Mata Pelajaran,</p><br><br><br>';
-html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(id.namaGuru||'.........................')+'</p>';
-html+='<p style="margin-top:0">NIP. '+(id.nipGuru||'.........................')+'</p>';
-html+='</td>';
-html+='<td style="border:none;width:50%;text-align:center;vertical-align:top">';
-html+='<p>'+escHtml(getTempatTanggalCetak(id))+'</p>';
-html+='<p>Pengawas Madrasah,</p><br><br><br>';
-html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(id.namaSupervisor||'.........................')+'</p>';
-html+='<p style="margin-top:0">NIP. '+(id.nipSupervisor||'.........................')+'</p>';
-html+='</td></tr></table>';
+html+=getSupervisiSignatureTable(state.formData,'Guru Mata Pelajaran,',id.namaGuru,id.nipGuru);
 html+='</body></html>';
 w.document.write(html);w.document.close();
 setTimeout(function(){w.print();},500);
@@ -3200,8 +3198,11 @@ html+='table{width:100%;border-collapse:collapse;margin-bottom:15px}';
 html+='th,td{border:1px solid #333;padding:5px;text-align:center;vertical-align:top}';
 html+='th{background:#f0f0f0;font-weight:bold}';
 html+='.left{text-align:left}';
-html+='.ttd-table{border:none;margin-top:40px}';
-html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='.ttd-table{border:none;margin-top:40px;table-layout:fixed}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top;height:125px}';
+html+='.ttd-table p{margin:0;line-height:1.35}';
+html+='.ttd-space{height:58px}';
+html+='.ttd-name{font-weight:bold;text-decoration:underline}';
 html+='</style></head><body>';
 html+='<h2>REKAP HASIL PENDAMPINGAN KOKURIKULER</h2>';
 html+='<p style="text-align:center;margin-bottom:20px">Pengawas: '+(pengawas.nama||'-')+'</p>';
@@ -3219,10 +3220,10 @@ html+='<td>'+getPredikat(pct)+'</td></tr>';
 });
 html+='</tbody></table>';
 html+='<table class="ttd-table"><tr>';
-html+='<td style="width:50%"><p>Mengetahui,</p><br><br><br>';
+html+='<td style="width:50%"><p>&nbsp;</p><p>Mengetahui,</p><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">..........................</p>';
 html+='<p style="margin-top:0">NIP. ..........................</p></td>';
-html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>Pengawas Madrasah,</p><br><br><br>';
+html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>'+escHtml(getSupervisorSignatureLabel(data[0]||{}))+'</p><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(pengawas.nama||'..........................')+'</p>';
 html+='<p style="margin-top:0">NIP. '+(pengawas.nip||'..........................')+'</p></td>';
 html+='</tr></table>';
@@ -3251,8 +3252,11 @@ html+='td:last-child{text-align:left}';
 html+='.header-info{margin-bottom:15px}';
 html+='.header-info p{margin:3px 0}';
 html+='.narasi{text-align:justify;line-height:1.6;margin:5px 0}';
-html+='.ttd-table{border:none;margin-top:40px}';
-html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='.ttd-table{border:none;margin-top:40px;table-layout:fixed}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top;height:125px}';
+html+='.ttd-table p{margin:0;line-height:1.35}';
+html+='.ttd-space{height:58px}';
+html+='.ttd-name{font-weight:bold;text-decoration:underline}';
 html+='</style></head><body>';
 html+='<h2>INSTRUMEN PENDAMPINGAN KOKURIKULER</h2>';
 html+='<h3>Madrasah: '+escHtml(d.madrasahNama)+'</h3>';
@@ -3286,10 +3290,10 @@ html+='<div style="margin-top:15px"><b>Rencana Tindak Lanjut:</b></div>';
 html+='<p class="narasi">'+escHtml(rekap.tindakLanjut)+'</p>';
 }
 html+='<table class="ttd-table"><tr>';
-html+='<td style="width:50%"><p>Pembina Kokurikuler,</p><br><br><br>';
+html+='<td style="width:50%"><p>&nbsp;</p><p>Pembina Kokurikuler,</p><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(madrasahData.kepala||'.........................')+'</p>';
 html+='<p style="margin-top:0">NIP. '+(madrasahData.nipKepala||'.........................')+'</p></td>';
-html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>Pengawas Madrasah,</p><br><br><br>';
+html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>'+escHtml(getSupervisorSignatureLabel(d))+'</p><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(pengawas.nama||'.........................')+'</p>';
 html+='<p style="margin-top:0">NIP. '+(pengawas.nip||'.........................')+'</p></td>';
 html+='</tr></table>';
@@ -3541,8 +3545,11 @@ html+='table{width:100%;border-collapse:collapse;margin-bottom:15px}';
 html+='th,td{border:1px solid #333;padding:5px;text-align:center;vertical-align:top}';
 html+='th{background:#f0f0f0;font-weight:bold}';
 html+='.left{text-align:left}';
-html+='.ttd-table{border:none;margin-top:40px}';
-html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='.ttd-table{border:none;margin-top:40px;table-layout:fixed}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top;height:125px}';
+html+='.ttd-table p{margin:0;line-height:1.35}';
+html+='.ttd-space{height:58px}';
+html+='.ttd-name{font-weight:bold;text-decoration:underline}';
 html+='</style></head><body>';
 html+='<h2>REKAP HASIL PENDAMPINGAN EKSTRAKURIKULER</h2>';
 html+='<p style="text-align:center;margin-bottom:20px">Pengawas: '+(pengawas.nama||'-')+'</p>';
@@ -3560,10 +3567,10 @@ html+='<td>'+getPredikat(pct)+'</td></tr>';
 });
 html+='</tbody></table>';
 html+='<table class="ttd-table"><tr>';
-html+='<td style="width:50%"><p>Mengetahui,</p><br><br><br>';
+html+='<td style="width:50%"><p>&nbsp;</p><p>Mengetahui,</p><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">..........................</p>';
 html+='<p style="margin-top:0">NIP. ..........................</p></td>';
-html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>Pengawas Madrasah,</p><br><br><br>';
+html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>'+escHtml(getSupervisorSignatureLabel(data[0]||{}))+'</p><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(pengawas.nama||'..........................')+'</p>';
 html+='<p style="margin-top:0">NIP. '+(pengawas.nip||'..........................')+'</p></td>';
 html+='</tr></table>';
@@ -3592,8 +3599,11 @@ html+='td:last-child{text-align:left}';
 html+='.header-info{margin-bottom:15px}';
 html+='.header-info p{margin:3px 0}';
 html+='.narasi{text-align:justify;line-height:1.6;margin:5px 0}';
-html+='.ttd-table{border:none;margin-top:40px}';
-html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='.ttd-table{border:none;margin-top:40px;table-layout:fixed}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top;height:125px}';
+html+='.ttd-table p{margin:0;line-height:1.35}';
+html+='.ttd-space{height:58px}';
+html+='.ttd-name{font-weight:bold;text-decoration:underline}';
 html+='</style></head><body>';
 html+='<h2>INSTRUMEN PENDAMPINGAN EKSTRAKURIKULER</h2>';
 html+='<h3>Madrasah: '+escHtml(d.madrasahNama)+'</h3>';
@@ -3627,10 +3637,10 @@ html+='<div style="margin-top:15px"><b>Rencana Tindak Lanjut:</b></div>';
 html+='<p class="narasi">'+escHtml(rekap.tindakLanjut)+'</p>';
 }
 html+='<table class="ttd-table"><tr>';
-html+='<td style="width:50%"><p>Pembina Ekstrakurikuler,</p><br><br><br>';
+html+='<td style="width:50%"><p>&nbsp;</p><p>Pembina Ekstrakurikuler,</p><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">..........................</p>';
 html+='<p style="margin-top:0">NIP. ..........................</p></td>';
-html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>Pengawas Madrasah,</p><br><br><br>';
+html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>'+escHtml(getSupervisorSignatureLabel(d))+'</p><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(pengawas.nama||'..........................')+'</p>';
 html+='<p style="margin-top:0">NIP. '+(pengawas.nip||'..........................')+'</p></td>';
 html+='</tr></table>';
@@ -3905,8 +3915,11 @@ html+='table{width:100%;border-collapse:collapse;margin-bottom:15px}';
 html+='th,td{border:1px solid #333;padding:5px;text-align:center;vertical-align:top}';
 html+='th{background:#f0f0f0;font-weight:bold}';
 html+='.left{text-align:left}';
-html+='.ttd-table{border:none;margin-top:40px}';
-html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='.ttd-table{border:none;margin-top:40px;table-layout:fixed}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top;height:125px}';
+html+='.ttd-table p{margin:0;line-height:1.35}';
+html+='.ttd-space{height:58px}';
+html+='.ttd-name{font-weight:bold;text-decoration:underline}';
 html+='</style></head><body>';
 html+='<h2>REKAP HASIL SUPERVISI IKLIM MADRASAH</h2>';
 html+='<p style="text-align:center;margin-bottom:20px">Pengawas: '+(pengawas.nama||'-')+'</p>';
@@ -3924,10 +3937,10 @@ html+='<td>'+getPredikat(pct)+'</td></tr>';
 });
 html+='</tbody></table>';
 html+='<table class="ttd-table"><tr>';
-html+='<td style="width:50%"><p>Mengetahui,</p><br><br><br>';
+html+='<td style="width:50%"><p>&nbsp;</p><p>Mengetahui,</p><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">..........................</p>';
 html+='<p style="margin-top:0">NIP. ..........................</p></td>';
-html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>Pengawas Madrasah,</p><br><br><br>';
+html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>'+escHtml(getSupervisorSignatureLabel(data[0]||{}))+'</p><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(pengawas.nama||'..........................')+'</p>';
 html+='<p style="margin-top:0">NIP. '+(pengawas.nip||'..........................')+'</p></td>';
 html+='</tr></table>';
@@ -3955,8 +3968,11 @@ html+='td:last-child{text-align:left}';
 html+='.header-info{margin-bottom:15px}';
 html+='.header-info p{margin:3px 0}';
 html+='.narasi{text-align:justify;line-height:1.6;margin:5px 0}';
-html+='.ttd-table{border:none;margin-top:40px}';
-html+='.ttd-table td{border:none;text-align:center;vertical-align:top}';
+html+='.ttd-table{border:none;margin-top:40px;table-layout:fixed}';
+html+='.ttd-table td{border:none;text-align:center;vertical-align:top;height:125px}';
+html+='.ttd-table p{margin:0;line-height:1.35}';
+html+='.ttd-space{height:58px}';
+html+='.ttd-name{font-weight:bold;text-decoration:underline}';
 html+='</style></head><body>';
 html+='<h2>INSTRUMEN SUPERVISI IKLIM MADRASAH</h2>';
 html+='<h3>Madrasah: '+escHtml(d.madrasahNama)+'</h3>';
@@ -3990,10 +4006,10 @@ html+='<div style="margin-top:15px"><b>Rencana Tindak Lanjut:</b></div>';
 html+='<p class="narasi">'+escHtml(rekap.tindakLanjut)+'</p>';
 }
 html+='<table class="ttd-table"><tr>';
-html+='<td style="width:50%"><p>Kepala Madrasah,</p><br><br><br>';
+html+='<td style="width:50%"><p>&nbsp;</p><p>Kepala Madrasah,</p><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(madrasahData.kepala||'..........................')+'</p>';
 html+='<p style="margin-top:0">NIP. '+(madrasahData.nipKepala||'..........................')+'</p></td>';
-html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>Pengawas Madrasah,</p><br><br><br>';
+html+='<td style="width:50%"><p>'+escHtml(getTempatTanggalCetak(id))+'</p><p>'+escHtml(getSupervisorSignatureLabel(d))+'</p><br><br><br>';
 html+='<p style="font-weight:bold;text-decoration:underline;margin-bottom:0">'+(pengawas.nama||'..........................')+'</p>';
 html+='<p style="margin-top:0">NIP. '+(pengawas.nip||'..........................')+'</p></td>';
 html+='</tr></table>';
@@ -4316,7 +4332,7 @@ html+='<p>Pelaksanaan supervisi pembelajaran di '+escHtml(madrasahObj.nama||mNam
 html+='<p>Demikian laporan supervisi ini disusun sebagai bentuk pertanggungjawaban sekaligus bahan evaluasi bersama.</p>';
 html+='<div class="ttd" style="margin-top:20px">';
 html+='<p style="margin:0">..................., .................... 2026</p>';
-html+='<p style="margin:0">Pengawas Madrasah,</p>';
+html+='<p style="margin:0">'+getSupervisorSignatureLabel(data[0]||{})+'</p>';
 html+='<br><br><br>';
 html+='<p style="margin:0"><b><u>'+(pengawas.nama||'...........................')+'</u></b></p>';
 html+='<p style="margin:0">NIP. '+(pengawas.nip||'...........................')+'</p>';
@@ -4634,7 +4650,7 @@ html+='<p>Hasil supervisi juga memperlihatkan bahwa guru pada umumnya telah menu
 html+='<p>Demikian laporan supervisi ini disusun sebagai bentuk pertanggungjawaban sekaligus bahan evaluasi bersama bagi guru, kepala madrasah, dan pengawas. Besar harapan kami, hasil supervisi ini dapat memberikan kontribusi nyata dalam peningkatan mutu pendidikan, membentuk iklim belajar yang positif, dan menumbuhkan karakter peserta didik yang beriman, berilmu, berakhlak mulia, serta penuh cinta kasih.</p>';
 html+='<div class="ttd" style="margin-top:20px">';
 html+='<p style="margin:0">..................., .................... 2026</p>';
-html+='<p style="margin:0">Pengawas Madrasah,</p>';
+html+='<p style="margin:0">'+getSupervisorSignatureLabel(data[0]||{})+'</p>';
 html+='<br><br><br>';
 html+='<p style="margin:0"><b><u>'+(pengawas.nama||'...........................')+'</u></b></p>';
 html+='<p style="margin:0">NIP. '+(pengawas.nip||'...........................')+'</p>';
@@ -4732,7 +4748,7 @@ html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>KA
 html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan Pendampingan Kokurikuler Tahun Ajaran '+taLaporan()+' ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan pendampingan kegiatan kokurikuler yang telah dilakukan di madrasah.</p>';
 html+='<p>Pendampingan kokurikuler merupakan bagian penting dari upaya peningkatan mutu pendidikan secara holistik. Kegiatan kokurikuler dirancang untuk memperkuat dan memperdalam pemahaman peserta didik terhadap materi pembelajaran melalui kegiatan-kegiatan yang terintegrasi dengan kurikulum. Melalui pendampingan ini, diharapkan pelaksanaan kokurikuler dapat berjalan lebih efektif dan bermakna.</p>';
 html+='<p>Kami menyadari bahwa laporan ini masih jauh dari sempurna. Kritik dan saran yang membangun sangat kami harapkan demi perbaikan di masa mendatang.</p>';
-html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
+html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">'+getSupervisorSignatureLabel(data[0]||{})+'</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
 html+='</div>';
 // DAFTAR ISI
 html+='<div class="page-break"></div><h2>DAFTAR ISI</h2>';
@@ -4866,7 +4882,7 @@ html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>BA
 html+='<p>Pelaksanaan pendampingan kokurikuler yang telah dilakukan menunjukkan bahwa kegiatan ini memiliki peran penting dalam memastikan kualitas pelaksanaan kegiatan kokurikuler di madrasah. Melalui pendampingan, guru memperoleh bimbingan dan masukan yang konstruktif untuk meningkatkan kualitas perencanaan dan pelaksanaan kegiatan kokurikuler.</p>';
 html+='<p>Kegiatan kokurikuler yang berkualitas akan memberikan kontribusi signifikan terhadap pencapaian tujuan pendidikan secara holistik, tidak hanya aspek kognitif tetapi juga afektif dan psikomotorik peserta didik. Oleh karena itu, pembinaan dan pendampingan berkelanjutan perlu terus dilakukan.</p>';
 html+='<p>Demikian laporan ini disusun sebagai bentuk pertanggungjawaban dan bahan evaluasi bersama. Semoga dapat memberikan manfaat nyata dalam peningkatan mutu pendidikan di madrasah.</p>';
-html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div></div>';
+html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">'+getSupervisorSignatureLabel(data[0]||{})+'</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div></div>';
 // LAMPIRAN
 html+='<div class="page-break"></div><h2>LAMPIRAN</h2><h3>Dokumentasi Kegiatan Kokurikuler</h3>';
 html+='<p style="text-align:center;color:#666;margin-top:50px">(Tempelkan foto-foto dokumentasi kegiatan kokurikuler di halaman ini)</p>';
@@ -4947,7 +4963,7 @@ html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>KA
 html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan Pendampingan Ekstrakurikuler Tahun Ajaran '+taLaporan()+' ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan pendampingan kegiatan ekstrakurikuler yang telah dilakukan di madrasah.</p>';
 html+='<p>Kegiatan ekstrakurikuler merupakan wadah pengembangan potensi, minat, dan bakat peserta didik di luar kegiatan intrakurikuler. Melalui pendampingan ini, diharapkan pelaksanaan ekstrakurikuler dapat lebih terencana, terarah, dan memberikan dampak positif bagi pengembangan karakter dan kompetensi peserta didik.</p>';
 html+='<p>Kami menyadari bahwa laporan ini masih jauh dari sempurna. Kritik dan saran yang membangun sangat kami harapkan.</p>';
-html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
+html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">'+getSupervisorSignatureLabel(data[0]||{})+'</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
 html+='</div>';
 // DAFTAR ISI
 html+='<div class="page-break"></div><h2>DAFTAR ISI</h2>';
@@ -5081,7 +5097,7 @@ html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>BA
 html+='<p>Pelaksanaan pendampingan ekstrakurikuler yang telah dilakukan menunjukkan bahwa kegiatan ini memiliki peran penting dalam memastikan kualitas pelaksanaan kegiatan ekstrakurikuler di madrasah. Kegiatan ekstrakurikuler yang berkualitas akan memberikan kontribusi signifikan terhadap pembentukan karakter, pengembangan bakat, dan peningkatan prestasi peserta didik.</p>';
 html+='<p>Hasil pendampingan menunjukkan bahwa secara umum madrasah telah berupaya melaksanakan kegiatan ekstrakurikuler dengan baik, meskipun masih terdapat beberapa aspek yang perlu ditingkatkan. Tindak lanjut berupa pendampingan, pelatihan, dan monitoring berkelanjutan perlu terus dilakukan agar kualitas kegiatan ekstrakurikuler semakin optimal.</p>';
 html+='<p>Demikian laporan ini disusun sebagai bentuk pertanggungjawaban dan bahan evaluasi bersama. Semoga dapat memberikan manfaat nyata dalam peningkatan mutu pendidikan di madrasah.</p>';
-html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div></div>';
+html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">'+getSupervisorSignatureLabel(data[0]||{})+'</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div></div>';
 // LAMPIRAN
 html+='<div class="page-break"></div><h2>LAMPIRAN</h2><h3>Dokumentasi Kegiatan Ekstrakurikuler</h3>';
 html+='<p style="text-align:center;color:#666;margin-top:50px">(Tempelkan foto-foto dokumentasi kegiatan ekstrakurikuler di halaman ini)</p>';
@@ -5162,7 +5178,7 @@ html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>KA
 html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan Supervisi Iklim Madrasah Tahun Ajaran '+taLaporan()+' ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan supervisi budaya dan iklim madrasah.</p>';
 html+='<p>Iklim madrasah yang kondusif merupakan prasyarat penting bagi terciptanya proses pembelajaran yang efektif dan bermakna. Budaya madrasah yang positif akan mendorong seluruh warga madrasah untuk berprestasi, berkolaborasi, dan mengembangkan potensi secara optimal. Melalui supervisi ini, diharapkan dapat teridentifikasi kekuatan dan area perbaikan dalam menciptakan iklim madrasah yang ideal.</p>';
 html+='<p>Kami menyadari bahwa laporan ini masih jauh dari sempurna. Kritik dan saran yang membangun sangat kami harapkan.</p>';
-html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
+html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">'+getSupervisorSignatureLabel(data[0]||{})+'</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
 html+='</div>';
 // DAFTAR ISI
 html+='<div class="page-break"></div><h2>DAFTAR ISI</h2>';
@@ -5301,7 +5317,7 @@ html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>BA
 html+='<p>Pelaksanaan supervisi iklim madrasah yang telah dilakukan menunjukkan bahwa kegiatan ini sangat penting dalam upaya menciptakan lingkungan pendidikan yang kondusif, harmonis, dan berlandaskan nilai-nilai keislaman. Iklim madrasah yang positif merupakan fondasi bagi terciptanya proses pembelajaran yang efektif dan pembentukan karakter peserta didik yang mulia.</p>';
 html+='<p>Hasil supervisi menunjukkan bahwa madrasah-madrasah binaan telah berupaya membangun iklim yang baik, meskipun masih terdapat aspek-aspek yang perlu ditingkatkan. Komitmen bersama dari seluruh warga madrasah, dukungan stakeholder, dan pembinaan berkelanjutan dari pengawas menjadi kunci keberhasilan dalam mewujudkan iklim madrasah yang ideal.</p>';
 html+='<p>Demikian laporan ini disusun sebagai bentuk pertanggungjawaban dan bahan evaluasi bersama. Semoga dapat memberikan manfaat nyata dalam peningkatan mutu pendidikan dan terciptanya madrasah yang unggul, berkarakter, dan penuh cinta kasih.</p>';
-html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div></div>';
+html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">'+getSupervisorSignatureLabel(data[0]||{})+'</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div></div>';
 // LAMPIRAN
 html+='<div class="page-break"></div><h2>LAMPIRAN</h2><h3>Dokumentasi Supervisi Iklim Madrasah</h3>';
 html+='<p style="text-align:center;color:#666;margin-top:50px">(Tempelkan foto-foto dokumentasi supervisi iklim madrasah di halaman ini)</p>';
@@ -5479,7 +5495,7 @@ html+='<p style="text-align:center">'+(pengawas.jabatan||'Pengawas Madrasah')+'<
 html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>KATA PENGANTAR</h2>';
 html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan '+title+' Tahun Ajaran '+taLaporan()+' untuk '+escHtml(mName)+' ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan supervisi yang telah dilakukan.</p>';
 html+='<p>Kami menyadari bahwa laporan ini masih jauh dari sempurna. Kritik dan saran yang membangun sangat kami harapkan demi perbaikan di masa mendatang.</p>';
-html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
+html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">'+getSupervisorSignatureLabel(data[0]||{})+'</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
 html+='</div>';
 // DAFTAR ISI
 html+='<div class="page-break"></div><h2>DAFTAR ISI</h2>';
@@ -5542,7 +5558,7 @@ html+='<ol><li>Pendampingan dan pembinaan berkelanjutan.</li><li>Peningkatan kua
 // BAB V
 html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>BAB V<br>PENUTUP</h2>';
 html+='<p>Demikian laporan '+title.toLowerCase()+' untuk '+escHtml(mName)+' ini disusun sebagai bentuk pertanggungjawaban dan bahan evaluasi. Semoga dapat memberikan manfaat nyata dalam peningkatan mutu pendidikan di madrasah.</p>';
-html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div></div>';
+html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">'+getSupervisorSignatureLabel(data[0]||{})+'</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div></div>';
 // LAMPIRAN
 html+='<div class="page-break"></div><h2>LAMPIRAN</h2><h3>Dokumentasi Kegiatan</h3>';
 html+='<p style="text-align:center;color:#666;margin-top:50px">(Tempelkan foto-foto dokumentasi kegiatan di halaman ini)</p>';
@@ -5594,7 +5610,7 @@ html+='<p style="text-align:center">'+(pengawas.jabatan||'Pengawas Madrasah')+'<
 html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>KATA PENGANTAR</h2>';
 html+='<p>Puji syukur ke hadirat Allah SWT atas segala limpahan rahmat-Nya sehingga Laporan '+title+' '+escHtml(kkma)+' Tahun Ajaran '+taLaporan()+' ini dapat diselesaikan dengan baik. Laporan ini disusun sebagai bentuk pertanggungjawaban atas pelaksanaan supervisi yang telah dilakukan di seluruh madrasah binaan dalam wilayah '+escHtml(kkma)+'.</p>';
 html+='<p>Kami menyadari bahwa laporan ini masih jauh dari sempurna. Kritik dan saran yang membangun sangat kami harapkan demi perbaikan di masa mendatang.</p>';
-html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
+html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">'+getSupervisorSignatureLabel(data[0]||{})+'</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div>';
 html+='</div>';
 // DAFTAR ISI
 html+='<div class="page-break"></div><h2>DAFTAR ISI</h2>';
@@ -5663,7 +5679,7 @@ html+='<ol><li>Pendampingan dan pembinaan berkelanjutan di seluruh madrasah bina
 // BAB V
 html+='<div class="page-break"></div><div style="page-break-inside:avoid"><h2>BAB V<br>PENUTUP</h2>';
 html+='<p>Demikian laporan '+title.toLowerCase()+' untuk wilayah '+escHtml(kkma)+' ini disusun sebagai bentuk pertanggungjawaban dan bahan evaluasi. Semoga dapat memberikan manfaat nyata dalam peningkatan mutu pendidikan di madrasah-madrasah binaan.</p>';
-html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">Pengawas Madrasah,</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div></div>';
+html+='<div class="ttd" style="margin-top:20px"><p style="margin:0">..................., .................... 2025</p><p style="margin:0">'+getSupervisorSignatureLabel(data[0]||{})+'</p><br><br><br><p style="margin:0"><b><u>'+(pengawas.nama||'...')+'</u></b></p><p style="margin:0">NIP. '+(pengawas.nip||'...')+'</p></div></div>';
 // LAMPIRAN
 html+='<div class="page-break"></div><h2>LAMPIRAN</h2><h3>Dokumentasi Kegiatan</h3>';
 html+='<p style="text-align:center;color:#666;margin-top:50px">(Tempelkan foto-foto dokumentasi kegiatan di halaman ini)</p>';
