@@ -358,12 +358,12 @@
       "createdAt": "2026-10-13T09:35:36.191Z"
     },
     {
-      "code": "SUPERVISI-PENGAWAS-ERFGU9",
-      "role": "pengawas",
-      "user": "Emilia",
+      "code": "SUPERVISI-KAMAD-80DEW1",
+      "role": "kepala",
+      "user": "Subariyanto",
       "used": false,
-      "createdAt": "2026-10-21T11:14:21.492Z"
+      "createdAt": "2026-10-25T00:34:38.644Z"
     }
   ],
-  "updatedAt": "2026-10-21T11:14:24.948Z"
+  "updatedAt": "2026-10-25T00:34:42.244Z"
 }
