@@ -1091,7 +1091,9 @@ function getMadrasah(){try{return JSON.parse(localStorage.getItem(getActiveMadra
 function saveMadrasah(d){localStorage.setItem(getActiveMadrasahKey(),JSON.stringify(d))}
 function getGuru(){try{return JSON.parse(localStorage.getItem(getActiveGuruKey()))||[]}catch(e){return[]}}
 function saveGuru(d){localStorage.setItem(getActiveGuruKey(),JSON.stringify(d))}
-function getPengawas(){try{return JSON.parse(localStorage.getItem(PENGAWAS_KEY))||{}}catch(e){return{}}}
+function getPengawas(){var p={};try{p=JSON.parse(localStorage.getItem(PENGAWAS_KEY))||{}}catch(e){p={}}
+if(!p.nama){var s=getSession();if(s&&s.nama)p.nama=s.nama;}
+return p;}
 function savePengawas(d){localStorage.setItem(PENGAWAS_KEY,JSON.stringify(d))}
 
 // ===== UNIFIED HELPERS (merge RA + umum) =====
@@ -1149,14 +1151,32 @@ if(!role){var session=getSession();role=session&&session.role;}
 return role==='kepala'?'kepala':'pengawas';
 }
 function getSupervisorSignatureLabel(id){return getSupervisorRole(id)==='kepala'?'Kepala Madrasah,':'Pengawas Madrasah,';}
+function getSupervisorSigner(record){
+var id=record&&record.identitas?record.identitas:(record||{});
+var role=getSupervisorRole(record);
+var nama=id.namaSupervisor||'',nip=id.nipSupervisor||'';
+if(!nama&&role==='kepala'){
+var all=[];try{all=getAllMadrasah();}catch(e){all=[];}
+var md=null;
+if(id.namaMadrasah)md=all.find(function(m){return m.nama===id.namaMadrasah;});
+if(!md&&id.selectedMadrasahIdx!=null)md=all[parseInt(id.selectedMadrasahIdx)];
+if(md){if(md.kepala){nama=md.kepala;nip=nip||md.nipKepala||'';}}
+}
+if(!nama){var p={};try{p=getPengawas();}catch(e){p={}}
+if(p.nama){nama=p.nama;nip=nip||p.nip||'';}
+}
+if(!nama){var s=getSession();if(s&&s.nama)nama=s.nama;}
+return {nama:nama,nip:nip};
+}
 function getSupervisiSignatureTable(record,leftTitle,leftName,leftNip){
 var id=record&&record.identitas?record.identitas:(record||{});
 var label=getSupervisorSignatureLabel(record);
+var signer=getSupervisorSigner(record);
 return '<table class="ttd-table"><tr>'+
 '<td style="width:50%"><p class="ttd-date">&nbsp;</p><p class="ttd-label">'+escHtml(leftTitle)+'</p><div class="ttd-space"></div>'+
 '<p class="ttd-name">'+escHtml(leftName||'.........................')+'</p><p class="ttd-nip">NIP. '+escHtml(leftNip||'.........................')+'</p></td>'+
 '<td style="width:50%"><p class="ttd-date">'+escHtml(getTanggalTtd(id))+'</p><p class="ttd-label">'+escHtml(label)+'</p><div class="ttd-space"></div>'+
-'<p class="ttd-name">'+escHtml(id.namaSupervisor||'.........................')+'</p><p class="ttd-nip">NIP. '+escHtml(id.nipSupervisor||'.........................')+'</p></td>'+
+'<p class="ttd-name">'+escHtml(signer.nama||'.........................')+'</p><p class="ttd-nip">NIP. '+escHtml(signer.nip||'.........................')+'</p></td>'+
 '</tr></table>';
 }
 function formatDateDMY(value){
