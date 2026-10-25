@@ -2375,7 +2375,7 @@ render();
 function backToDashboard(){state.view='input-observasi';state.activeTab='supervisi';state.jenjang='mi';render()}
 function renderSupervisiList(){
 var data=getAllSupervisi();
-var html='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="margin:0">📝 Daftar Supervisi Pembelajaran</h2><button class="btn btn-success" onclick="newSupervisi()">+ Supervisi Baru</button></div>';
+var html='<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px"><h2 style="margin:0">📝 Daftar Supervisi Pembelajaran</h2><button class="btn btn-success" onclick="newForm()">+ Supervisi Baru</button></div>';
 if(data.length===0){
 html+='<div class="empty-state"><p>Belum ada data supervisi.<br>Klik tombol di bawah untuk mulai.</p></div>';
 }else{
